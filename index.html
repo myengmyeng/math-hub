@@ -2,6 +2,7 @@
 <html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>수업 허브</title>
+<script defer src="https://cdn.jsdelivr.net/npm/mathlive@0.111.0/mathlive.min.js"></script>
 <style>
 :root{--navy:#1d2b4f;--or:#f28c28;--bg:#f4f6fa;--line:#d9dee8;--g:#2fa84f;--y:#f2b705;--r:#e04646}
 *{box-sizing:border-box}html,body{margin:0;height:100%;font-family:"Pretendard","Noto Sans KR","Malgun Gothic",sans-serif;background:var(--bg);color:#1c2333}
@@ -57,6 +58,23 @@ h1{color:var(--navy);margin:8px 0 18px;font-size:28px}
 #qState{margin-top:10px;color:var(--g);font-size:18px;min-height:24px}
 #pauseOv{z-index:90;background:var(--navy);color:#fff;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:30px}
 #pauseOv .big{font-size:44px;font-weight:800;margin-bottom:14px}#pauseOv .m{font-size:30px}
+/* 🎮 게임 */
+#gOv{z-index:85;background:#1d2b4f;color:#fff;overflow:auto;justify-content:center;align-items:flex-start}#gIn{width:min(900px,100%);padding:22px;text-align:center}
+.gwho{opacity:.85;font-size:18px;margin-bottom:10px}.gbig{font-size:38px;font-weight:800;margin:20px 0 10px}#gIn p{font-size:21px}
+.gtop{display:flex;justify-content:space-between;font-size:20px;opacity:.9}.gtop .warn{color:#ffb86b;font-weight:800}
+.gpr{font-size:26px;font-weight:700;margin:14px 0;line-height:1.5}.gim img{max-width:100%;max-height:34vh;background:#fff;border-radius:10px}
+.gch{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.gch button{color:#fff;font-size:24px;padding:26px 14px;border-radius:14px;display:flex;gap:12px;align-items:center;justify-content:center}.gch i{font-style:normal;font-size:28px}
+.gch button:disabled,.gor button:disabled{opacity:.35}
+#gIn math-field{font-size:30px;width:100%;max-width:600px;margin:14px auto;display:block;border-radius:10px;padding:8px;color:#1c2333}
+#gIn input{font-size:26px;margin:14px auto;display:block;text-align:center}
+.gsend{background:var(--or);color:#fff;font-size:24px;padding:14px 46px;margin-top:6px}.gre{background:#3c4a70;color:#fff;font-size:20px;padding:12px 24px}
+.gcho{font-size:56px;letter-spacing:14px;font-weight:800;color:#ffd27a;margin:10px 0}
+.gor{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:12px 0}.gor button{font-size:22px;padding:14px 20px;background:#fff;color:#1d2b4f}
+.gseq{min-height:34px;font-size:20px;color:#ffd27a;margin:8px 0}
+.gdone{font-size:34px;font-weight:800;margin-top:40px}.gdone small{font-size:20px;opacity:.8;font-weight:400}
+.gres{font-size:44px;font-weight:900;border-radius:20px;padding:30px;margin:26px auto;max-width:520px}.gres.ok{background:#2fa84f}.gres.no{background:#c0392b}.gres b{font-size:56px}
+.gbt{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.gbt button{font-size:26px;padding:20px 26px;background:#fff;color:#1d2b4f}.gbt button.on{background:var(--or);color:#fff}
+.gok{color:#9be3ae}.gmut{opacity:.8;font-size:18px}.gm{color:#ffd27a}.gtop3 div{font-size:24px;margin:8px 0}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#1c2333;color:#fff;padding:12px 20px;border-radius:12px;font-size:18px;z-index:100}
 </style>
 </head><body>
@@ -83,6 +101,7 @@ h1{color:var(--navy);margin:8px 0 18px;font-size:28px}
 
 <div id="slideOv" class="ov"><img id="slideImg" alt=""><div class="ld" id="slideLd">발표 화면 불러오는 중…</div></div>
 <div id="qOv" class="ov"><div id="qBox"><h3>❓ 선생님 질문</h3><div class="qt" id="qText"></div><div id="qIn"></div><button id="qSend">보내기</button><div id="qState"></div></div></div>
+<div id="gOv" class="ov"><div id="gIn"></div></div>
 <div id="pauseOv" class="ov"><div class="big">⏸ 잠깐 멈춰요</div><div class="m" id="pauseMsg"></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -141,6 +160,7 @@ function put_(k, v) {
 /* 반 채널 하나 = Presence(학생 상태). 학생은 자기 키로 들어가 track, 선생님은 듣기만 */
 function room_(cls, key) {
   if (ROOM[cls]) return ROOM[cls];
+  if (key) watch_(cls);
   var ch = sb.channel('room:' + cls, { config: { presence: { key: key || 'T' + Math.random().toString(36).slice(2) } } });
   ch.on('presence', { event: 'sync' }, function () {
     var st = ch.presenceState(), now = Date.now();
@@ -188,22 +208,42 @@ var ST = {
   pset: put_,
   lock: function (fn) { return fn(); },   // ponytail: 선생님 한 명 기준(마지막 저장이 이김). 학생 쓰기는 DB 함수가 잠근다
   deckFolder: function () { return 'D' + Date.now(); },
+  delPrefix: function (p) {
+    Object.keys(MIR).forEach(function (k) { if (k.indexOf(p) === 0) delete MIR[k]; });
+    WQ = WQ.then(function () { return sb.rpc('t_del', { c: CODE, p: p }); });
+  },
   fileData: function (id) {
     return sb.from('files').select('v').eq('k', id).single().then(function (r) { if (r.error) throw r.error.message; return r.data.v; });
   }
 };
-/* 시작: kv 거울 채우기 + 바뀔 때마다 알림. 학생은 즉석 질문 답(A:)을 받지 않는다(남의 답·양) */
+/* 시작: kv 거울 채우기 + 바뀔 때마다 알림.
+ * 선생님 기기는 전부, 학생은 답(A:·GA:)을 빼고 받고, 실시간은 자기 반 키만(watch_ — 반을 알게 된 뒤) */
+function sub_(filter, keys) {
+  var o = { event: '*', schema: 'public', table: 'kv' }; if (filter) o.filter = filter;
+  var ch = sb.channel('kv:' + (filter || 'all')).on('postgres_changes', o, function (e) {
+    if (e.eventType === 'DELETE') { delete MIR[e.old.k]; return; }
+    MIR[e.new.k] = e.new.v;
+  });
+  ch.subscribe(function (s) {   // 구독 전에 바뀐 것을 놓치지 않게 한 번 더 읽는다
+    if (s === 'SUBSCRIBED' && keys) sb.from('kv').select('k,v').in('k', keys).then(function (r) {
+      if (r.error) return;
+      keys.forEach(function (k) { delete MIR[k]; }); r.data.forEach(function (x) { MIR[x.k] = x.v; });
+    });
+  });
+}
+var WATCH = null;
+function watch_(cls) {
+  if (TEACHER || WATCH === cls) return; WATCH = cls;
+  var keys = ['P:' + cls, 'B:' + cls, 'GQ:' + cls, 'DECK', 'CLASSES'];
+  sub_('k=in.(' + keys.map(function (k) { return '"' + k + '"'; }).join(',') + ')', keys);
+}
 var HUB_READY = (function () {
   var q = sb.from('kv').select('k,v');
-  if (!TEACHER) q = q.not('k', 'like', 'A:%');
+  if (!TEACHER) q = q.not('k', 'like', 'A:%').not('k', 'like', 'GA:%');
   return q.then(function (r) {
     if (r.error) throw r.error.message;
-    r.data.forEach(function (x) { MIR[x.k] = x.v; });
-    sb.channel('kv').on('postgres_changes', { event: '*', schema: 'public', table: 'kv' }, function (e) {
-      if (e.eventType === 'DELETE') { delete MIR[e.old.k]; return; }
-      if (!TEACHER && e.new.k.indexOf('A:') === 0) return;
-      MIR[e.new.k] = e.new.v;
-    }).subscribe();
+    r.data.forEach(function (x) { MIR[x.k] = x.v; });   // ponytail: 1000 줄까지 한 번에(Supabase 기본). 답은 질문·게임이 끝나면 지워서 넘지 않게
+    if (TEACHER) sub_(null, null);
   });
 })();
 
@@ -212,6 +252,8 @@ var HUB_READY = (function () {
  * 저장은 모두 ST(저장소 어댑터)를 거친다: cget/cput/cgetAll/cscan(캐시) · pget/pset(속성) · lock · now · code · 파일.
  * 키: CLASSES · B:반(태블릿 묶음) · Q:반(허락 대기) · RJ:…(거절 알림) · P:반(수업 상태) · L:반(진도판 열림) · SEQ:활동 · DECK · DECK:t
  *     S:반:번호(학생 현재 상태 — supa 에선 Presence) · A:반:질문:번호(즉석 질문 답)
+ *     게임: GQ:반(공개 상태, 정답은 공개 단계에서만) · GC:반(리모컨 '다음' 신호) · GA:반:게임:문항:번호(답) · GSETS(세트 목록)
+ *     세트 본문(정답)·게임 기록은 비공개 저장소(setSave/setLoad — supa 는 sets 표), 문제 그림은 파일(GI:게임:문항)
  * 명렬표 없음: 학생이 학년·반·번호를 넣고 수업마다 닉네임을 정한다. 실명은 저장하지 않는다.
  */
 var DEMO = '체험';
@@ -267,7 +309,7 @@ function login(cls, no, dev) {
 
 /* 학생이 자주 부른다(로컬 2~5초, supa 는 거울만 읽어서 0.4초). 바뀐 게 없으면 상태를 보내지 않는다.
  * info = { act, scr, sig, prog, help, nick, ani } — 진도판 현황표용 */
-function pull(cls, no, dev, v, info) {
+function pull(cls, no, dev, v, info, gt) {
   cls = String(cls); no = Number(no);
   var now = ST.now(), sk = 'S:' + cls + ':' + no;
   var c = ST.cgetAll(['P:' + cls, 'B:' + cls, 'DECK', 'L:' + cls, sk]);
@@ -279,6 +321,8 @@ function pull(cls, no, dev, v, info) {
   }
   var d = c.DECK != null ? j_(c.DECK, null) : rd_('DECK', null);
   var s = j_(c[sk], {}), out = { now: now, fast: !!c['L:' + cls], deck: d ? { t: d.t, n: d.n } : null };
+  var g = rd_('GQ:' + cls, null);
+  if ((g ? g.t : 0) !== (gt || 0)) out.g = g || { t: 0 };
   if (p.v !== v) {
     out.p = p;
     if (p.v > (s.gv || 0)) { s.gv = p.v; s.lat = now - p.v; }   // 선생님이 바꾼 뒤 이 학생에게 닿기까지 걸린 시간
@@ -357,7 +401,10 @@ function setPace(code, cls, patch) {
     if (!patch || !(k in patch)) return;
     var x = patch[k];
     if (k === 'timer') p.timer = x && Number(x.min) > 0 ? { end: ST.now() + Number(x.min) * 60000, min: Number(x.min), label: str_(x.label, 30) } : null;
-    else if (k === 'q') p.q = x ? { id: ST.now().toString(36), type: ['ox', 'choice', 'num', 'text'].indexOf(x.type) >= 0 ? x.type : 'text', n: Math.max(2, Math.min(5, Number(x.n) || 5)), text: str_(x.text, 120) } : null;
+    else if (k === 'q') {
+      if (p.q) ST.delPrefix('A:' + cls + ':' + p.q.id + ':');   // 닫거나 바꾼 질문의 답은 지운다(쌓이지 않게)
+      p.q = x ? { id: ST.now().toString(36), type: ['ox', 'choice', 'num', 'text'].indexOf(x.type) >= 0 ? x.type : 'text', n: Math.max(2, Math.min(5, Number(x.n) || 5)), text: str_(x.text, 120) } : null;
+    }
     else if (k === 'act' || k === 'msg' || k === 'show') p[k] = x == null ? (k === 'msg' ? '' : null) : str_(x, 120);
     else if (k === 'pause') p.pause = !!x;
     else p[k] = x == null ? null : Math.max(0, Number(x) || 0);
@@ -384,7 +431,13 @@ function board(code, cls) {
   var ro = ns.map(function (n) { var s = pres[n] || {}; return [n, s.nick || '', s.ani || '']; });
   var b = rd_('B:' + cls, {}), bound = {};
   Object.keys(b).forEach(function (k) { bound[k] = String(b[k]).slice(-4); });
-  return { ok: true, now: ST.now(), classes: rd_('CLASSES', []).concat([DEMO]), pace: p, roster: ro, bound: bound, reqs: rd_('Q:' + cls, []), pres: pres, ans: ans };
+  /* 게임: 공개 상태 + 지금 문항(또는 베팅)에 답한 수 + 리모컨 신호 + 세트 목록 */
+  var g = rd_('GQ:' + cls, null), gcnt = 0;
+  if (g && (g.phase === 'q' || g.phase === 'bet')) {
+    var pre = 'GA:' + cls + ':' + g.gid + ':' + (g.phase === 'bet' ? 'b' : '') + g.qi + ':';
+    gcnt = Object.keys(ST.cgetAll(ns.map(function (n) { return pre + n; }))).length;
+  }
+  return { ok: true, now: ST.now(), classes: rd_('CLASSES', []).concat([DEMO]), game: g, gcnt: gcnt, gc: rd_('GC:' + cls, null), gsets: rd_('GSETS', []), pace: p, roster: ro, bound: bound, reqs: rd_('Q:' + cls, []), pres: pres, ans: ans };
 }
 
 /* 발표 자료: 진도판이 쪽마다 JPG 로 올린다. 모든 반이 같은 자료를 쓴다 */
@@ -417,6 +470,40 @@ function saveSeq(code, cls, act, seq) {
   return { ok: true, pace: p };
 }
 
+/* ---------------- 게임 (퀴즈온식) ----------------
+ * 진행·채점은 게임을 시작한 진도판 기기(엔진)가 한다. 학생은 답만 보내고(gans), 정답은 공개 단계 전엔 학생에게 가지 않는다. */
+function bad_() { return { ok: false, msg: '접속코드가 맞지 않아요' }; }
+function gput(code, k, v) {
+  if (!okCode_(code)) return bad_();
+  k = String(k); if (!/^(GQ|GC):|^GSETS$/.test(k)) return { ok: false, msg: '쓸 수 없는 키' };
+  if (v == null) ST.pset(k, ''); else wr_(k, v);
+  return { ok: true };
+}
+/* supabase.sql 의 s_gans 가 같은 규칙. qi 가 'b3' 이면 3번 문제 파이널 베팅 */
+function gans(cls, no, dev, gid, qi, val, ms) {
+  cls = String(cls); no = Number(no); qi = String(qi);
+  if (cls !== DEMO && rd_('B:' + cls, {})[no] !== dev) return { ok: false, msg: '다시 들어와 주세요' };
+  var g = rd_('GQ:' + cls, null), bet = qi.charAt(0) === 'b';
+  if (!g || g.gid !== gid || (bet ? g.phase !== 'bet' || 'b' + g.qi !== qi : g.phase !== 'q' || String(g.qi) !== qi)) return { ok: false, msg: '시간이 끝났어요' };
+  ST.cput('GA:' + cls + ':' + gid + ':' + qi + ':' + no, JSON.stringify({ v: str_(val, 300), ms: Math.max(0, Number(ms) || 0) }));
+  return { ok: true };
+}
+/* 엔진·TV 가 부른다: 그 문항(또는 베팅)의 답 + 리모컨 신호 */
+function gboard(code, cls, gid, qi) {
+  if (!okCode_(code)) return bad_();
+  cls = String(cls);
+  var ns = nos_(cls), pre = 'GA:' + cls + ':' + gid + ':' + qi + ':';
+  var c = ns.length ? ST.cgetAll(ns.map(function (n) { return pre + n; })) : {}, ans = {};
+  ns.forEach(function (n) { var a = c[pre + n]; if (a) ans[n] = j_(a, null); });
+  return { ok: true, ans: ans, gc: rd_('GC:' + cls, null) };
+}
+function gclear(code, prefix) { if (!okCode_(code)) return bad_(); if (!/^GA:/.test(prefix)) return { ok: false }; ST.delPrefix(prefix); return { ok: true }; }
+/* 비공개 저장소: SET:게임(세트 본문), RUN:반(진행 중 상태 — 진도판을 새로 열어도 이어서), LOG:반:게임:시각(기록) */
+function setSave(code, k, v) { if (!okCode_(code)) return bad_(); ST.sset(str_(k, 80), v == null ? null : String(v)); return { ok: true }; }
+function setLoad(code, k) { if (!okCode_(code)) return bad_(); return { ok: true, v: ST.sget(str_(k, 80)) }; }
+function filePut(code, id, data) { if (!okCode_(code)) return bad_(); ST.filePut(str_(id, 80), data); return { ok: true }; }
+function fileGet(id) { var v = ST.fileData(str_(id, 80)); return v && v.then ? v.then(function (x) { return { ok: true, v: x }; }) : { ok: !!v, v: v }; }
+
 
 /* server.js 위에 덮어쓰기 — 학생 쓰기는 DB 함수로, 진도판 코드는 DB 가 확인, 그림은 files 표에서 */
 login = function (cls, no, dev) {
@@ -443,13 +530,28 @@ getSlide = function (i, t) {
   var r = getSlide0(i, t); if (!r.ok) return r;
   return r.img.then(function (img) { r.img = img; return r; });
 };
+gans = function (cls, no, dev, gid, qi, val, ms) {
+  return sb.rpc('s_gans', { cls: String(cls), no: Number(no), dev: String(dev), gid: String(gid), qi: String(qi), val: str_(val, 300), ms: Math.round(Number(ms) || 0) })
+    .then(function (r) { if (r.error) throw r.error.message; return r.data; });
+};
+setSave = function (code, k, v) {
+  return sb.rpc('t_set_put', { c: String(code), k: str_(k, 80), v: v == null ? null : String(v) })
+    .then(function (r) { return r.error || r.data === false ? { ok: false, msg: r.error ? r.error.message : '진도판 코드가 맞지 않아요' } : { ok: true }; });
+};
+setLoad = function (code, k) {
+  return sb.rpc('t_set_get', { c: String(code), k: str_(k, 80) }).then(function (r) { return r.error ? { ok: false, msg: r.error.message } : { ok: true, v: r.data }; });
+};
+filePut = function (code, id, data) {
+  return sb.rpc('t_file', { c: String(code), k: str_(id, 80), v: data })
+    .then(function (r) { return r.error || r.data === false ? { ok: false, msg: r.error ? r.error.message : '진도판 코드가 맞지 않아요' } : { ok: true }; });
+};
 deckPage = function (code, key, i, img) {
   if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
   var id = key + '/p' + ('0' + (i + 1)).slice(-2);
   return sb.rpc('t_file', { c: CODE, k: id, v: img }).then(function (r) { return r.error || r.data === false ? { ok: false, msg: r.error ? r.error.message : '진도판 코드가 맞지 않아요' } : { ok: true, i: i, id: id }; });
 };
 
-return { login: login, pull: pull, answer: answer, getSlide: getSlide, tLogin: tLogin, approve: approve, unbind: unbind, setPace: setPace, board: board, deckBegin: deckBegin, deckPage: deckPage, deckEnd: deckEnd, saveSeq: saveSeq, ready: HUB_READY, online: true };
+return { login: login, pull: pull, answer: answer, getSlide: getSlide, tLogin: tLogin, approve: approve, unbind: unbind, setPace: setPace, board: board, deckBegin: deckBegin, deckPage: deckPage, deckEnd: deckEnd, saveSeq: saveSeq, gput: gput, gans: gans, gboard: gboard, gclear: gclear, setSave: setSave, setLoad: setLoad, filePut: filePut, fileGet: fileGet, ready: HUB_READY, online: true };
 })();
 /* 서버 부르기 — server.js 가 브라우저 안(HUB)에서 돈다. 배포본은 Supabase 거울(supa.js), 로컬은 localStorage(fake.js).
  * 서버 함수는 값이나 Promise 를 돌려준다. 로컬은 120~400ms 늦게 답해 실제 통신처럼 */
@@ -464,6 +566,66 @@ function srv(fn, args, ok, fail) {
     .then(function (r) { ok(JSON.parse(JSON.stringify(r))); }, function (e) { fail(e && e.message || String(e)); });
 }
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+/* 수식 도우미 — 학생·진도판·TV 공용.
+ *  mrender(el): 글 속 $…$ 를 수식으로 그림(MathLive 가 있을 때)
+ *  eqAns(학생 답, 허용 답): 글자가 같거나 값이 같으면 정답. 1/2 = 0.5 = \frac{2}{4}, \sqrt{8} = 2\sqrt{2}, 35° = 35
+ *  lnum(s): LaTeX·글자 수식을 수로(못 읽으면 NaN). 학생이 쓴 글이라 eval 은 쓰지 않는다.
+ *  cho(s): 한글 초성 */
+/* CDN 에서 불러오면 MathLive 가 글꼴 폴더를 잘못 짐작한다 → 직접 알려 주고, 누를 때 소리는 끈다 */
+document.addEventListener('DOMContentLoaded', function () {
+  if (window.MathfieldElement) { MathfieldElement.fontsDirectory = 'https://cdn.jsdelivr.net/npm/mathlive@0.111.0/fonts'; MathfieldElement.soundsDirectory = null; }
+});
+function mrender(el) {
+  if (el && window.MathLive && MathLive.renderMathInElement)
+    MathLive.renderMathInElement(el, { TeX: { delimiters: { inline: [['$', '$']], display: [['$$', '$$']] } } });
+}
+function anorm(s) {
+  return String(s == null ? '' : s).replace(/\\left|\\right|\\[,!; ]|\s/g, '').replace(/\^\{?\\circ\}?|°|\\degree/g, '')
+    .replace(/\\[dt]frac/g, '\\frac').replace(/\\cdot|\\times|×/g, '*').replace(/\\div|÷/g, '/').replace(/−/g, '-')
+    .replace(/√/g, '\\sqrt').replace(/\\pi|π/g, 'p').replace(/\\text\{([^}]*)\}/g, '$1').toLowerCase();
+}
+function lnum(s) {
+  s = anorm(s); var i = 0;
+  function grp() { if (s[i] === '{') { i++; var v = expr(); if (s[i] !== '}') throw 0; i++; return v; } return atom(); }
+  function atom() {
+    var c = s[i];
+    if (c === '(' ) { i++; var v = expr(); if (s[i] !== ')') throw 0; i++; return v; }
+    if (c === '{') return grp();
+    if (s.substr(i, 5) === '\\frac') { i += 5; var a = grp(), b = grp(); return a / b; }
+    if (s.substr(i, 5) === '\\sqrt') { i += 5; var n = 2; if (s[i] === '[') { i++; n = expr(); if (s[i] !== ']') throw 0; i++; } return Math.pow(grp(), 1 / n); }
+    if (c === 'p') { i++; return Math.PI; }
+    var m = /^\d*\.?\d+/.exec(s.slice(i)); if (m) { i += m[0].length; return parseFloat(m[0]); }
+    throw 0;
+  }
+  function pow() {
+    var b = atom();
+    if (s[i] === '^') { i++; if (/\d/.test(s[i])) return Math.pow(b, +s[i++]); return Math.pow(b, s[i] === '-' ? (i++, -grp()) : grp()); }   // x^23 은 LaTeX 처럼 x^2·3
+    return b;
+  }
+  function unary() { if (s[i] === '-') { i++; return -unary(); } if (s[i] === '+') { i++; return unary(); } return pow(); }
+  function term() {
+    var v = unary();
+    for (;;) {
+      var c = s[i];
+      if (c === '*' || c === '/') { i++; var r = unary(); v = c === '*' ? v * r : v / r; }
+      else if (c && /[\d(p\\{]/.test(c)) v *= pow();   // 2\sqrt{2}, 2p 처럼 곱셈 기호 없이
+      else return v;
+    }
+  }
+  function expr() { var v = term(); while (s[i] === '+' || s[i] === '-') { var c = s[i++], r = term(); v = c === '+' ? v + r : v - r; } return v; }
+  try { var v = expr(); return i === s.length ? v : NaN; } catch (e) { return NaN; }
+}
+function eqAns(a, b) {
+  var x = anorm(a), y = anorm(b);
+  if (!x) return false;
+  if (x === y) return true;
+  var p = lnum(a), q = lnum(b);
+  return isFinite(p) && isFinite(q) && Math.abs(p - q) <= 1e-9 * Math.max(1, Math.abs(q));
+}
+function cho(s) {
+  return String(s).replace(/[가-힣]/g, function (c) { return 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ'[Math.floor((c.charCodeAt(0) - 0xAC00) / 588)]; });
+}
 
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -540,12 +702,13 @@ function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function
     if (inflight) return;
     if (document.hidden) { schedule(3000); return; }
     inflight = true;
-    srv('pull', [ME.cls, ME.no, DEV, V, { act: P && P.act, scr: P && P.act ? (CUR[P.act] || 0) : null, sig: SIG, prog: PROG, help: 0, nick: ME.nick, ani: ME.ani }], function (r) {
+    srv('pull', [ME.cls, ME.no, DEV, V, { act: P && P.act, scr: P && P.act ? (CUR[P.act] || 0) : null, sig: SIG, prog: PROG, help: 0, nick: ME.nick, ani: ME.ani }, GTT], function (r) {
       inflight = false;
       if (r.kick) { pickClass('다른 태블릿에서 이 번호로 들어왔어요. 선생님께 말씀드려 주세요.'); return; }
       SKEW = r.now - Date.now(); FAST = r.fast;
       if (r.deck) deckMeta(r.deck);
       if (r.p) { P = r.p; V = P.v; apply(); }
+      if (r.g) gGot(r.g);
       schedule(TICK || (FAST ? 2000 : 5000) * (0.85 + Math.random() * 0.3));
     }, function () { inflight = false; schedule(5000); });
   }
@@ -701,6 +864,94 @@ function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function
     im.style.display = u ? '' : 'none'; $('pgLd').style.display = u ? 'none' : '';
     if (u && im.getAttribute('src') !== u) im.src = u;
   }
+
+  /* ================= 🎮 게임 — 학생 태블릿(student.html 의 IIFE 안에 끼워짐) =================
+   * GQ(공개 상태)를 받아 단계마다 그린다. 답은 gans 로 보내고, 맞았는지는 선생님 기기가 공개 단계에 알려 준다. */
+  var GQ = null, GTT = 0, GSEEN = {}, GIMG = {}, GSEQ = [];
+  var SHAPE = ['▲', '◆', '●', '■', '★'], SCOL = ['#3b6fe0', '#f2852b', '#2fa84f', '#8e5bd8', '#e04646'];
+  function gkey() { return GQ.gid + ':' + GQ.qi; }
+  function gGot(g) {
+    GTT = g.t || 0; var prev = GQ; GQ = g.gid ? g : null;
+    if (GQ && GQ.phase === 'q' && !GSEEN[gkey()]) GSEEN[gkey()] = { at: Date.now() };   // 남은 시간·빠르기는 이 태블릿이 문제를 받은 때부터
+    if (GQ && GQ.phase === 'reveal' && (!prev || prev.phase !== 'reveal') && navigator.vibrate) navigator.vibrate(120);
+    gRender();
+  }
+  function gmsg(t) { var m = $('gMsg'); if (m) m.textContent = t; else toast(t); }
+  function sent(k) { return ls('HUB_GA:' + ME.cls + ':' + k); }
+  function gSend(qi, v) {
+    var k = GQ.gid + ':' + qi, seen = GSEEN[GQ.gid + ':' + GQ.qi] || { at: Date.now() };
+    gmsg('보내는 중…');
+    srv('gans', [ME.cls, ME.no, DEV, GQ.gid, String(qi), String(v), Date.now() - seen.at], function (r) {
+      if (!r.ok) { gmsg(r.msg); return; }
+      ls('HUB_GA:' + ME.cls + ':' + k, String(v)); gRender();
+    }, function () { gmsg('못 보냈어요. 다시 눌러 주세요.'); });
+  }
+  function gRender() {
+    var on = !!(GQ && ME && $('main').classList.contains('on'));
+    $('gOv').classList.toggle('on', on);
+    if (!on) return;
+    var g = GQ, q = g.q, me = (g.res || {})[ME.no], k = g.phase + ':' + g.t + ':' + (sent(gkey()) || '') + ':' + (g.phase === 'bet' ? sent(g.gid + ':b' + g.qi) || '' : '');
+    if ($('gIn').getAttribute('data-k') === k) return;
+    $('gIn').setAttribute('data-k', k);
+    var who = '<div class="gwho">' + esc((ME.ani || '') + ' ' + (ME.nick || '')) + (me ? ' · 총 <b>' + me.total + '</b>점 · ' + me.rank + '등' : '') + '</div>', h = '';
+    if (g.phase === 'lobby') h = '<div class="gbig">🎮 ' + esc(g.title) + '</div><p>곧 시작해요. TV 를 보세요!</p>';
+    else if (g.phase === 'bet') {
+      var b = sent(g.gid + ':b' + g.qi);
+      h = '<div class="gbig">💰 파이널 베팅</div><p>지금 점수의 몇 %를 걸까요? 맞히면 더하고, 틀리면 뺍니다.</p><div class="gbt">' +
+        [0, 25, 50, 100].map(function (p) { return '<button data-bet="' + p + '" class="' + (b === String(p) ? 'on' : '') + '">' + (p === 100 ? '올인 100%' : p + '%') + '</button>'; }).join('') + '</div>' +
+        (b != null ? '<p class="gok">' + b + '% 걸었어요 ✓ (바꿀 수 있어요)</p>' : '');
+    } else if (g.phase === 'spin') h = '<div class="gbig">🎡 스페셜 룰렛!</div><p>TV 를 보세요. 이번 문제를 맞히면 룰렛 효과를 받아요.</p>';
+    else if (g.phase === 'q') {
+      var mine = sent(gkey());
+      h = '<div class="gtop"><span>' + (g.qi + 1) + ' / ' + g.n + '</span><span id="gLeft"></span></div><div class="gpr">' + esc(q.prompt) + '</div>' +
+        (q.img ? '<div class="gim"><img id="gImg" alt=""></div>' : '');
+      if (q.type === 'slide') h += '<p class="gmut">선생님 설명을 들어요</p>';
+      else if (mine != null) h += '<div class="gdone">✅ 보냈어요!<br><small>다른 친구들을 기다려요</small></div>';
+      else if (q.choices) h += '<div class="gch">' + q.choices.map(function (c, i) { return '<button data-c="' + i + '" style="background:' + SCOL[i] + '"><i>' + SHAPE[i] + '</i>' + (q.type === 'ox' ? (i ? '❌' : '⭕') : esc(c)) + '</button>'; }).join('') + '</div>';
+      else if (q.type === 'short') h += '<math-field id="gMf" math-virtual-keyboard-policy="auto"></math-field><button class="gsend" id="gGo">제출</button>';
+      else if (q.type === 'chosung') h += '<div class="gcho">' + esc(q.hint) + '</div><input id="gTx" placeholder="정답 낱말" autocomplete="off"><button class="gsend" id="gGo">제출</button>';
+      else if (q.type === 'order') {
+        GSEQ = [];
+        h += '<p class="gmut">처음부터 차례대로 누르세요</p><div class="gor">' + q.items.map(function (x, i) { return '<button data-o="' + i + '">' + esc(x) + '</button>'; }).join('') + '</div>' +
+          '<div class="gseq" id="gSeq"></div><button class="gsend" id="gGo">제출</button> <button class="gre" id="gRe">다시</button>';
+      }
+      h += '<div id="gMsg" class="gmut"></div>';
+    } else if (g.phase === 'reveal') {
+      if (q.type === 'survey') h = '<div class="gbig">📊 설문 결과는 TV 에서</div>';
+      else h = me && me.ok ? '<div class="gres ok">🎉 정답!<br><b>+' + me.pts + '</b></div>' :
+        '<div class="gres no">' + (me && me.ans ? '😢 아쉬워요' : '⏰ 답하지 못했어요') + (me && me.pts < 0 ? '<br><b>' + me.pts + '</b>' : '') + '</div>' + (g.ans ? '<p>정답: <b class="gm">' + esc(g.ans) + '</b></p>' : '');
+    } else if (g.phase === 'rank') h = '<div class="gbig">' + (me ? '지금 ' + me.rank + '등' : '순위 발표') + '</div><p>TV 를 보세요!</p>';
+    else if (g.phase === 'end') {
+      h = '<div class="gbig">🏆 끝!</div>' + (me ? '<div class="gres ok">' + me.rank + '등 · ' + me.total + '점</div>' : '') +
+        '<div class="gtop3">' + (g.top || []).slice(0, 3).map(function (x, i) { return '<div>' + ['🥇', '🥈', '🥉'][i] + ' ' + esc(x[1]) + ' <small>' + x[2] + '점</small></div>'; }).join('') + '</div>';
+    }
+    $('gIn').innerHTML = who + h;
+    mrender($('gIn'));
+    var im = $('gImg'); if (im) { var id = 'GI:' + g.sid + ':' + g.qi; if (GIMG[id]) im.src = GIMG[id]; else srv('fileGet', [id], function (r) { if (r.ok && r.v) { GIMG[id] = r.v; if ($('gImg')) $('gImg').src = r.v; } }); }
+    var mf = $('gMf'); if (mf) setTimeout(function () { mf.focus(); }, 50);
+    gLeft();
+  }
+  function gLeft() {
+    var el = $('gLeft'); if (!el || !GQ || GQ.phase !== 'q') return;
+    var left = Math.max(0, Math.ceil((GSEEN[gkey()].at + GQ.q.time * 1000 - Date.now()) / 1000));
+    el.textContent = '⏱ ' + left + '초'; el.className = left <= 5 ? 'warn' : '';
+    if (!left) [].forEach.call($('gIn').querySelectorAll('button,input,math-field'), function (b) { b.disabled = true; });
+  }
+  setInterval(gLeft, 500);
+  $('gIn').onclick = function (e) {
+    var b = e.target.closest('button'); if (!b || b.disabled || !GQ) return;
+    if (b.hasAttribute('data-bet')) return gSend('b' + GQ.qi, b.getAttribute('data-bet'));
+    if (b.hasAttribute('data-c')) return gSend(GQ.qi, b.getAttribute('data-c'));
+    if (b.hasAttribute('data-o')) { var i = Number(b.getAttribute('data-o')); if (GSEQ.indexOf(i) < 0) GSEQ.push(i); b.disabled = true; $('gSeq').textContent = GSEQ.map(function (j, n) { return (n + 1) + '. ' + GQ.q.items[j]; }).join('   '); mrender($('gSeq')); return; }
+    if (b.id === 'gRe') { GSEQ = []; $('gSeq').textContent = ''; [].forEach.call($('gIn').querySelectorAll('[data-o]'), function (x) { x.disabled = false; }); return; }
+    if (b.id === 'gGo') {
+      var q = GQ.q, v = q.type === 'short' ? $('gMf').value : q.type === 'chosung' ? $('gTx').value : GSEQ.join(',');
+      if (q.type === 'order' && GSEQ.length !== q.items.length) { gmsg('모두 차례대로 눌러 주세요'); return; }
+      if (!String(v).trim()) { gmsg('답을 써 주세요'); return; }
+      gSend(GQ.qi, v);
+    }
+  };
+  $('gIn').onkeydown = function (e) { if (e.key === 'Enter' && $('gGo')) $('gGo').click(); };
 
   /* 확인용(수업엔 안 쓰임) */
   window.__HUB = { st: function () { return { ME: ME, V: V, P: P, FAST: FAST, CUR: CUR, deck: { t: DK.t, n: DK.n, got: Object.keys(IMG).filter(function (k) { return k.indexOf(DK.t + ':') === 0; }).length }, imgs: Object.keys(IMG) }; } };
