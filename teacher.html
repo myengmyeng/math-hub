@@ -259,7 +259,7 @@ var HUB = (function () {
 var SB_URL = 'https://faiemcomvhlahrssrfex.supabase.co';
 var SB_KEY = 'sb_publishable_S4gxcXRMSJb6K0G5ncQYGw_I8ZRLONa';
 var sb = supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: false } });
-var MIR = {}, PRES = {}, LAT = {}, ROOM = {}, CODE = null, TEACHER = /teacher/.test(location.pathname), WQ = Promise.resolve();
+var MIR = {}, PRES = {}, LAT = {}, ROOM = {}, CODE = null, TEACHER = /teacher|editor/.test(location.pathname), WQ = Promise.resolve();
 window.__SB = { MIR: MIR, PRES: PRES, ROOM: ROOM };   // 확인용
 
 function fail_(m) { console.warn('저장 실패', m); window.dispatchEvent(new CustomEvent('hubfail', { detail: m })); }
@@ -621,6 +621,7 @@ function gboard(code, cls, gid, qi) {
   ns.forEach(function (n) { var a = c[pre + n]; if (a) ans[n] = j_(a, null); });
   return { ok: true, ans: ans, gc: rd_('GC:' + cls, null) };
 }
+function gsets(code) { if (!okCode_(code)) return bad_(); return { ok: true, list: rd_('GSETS', []) }; }   // 문항 편집기용 세트 목록
 function gclear(code, prefix) { if (!okCode_(code)) return bad_(); if (!/^GA:/.test(prefix)) return { ok: false }; ST.delPrefix(prefix); return { ok: true }; }
 /* 비공개 저장소: SET:게임(세트 본문), RUN:반(진행 중 상태 — 진도판을 새로 열어도 이어서), LOG:반:게임:시각(기록) */
 function setSave(code, k, v) { if (!okCode_(code)) return bad_(); ST.sset(str_(k, 80), v == null ? null : String(v)); return { ok: true }; }
@@ -702,7 +703,7 @@ deckPage = function (code, key, i, img) {
   return sb.rpc('t_file', { c: CODE, k: id, v: img }).then(function (r) { return r.error || r.data === false ? { ok: false, msg: r.error ? r.error.message : '진도판 코드가 맞지 않아요' } : { ok: true, i: i, id: id }; });
 };
 
-return { login: login, pull: pull, answer: answer, getSlide: getSlide, tLogin: tLogin, approve: approve, unbind: unbind, setPace: setPace, board: board, deckBegin: deckBegin, deckPage: deckPage, deckEnd: deckEnd, saveSeq: saveSeq, gput: gput, gans: gans, gboard: gboard, gclear: gclear, setSave: setSave, setLoad: setLoad, filePut: filePut, fileGet: fileGet, work: work, works: works, ready: HUB_READY, online: true };
+return { login: login, pull: pull, answer: answer, getSlide: getSlide, tLogin: tLogin, approve: approve, unbind: unbind, setPace: setPace, board: board, deckBegin: deckBegin, deckPage: deckPage, deckEnd: deckEnd, saveSeq: saveSeq, gput: gput, gans: gans, gboard: gboard, gsets: gsets, gclear: gclear, setSave: setSave, setLoad: setLoad, filePut: filePut, fileGet: fileGet, work: work, works: works, ready: HUB_READY, online: true };
 })();
 /* 서버 부르기 — server.js 가 브라우저 안(HUB)에서 돈다. 배포본은 Supabase 거울(supa.js), 로컬은 localStorage(fake.js).
  * 서버 함수는 값이나 Promise 를 돌려준다. 로컬은 120~400ms 늦게 답해 실제 통신처럼 */
@@ -789,87 +790,63 @@ function gradeQ(q, v, perm) {
   return false;
 }
 
-/* 캐릭터 20종 — 몸 모양·색·눈·입·꾸미개를 섞어 그린 SVG(그림 파일 없음). 학생·진도판·TV 공용.
- *  av(코드, 크기px) → <svg> 글. 코드는 'a0'~'a19'. 예전 이모지 값이 오면 그 글자를 그대로 쓴다. */
-var AV = [
-  { n: '불꽃이', b: 'flame', c: '#ff6b4a', e: 'angry', m: 'grin', a: '' },
-  { n: '물방울', b: 'drop', c: '#4aa8ff', e: 'sparkle', m: 'smile', a: '' },
-  { n: '새싹이', b: 'bean', c: '#7bd88f', e: 'dot', m: 'smile', a: 'sprout' },
-  { n: '별똥이', b: 'star', c: '#ffd23f', e: 'happy', m: 'open', a: '' },
-  { n: '구름이', b: 'cloud', c: '#cfd8ff', e: 'sleepy', m: 'o', a: '' },
-  { n: '번개', b: 'round', c: '#9b6bff', e: 'sparkle', m: 'grin', a: 'bolt' },
-  { n: '외눈이', b: 'bean', c: '#ffa53a', e: 'one', m: 'smile', a: '' },
-  { n: '유령', b: 'ghost', c: '#eef3ff', e: 'dot', m: 'o', a: '' },
-  { n: '로봇', b: 'square', c: '#b8c2d1', e: 'rect', m: 'flat', a: 'antenna' },
-  { n: '공주', b: 'round', c: '#ff9ccf', e: 'sparkle', m: 'smile', a: 'crown' },
-  { n: '해적', b: 'round', c: '#3fc1b0', e: 'patch', m: 'grin', a: '' },
-  { n: '박사', b: 'square', c: '#c9a27c', e: 'glasses', m: 'smile', a: '' },
-  { n: 'DJ', b: 'round', c: '#7fe3d0', e: 'happy', m: 'open', a: 'phones' },
-  { n: '마법사', b: 'bean', c: '#5b7bd6', e: 'dot', m: 'smile', a: 'wizard' },
-  { n: '공룡', b: 'bean', c: '#5fc96b', e: 'dot', m: 'grin', a: 'spikes' },
-  { n: '냥이', b: 'round', c: '#4b4f5c', e: 'cat', m: 'cat', a: 'catears' },
-  { n: '토순이', b: 'bean', c: '#ffffff', e: 'dot', m: 'cat', a: 'bunny' },
-  { n: '천사', b: 'round', c: '#fff1a8', e: 'happy', m: 'smile', a: 'halo' },
-  { n: '꼬마악마', b: 'round', c: '#e8505b', e: 'angry', m: 'grin', a: 'horns' },
-  { n: '외계인', b: 'bean', c: '#b6f05a', e: 'three', m: 'o', a: 'antennas' }
-];
+/* 문제 그림 열쇠: 'GI:…' 글자면 그대로, 예전 세트(true)면 'GI:세트:번호', 없으면 '' */
+function imgKey(q, sid, i) { return !q.image ? '' : typeof q.image === 'string' && q.image.indexOf('GI:') === 0 ? q.image : 'GI:' + sid + ':' + i; }
+
+/* 캐릭터 30종 — 네모난 얼굴의 납작한(flat) 동물들. 직접 그린 SVG(다른 서비스 그림을 가져오지 않음). 학생·진도판·TV 공용.
+ *  av(코드, 크기px) → <svg> 글. 코드는 'a0'~'a29'. 예전 이모지 값이 오면 그 글자를 그대로 쓴다. */
+var AV = (function () {
+  var K = '#2b2d3a';
+  function face(c, x) { x = x || {}; return '<rect x="' + (x.x || 8) + '" y="' + (x.y || 12) + '" width="' + (x.w || 48) + '" height="' + (x.h || 46) + '" rx="' + (x.r || 13) + '" fill="' + c + '"/>'; }
+  function eyes(o) {
+    o = o || {}; var y = o.y || 31, dx = o.dx || 10, r = o.r || 6.5, p = o.p || 3.6, ec = o.ec || '#fff', pc = o.pc || K;
+    return [32 - dx, 32 + dx].map(function (x) { return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + ec + '"/><circle cx="' + (x + 1) + '" cy="' + (y + 0.5) + '" r="' + p + '" fill="' + pc + '"/><circle cx="' + (x + 2.2) + '" cy="' + (y - 1.2) + '" r="1.3" fill="#fff"/>'; }).join('');
+  }
+  function muzzle(c, o) { o = o || {}; return '<ellipse cx="32" cy="' + (o.y || 45) + '" rx="' + (o.rx || 12) + '" ry="' + (o.ry || 8.5) + '" fill="' + c + '"/>'; }
+  function nose(c, y) { y = y || 41; return '<path d="M28 ' + y + 'h8l-4 4.2z" fill="' + (c || K) + '" stroke="' + (c || K) + '" stroke-width="2" stroke-linejoin="round"/>'; }
+  function mouth(y, c) { y = y || 47; return '<path d="M28 ' + y + 'q2 2.6 4 0q2 2.6 4 0" fill="none" stroke="' + (c || K) + '" stroke-width="2" stroke-linecap="round"/>'; }
+  function cheeks(y, c) { y = y || 42; return '<circle cx="15" cy="' + y + '" r="3.6" fill="' + (c || '#ff8fa6') + '" opacity=".55"/><circle cx="49" cy="' + y + '" r="3.6" fill="' + (c || '#ff8fa6') + '" opacity=".55"/>'; }
+  function triEars(c, inner) { return '<path d="M10 22L14 3l15 12z" fill="' + c + '"/><path d="M54 22L50 3 35 15z" fill="' + c + '"/>' + (inner ? '<path d="M14 18l2.5-9 7 6z" fill="' + inner + '"/><path d="M50 18l-2.5-9-7 6z" fill="' + inner + '"/>' : ''); }
+  function roundEars(c, inner, r) { r = r || 9; return '<circle cx="13" cy="14" r="' + r + '" fill="' + c + '"/><circle cx="51" cy="14" r="' + r + '" fill="' + c + '"/>' + (inner ? '<circle cx="13" cy="14" r="' + (r - 4) + '" fill="' + inner + '"/><circle cx="51" cy="14" r="' + (r - 4) + '" fill="' + inner + '"/>' : ''); }
+  var D = [
+    ['병아리', face('#ffd84a') + '<path d="M28 13q4-9 8 0" fill="#ffd84a"/>' + eyes() + '<path d="M26 40l6-4 6 4-6 5z" fill="#ff9a2e"/>' + cheeks(43)],
+    ['돼지', triEars('#ff9fb4', '#ff7f9c') + face('#ffb6c6') + eyes({ y: 29 }) + '<ellipse cx="32" cy="43" rx="10" ry="7.5" fill="#ff8fa9"/><ellipse cx="28.5" cy="43" rx="2" ry="3" fill="#c9506d"/><ellipse cx="35.5" cy="43" rx="2" ry="3" fill="#c9506d"/>'],
+    ['소', '<path d="M12 18q-6-10 2-12M52 18q6-10-2-12" stroke="#e8d6b0" stroke-width="5" fill="none" stroke-linecap="round"/>' + face('#fbfbfb') + '<path d="M8 25q8-2 12-12H21q-9 0-13 8zM56 34q-8-4-10 8 4 6 10 4z" fill="#33363f"/>' + eyes({ y: 29 }) + muzzle('#ffb3c4', { y: 46, rx: 15, ry: 9 }) + '<circle cx="27" cy="46" r="2" fill="#a0465d"/><circle cx="37" cy="46" r="2" fill="#a0465d"/>'],
+    ['말', triEars('#8a5226') + face('#b9773c') + '<path d="M22 12h20l-4 10h-12z" fill="#5b3418"/>' + eyes({ y: 28 }) + '<rect x="18" y="38" width="28" height="18" rx="9" fill="#e2b58a"/><circle cx="26" cy="46" r="2" fill="#5b3418"/><circle cx="38" cy="46" r="2" fill="#5b3418"/>'],
+    ['강아지', face('#e3ac6d') + '<path d="M6 16q-2 18 8 22 4-12 2-24z" fill="#7a4a2a"/><path d="M58 16q2 18-8 22-4-12-2-24z" fill="#7a4a2a"/>' + eyes() + muzzle('#fff4e6') + nose() + mouth(48)],
+    ['고양이', triEars('#f4a24a', '#ffc7a8') + face('#f4a24a') + '<path d="M26 12h12l-6 8z" fill="#d67d27"/>' + eyes() + muzzle('#fff2e0', { rx: 10, ry: 7 }) + '<path d="M30 41h4l-2 2.5z" fill="#ff7f9c"/>' + mouth(45) + '<path d="M4 42h9M4 47h9M51 42h9M51 47h9" stroke="#fff" stroke-width="1.6"/>'],
+    ['까망냥', triEars('#3a3d48', '#5b5f6e') + face('#3a3d48') + eyes({ ec: '#ffe066', pc: '#2b2d3a', p: 2.4 }) + '<path d="M30 41h4l-2 2.5z" fill="#ff8fa6"/>' + mouth(45, '#9aa0b2') + '<path d="M4 42h9M4 47h9M51 42h9M51 47h9" stroke="#9aa0b2" stroke-width="1.6"/>'],
+    ['여우', '<path d="M10 24L12 2l17 13z" fill="#e8692a"/><path d="M54 24L52 2 35 15z" fill="#e8692a"/><path d="M12 9l1-7 5 4z" fill="#3a2a22"/><path d="M52 9l-1-7-5 4z" fill="#3a2a22"/>' + face('#f07b2e') + '<path d="M8 36q12 0 24 22H21Q8 56 8 44zM56 36q-12 0-24 22h11q13-2 13-14z" fill="#fff"/>' + eyes() + nose(K, 44)],
+    ['곰', roundEars('#8b5a3c', '#b47e5b') + face('#8b5a3c') + eyes() + muzzle('#d9a87c') + nose() + mouth(48)],
+    ['판다', roundEars('#2b2d3a') + face('#fbfbfb') + '<ellipse cx="21" cy="31" rx="8" ry="9.5" fill="#2b2d3a" transform="rotate(-20 21 31)"/><ellipse cx="43" cy="31" rx="8" ry="9.5" fill="#2b2d3a" transform="rotate(20 43 31)"/>' + eyes({ ec: '#fff', r: 4.2, p: 2.6 }) + nose(K, 42) + mouth(47) + cheeks(44)],
+    ['코알라', '<circle cx="10" cy="22" r="11" fill="#9aa3ad"/><circle cx="54" cy="22" r="11" fill="#9aa3ad"/><circle cx="10" cy="22" r="6.5" fill="#e6e9ee"/><circle cx="54" cy="22" r="6.5" fill="#e6e9ee"/>' + face('#aab3bd') + eyes({ dx: 11, r: 5, p: 3 }) + '<rect x="26" y="34" width="12" height="15" rx="6" fill="#3b3f4a"/>'],
+    ['호랑이', roundEars('#f2913a', '#fff3e0', 8) + face('#f2913a') + '<path d="M26 12h4l-1 8zM34 12h4l-3 8zM8 26h8l-8 4zM56 26h-8l8 4zM8 36h7l-7 3zM56 36h-7l7 3z" fill="#3a2a22"/>' + eyes() + muzzle('#fff6ea', { rx: 13, ry: 9 }) + nose() + mouth(48)],
+    ['사자', '<rect x="2" y="5" width="60" height="58" rx="22" fill="#c8742a"/>' + face('#f4bf55', { x: 11, y: 14, w: 42, h: 42, r: 14 }) + roundEars('#f4bf55', '#e19a3a', 5).replace(/cx="13"/g, 'cx="16"').replace(/cx="51"/g, 'cx="48"').replace(/cy="14"/g, 'cy="17"') + eyes({ dx: 9 }) + muzzle('#fff1d0', { rx: 11, ry: 7.5 }) + nose() + mouth(48)],
+    ['토끼', '<rect x="14" y="-4" width="11" height="26" rx="5.5" fill="#f1f1f6"/><rect x="39" y="-4" width="11" height="26" rx="5.5" fill="#f1f1f6"/><rect x="17" y="0" width="5" height="18" rx="2.5" fill="#ffb3c6"/><rect x="42" y="0" width="5" height="18" rx="2.5" fill="#ffb3c6"/>' + face('#f7f7fb') + eyes() + '<path d="M30 40h4l-2 2.5z" fill="#ff8fa6"/>' + mouth(44) + cheeks(43)],
+    ['햄스터', roundEars('#e9a86a', '#ffcfb0', 7) + face('#f2c58e') + '<circle cx="15" cy="44" r="8" fill="#fff4e6"/><circle cx="49" cy="44" r="8" fill="#fff4e6"/><path d="M24 12q8 8 16 0" fill="#e9a86a"/>' + eyes({ r: 5, p: 3.4 }) + '<path d="M30 40h4l-2 2.5z" fill="#ff8fa6"/>' + mouth(44)],
+    ['부엉이', '<path d="M8 20L10 4l12 10zM56 20L54 4 42 14z" fill="#6e5440"/>' + face('#8a6b4f') + '<circle cx="22" cy="31" r="10" fill="#f2e3c9"/><circle cx="42" cy="31" r="10" fill="#f2e3c9"/>' + eyes({ r: 6, p: 4 }) + '<path d="M28 38l4 7 4-7z" fill="#ffb02e"/><path d="M18 50q4-3 8 0 3-3 6 0 3-3 6 0 4-3 8 0" stroke="#6e5440" stroke-width="2" fill="none"/>'],
+    ['펭귄', face('#2f3346') + '<path d="M14 24q0-6 9-6 9 0 9 6 0-6 9-6 9 0 9 6v18q0 14-18 14T14 42z" fill="#fff"/>' + eyes({ y: 32, r: 4.5, p: 3 }) + '<path d="M27 40l5 6 5-6z" fill="#ffa02e"/>' + cheeks(44)],
+    ['개구리', '<circle cx="18" cy="16" r="10" fill="#5fb84a"/><circle cx="46" cy="16" r="10" fill="#5fb84a"/>' + face('#6cc04a', { y: 18, h: 40 }) + eyes({ y: 16, r: 7, p: 4 }) + '<path d="M18 40q14 12 28 0" stroke="#2f6b25" stroke-width="3" fill="none" stroke-linecap="round"/>' + cheeks(38)],
+    ['너구리', triEars('#7c8494', '#3b3f4a') + face('#9aa1ad') + '<path d="M8 26h48v12q-8 4-14-2-4 4-10 4-6 0-10-4-6 6-14 2z" fill="#3b3f4a"/>' + eyes() + muzzle('#f1f2f5', { y: 47, rx: 10, ry: 7 }) + nose(K, 43)],
+    ['늑대', '<path d="M9 26L11 2l18 14zM55 26L53 2 35 16z" fill="#6f7a8c"/>' + face('#8d99ae') + '<path d="M8 38q10 0 24 20H18q-10-2-10-12zM56 38q-10 0-24 20h14q10-2 10-12z" fill="#e9edf2"/>' + eyes({ ec: '#bfe3ff', p: 3 }) + nose(K, 42)],
+    ['사슴', '<path d="M18 14l-6-10M12 8l-6-2M46 14l6-10M52 8l6-2" stroke="#7a5230" stroke-width="3.5" stroke-linecap="round"/>' + '<ellipse cx="9" cy="24" rx="7" ry="4.5" fill="#b8763d" transform="rotate(-25 9 24)"/><ellipse cx="55" cy="24" rx="7" ry="4.5" fill="#b8763d" transform="rotate(25 55 24)"/>' + face('#c98a4b') + '<circle cx="15" cy="20" r="2" fill="#f5deb8"/><circle cx="49" cy="22" r="2" fill="#f5deb8"/><circle cx="45" cy="16" r="1.6" fill="#f5deb8"/>' + eyes() + muzzle('#f3dcb8', { rx: 10, ry: 7 }) + nose(K, 41)],
+    ['원숭이', '<circle cx="7" cy="34" r="8" fill="#9a6440"/><circle cx="57" cy="34" r="8" fill="#9a6440"/><circle cx="7" cy="34" r="4.5" fill="#f2c9a0"/><circle cx="57" cy="34" r="4.5" fill="#f2c9a0"/>' + face('#9a6440') + '<path d="M32 24q6-8 13-2 7 6 3 16 4 10-16 16-20-6-16-16-4-10 3-16 7-6 13 2z" fill="#f2c9a0"/>' + eyes({ y: 31, dx: 7, r: 5, p: 3 }) + mouth(46) + '<circle cx="30" cy="41" r="1.2" fill="' + K + '"/><circle cx="34" cy="41" r="1.2" fill="' + K + '"/>'],
+    ['오리', face('#3a9a5b') + '<rect x="8" y="46" width="48" height="12" rx="6" fill="#fff" opacity=".35"/>' + eyes({ y: 28 }) + '<rect x="18" y="37" width="28" height="11" rx="5.5" fill="#ffb52e"/><path d="M20 42.5h24" stroke="#d98a12" stroke-width="1.6"/>'],
+    ['거북이', '<path d="M14 12q18-10 36 0v6H14z" fill="#3f8a3a"/>' + face('#8fd36e') + '<path d="M14 12h36M22 6v6M32 3v9M42 6v6" stroke="#2f6b2a" stroke-width="2"/>' + eyes({ y: 32 }) + '<path d="M24 44q8 6 16 0" stroke="#2f6b2a" stroke-width="2.5" fill="none" stroke-linecap="round"/>' + cheeks(42)],
+    ['공룡', '<path d="M16 14l4-10 5 9 5-11 5 11 5-9 4 10z" fill="#2f9a3e"/>' + face('#5cc06a') + eyes() + '<path d="M18 42q14 10 28 0" fill="#fff" stroke="#2f6b2a" stroke-width="2"/><path d="M24 44l2 3 2-3M36 44l2 3 2-3" fill="#fff"/><circle cx="26" cy="38" r="1.3" fill="#2f6b2a"/><circle cx="38" cy="38" r="1.3" fill="#2f6b2a"/>'],
+    ['유니콘', '<path d="M32 -2l-5 18h10z" fill="#ffd34d"/><path d="M28.5 10l7-2M27.5 14l9-2" stroke="#e6a800" stroke-width="1.2"/>' + triEars('#f7f3ff', '#ffc4e1') + face('#f7f3ff') + '<path d="M8 22q6-12 22-9-10 4-14 14-4 4-8 4z" fill="#ff8ccf"/><path d="M8 24q4-6 12-6-4 4-6 10z" fill="#8fd2ff"/>' + eyes({ pc: '#6a3fb5' }) + mouth(46) + cheeks(42, '#ff8ccf')],
+    ['앵무새', '<path d="M20 14q6-12 12-4 4-10 10 0" fill="#e8473f"/>' + face('#e8473f') + '<path d="M36 26q14 0 20 8v8q-10-6-20-4z" fill="#ffd23f"/><path d="M8 36q10-2 14 6v14H18Q8 54 8 46z" fill="#3c8dde"/>' + eyes({ dx: 9 }) + '<path d="M26 37q8-4 12 4-1 8-7 9 2-5-5-7z" fill="#3b3f4a"/><path d="M27 37q6-3 10 3" fill="#fff" opacity=".35"/>'],
+    ['하마', roundEars('#8b7fa6', '#c7bce0', 6) + face('#9b8fb5') + eyes({ y: 27, r: 5.5 }) + '<rect x="11" y="36" width="42" height="20" rx="10" fill="#b9aed2"/><ellipse cx="25" cy="42" rx="2.3" ry="3" fill="#5b4f78"/><ellipse cx="39" cy="42" rx="2.3" ry="3" fill="#5b4f78"/><path d="M26 50q6 3 12 0" stroke="#5b4f78" stroke-width="2" fill="none" stroke-linecap="round"/>'],
+    ['코끼리', '<path d="M8 16q-8 4-6 18 2 12 10 12 4-14-4-30z" fill="#8ea3bd"/><path d="M56 16q8 4 6 18-2 12-10 12-4-14 4-30z" fill="#8ea3bd"/>' + face('#a9bcd3') + eyes({ y: 29, dx: 11, r: 5, p: 3.2 }) + '<path d="M27 36h10v14q0 8 6 8-11 4-16-6z" fill="#8ea3bd"/>' + cheeks(40)],
+    ['양', '<circle cx="14" cy="16" r="8" fill="#f5f0e3"/><circle cx="26" cy="11" r="8" fill="#f5f0e3"/><circle cx="38" cy="11" r="8" fill="#f5f0e3"/><circle cx="50" cy="16" r="8" fill="#f5f0e3"/><circle cx="8" cy="30" r="7" fill="#f5f0e3"/><circle cx="56" cy="30" r="7" fill="#f5f0e3"/>' + face('#4a4550', { x: 14, y: 18, w: 36, h: 40, r: 14 }) + '<circle cx="24" cy="18" r="7" fill="#f5f0e3"/><circle cx="34" cy="16" r="7" fill="#f5f0e3"/><circle cx="42" cy="20" r="6" fill="#f5f0e3"/>' + eyes({ y: 33, dx: 8, r: 5, p: 3 }) + '<path d="M28 46q4 3 8 0" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>']
+  ];
+  return D.map(function (d) { return { n: d[0], s: d[1] }; });
+})();
 function av(code, px) {
-  var k = /^a(\d+)$/.exec(String(code || '')), d = k && AV[Number(k[1])];
+  var k = /^a(\d+)$/.exec(String(code || '')), d = k && AV[Number(k[1]) % AV.length];
   px = px || 28;
   if (!d) return code ? '<span style="font-size:' + px * 0.8 + 'px">' + String(code).replace(/[<>&]/g, '') + '</span>' : '';
-  var S = '#2a2f3d', back = '', front = '', body = '', eyes = '', mouth = '';
-  var B = {
-    round: '<circle cx="32" cy="36" r="22"/>',
-    square: '<rect x="10" y="14" width="44" height="44" rx="12"/>',
-    drop: '<path d="M32 8C44 24 54 31 54 42a22 22 0 0 1-44 0C10 31 20 24 32 8z"/>',
-    star: '<path d="M32 9l7 15 16 2-12 11 3 16-14-8-14 8 3-16-12-11 16-2z"/>',
-    cloud: '<path d="M16 54a10 10 0 0 1-2-20 12 12 0 0 1 18-12 12 12 0 0 1 20 6 10 10 0 0 1-2 26z"/>',
-    ghost: '<path d="M10 58V34a22 22 0 0 1 44 0v24l-7-5-7 5-8-5-8 5-7-5z"/>',
-    flame: '<path d="M32 5c6 12 20 18 20 35a20 20 0 0 1-40 0c0-10 7-14 9-23 4 7 8 5 11-12z"/>',
-    bean: '<ellipse cx="32" cy="37" rx="20" ry="23"/>'
-  };
-  body = '<g fill="' + d.c + '" stroke="' + S + '" stroke-width="2.5" stroke-linejoin="round">' + B[d.b] + '</g>';
-  var ey = d.b === 'star' ? 34 : 35;
-  var E = {
-    dot: '<circle cx="25" cy="' + ey + '" r="3.2"/><circle cx="39" cy="' + ey + '" r="3.2"/>',
-    sparkle: '<circle cx="25" cy="' + ey + '" r="4.6"/><circle cx="39" cy="' + ey + '" r="4.6"/><circle cx="26.6" cy="' + (ey - 1.6) + '" r="1.6" fill="#fff"/><circle cx="40.6" cy="' + (ey - 1.6) + '" r="1.6" fill="#fff"/>',
-    happy: '<path d="M21 ' + (ey + 1) + 'q4-6 8 0M35 ' + (ey + 1) + 'q4-6 8 0" fill="none" stroke="' + S + '" stroke-width="2.6" stroke-linecap="round"/>',
-    sleepy: '<path d="M21 ' + ey + 'q4 3 8 0M35 ' + ey + 'q4 3 8 0" fill="none" stroke="' + S + '" stroke-width="2.6" stroke-linecap="round"/>',
-    angry: '<circle cx="25" cy="' + (ey + 1) + '" r="3.2"/><circle cx="39" cy="' + (ey + 1) + '" r="3.2"/><path d="M20 ' + (ey - 5) + 'l9 3M44 ' + (ey - 5) + 'l-9 3" stroke="' + S + '" stroke-width="2.6" stroke-linecap="round"/>',
-    one: '<circle cx="32" cy="' + (ey - 1) + '" r="8.5" fill="#fff" stroke="' + S + '" stroke-width="2.5"/><circle cx="33" cy="' + ey + '" r="4.2"/>',
-    three: '<circle cx="23" cy="' + ey + '" r="3"/><circle cx="32" cy="' + (ey - 4) + '" r="3"/><circle cx="41" cy="' + ey + '" r="3"/>',
-    rect: '<rect x="20" y="' + (ey - 4) + '" width="9" height="7" rx="1.5" fill="#5ff2ff" stroke="' + S + '" stroke-width="2"/><rect x="35" y="' + (ey - 4) + '" width="9" height="7" rx="1.5" fill="#5ff2ff" stroke="' + S + '" stroke-width="2"/>',
-    glasses: '<circle cx="25" cy="' + ey + '" r="2.6"/><circle cx="39" cy="' + ey + '" r="2.6"/><g fill="none" stroke="' + S + '" stroke-width="2.2"><circle cx="25" cy="' + ey + '" r="6"/><circle cx="39" cy="' + ey + '" r="6"/><path d="M31 ' + ey + 'h2"/></g>',
-    patch: '<circle cx="25" cy="' + ey + '" r="3.2"/><path d="M12 24L52 40" stroke="' + S + '" stroke-width="2"/><ellipse cx="39" cy="' + ey + '" rx="6" ry="5"/>',
-    cat: '<path d="M22 ' + ey + 'a3 4 0 0 0 6 0M36 ' + ey + 'a3 4 0 0 0 6 0" fill="#ffd23f" stroke="' + S + '" stroke-width="2"/>'
-  };
-  eyes = '<g fill="' + S + '">' + E[d.e] + '</g>';
-  var my = d.b === 'star' ? 43 : 45;
-  var M = {
-    smile: '<path d="M26 ' + my + 'q6 6 12 0" fill="none" stroke="' + S + '" stroke-width="2.6" stroke-linecap="round"/>',
-    open: '<path d="M26 ' + (my - 1) + 'q6 9 12 0z" fill="#c8384a" stroke="' + S + '" stroke-width="2" stroke-linejoin="round"/>',
-    o: '<ellipse cx="32" cy="' + (my + 1) + '" rx="3" ry="3.6" fill="' + S + '"/>',
-    grin: '<path d="M24 ' + (my - 2) + 'h16q-8 10-16 0z" fill="#fff" stroke="' + S + '" stroke-width="2.2" stroke-linejoin="round"/>',
-    flat: '<path d="M26 ' + (my + 1) + 'h12" stroke="' + S + '" stroke-width="2.6" stroke-linecap="round"/>',
-    cat: '<path d="M26 ' + my + 'q3 4 6 0q3 4 6 0" fill="none" stroke="' + S + '" stroke-width="2.4" stroke-linecap="round"/>'
-  };
-  mouth = M[d.m] + (d.e !== 'patch' && d.e !== 'rect' ? '<g fill="#ff7aa8" opacity=".45"><circle cx="18" cy="' + (my - 2) + '" r="3.5"/><circle cx="46" cy="' + (my - 2) + '" r="3.5"/></g>' : '');
-  var A = {
-    sprout: ['', '<path d="M32 14V6" stroke="#2f8f3f" stroke-width="2.5"/><path d="M32 8c-8-5-12 0-10 2 4 2 8 0 10-2zM32 8c8-5 12 0 10 2-4 2-8 0-10-2z" fill="#4cc35f" stroke="' + S + '" stroke-width="1.6"/>'],
-    crown: ['', '<path d="M20 16l3-10 5 6 4-8 4 8 5-6 3 10z" fill="#ffc83a" stroke="' + S + '" stroke-width="2" stroke-linejoin="round"/>'],
-    halo: ['', '<ellipse cx="32" cy="8" rx="13" ry="3.5" fill="none" stroke="#ffc83a" stroke-width="3"/>'],
-    horns: ['<path d="M15 22l-3-16 12 9zM49 22l3-16-12 9z" fill="#7a1f2a" stroke="' + S + '" stroke-width="2" stroke-linejoin="round"/>', ''],
-    antenna: ['', '<path d="M32 14V5" stroke="' + S + '" stroke-width="2.5"/><circle cx="32" cy="5" r="3.5" fill="#ff5a5a" stroke="' + S + '" stroke-width="2"/>'],
-    antennas: ['', '<path d="M25 15l-5-10M39 15l5-10" stroke="' + S + '" stroke-width="2.5"/><circle cx="20" cy="5" r="3" fill="#ff5ad1"/><circle cx="44" cy="5" r="3" fill="#ff5ad1"/>'],
-    catears: ['<path d="M13 26l2-17 12 9zM51 26l-2-17-12 9z" fill="' + d.c + '" stroke="' + S + '" stroke-width="2.5" stroke-linejoin="round"/>', '<path d="M12 40h8M12 45h8M44 40h8M44 45h8" stroke="#ddd" stroke-width="1.6"/>'],
-    bunny: ['<g fill="#fff" stroke="' + S + '" stroke-width="2.5"><ellipse cx="23" cy="10" rx="5" ry="12"/><ellipse cx="41" cy="10" rx="5" ry="12"/></g><g fill="#ffb3c8"><ellipse cx="23" cy="10" rx="2.2" ry="8"/><ellipse cx="41" cy="10" rx="2.2" ry="8"/></g>', ''],
-    phones: ['', '<path d="M11 36a21 21 0 0 1 42 0" fill="none" stroke="' + S + '" stroke-width="3"/><rect x="6" y="32" width="9" height="14" rx="4" fill="#ff5a7a" stroke="' + S + '" stroke-width="2"/><rect x="49" y="32" width="9" height="14" rx="4" fill="#ff5a7a" stroke="' + S + '" stroke-width="2"/>'],
-    wizard: ['', '<path d="M14 20L36 0l-2 20z" fill="#2b3a8c" stroke="' + S + '" stroke-width="2" stroke-linejoin="round"/><path d="M10 20h34" stroke="' + S + '" stroke-width="3" stroke-linecap="round"/><path d="M27 10l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.2-2.4 1.2.5-2.6-1.9-1.8 2.6-.4z" fill="#ffd23f"/>'],
-    spikes: ['<path d="M18 18l4-9 4 7 6-10 6 10 4-7 4 9z" fill="#2f9a3e" stroke="' + S + '" stroke-width="2" stroke-linejoin="round"/>', ''],
-    bolt: ['', '<path d="M34 1l-9 12h7l-4 9 11-13h-7l4-8z" fill="#ffd23f" stroke="' + S + '" stroke-width="1.8" stroke-linejoin="round"/>']
-  };
-  if (d.a) { back = A[d.a][0]; front = A[d.a][1]; }
-  return '<svg class="av" width="' + px + '" height="' + px + '" viewBox="0 0 64 64" style="vertical-align:middle;flex:none" role="img" aria-label="' + d.n + '">' + back + body + eyes + mouth + front + '</svg>';
+  return '<svg class="av" width="' + px + '" height="' + px + '" viewBox="0 0 64 64" style="vertical-align:middle;flex:none;overflow:visible" role="img" aria-label="' + d.n + '">' + d.s + '</svg>';
 }
 
 /* 학기 누적 별 → 레벨(별 5개마다 한 단계). 기준은 기획서 7절 — 바꾸려면 여기만 */
@@ -1407,7 +1384,7 @@ function lineThru(p, r, a, col) {
       var bad = qs.map(function (q, i) { return GTYPES[q.type] ? null : (i + 1) + '번 유형(' + q.type + ')'; }).filter(Boolean);
       if (bad.length) { toast('알 수 없는 유형: ' + bad.join(', ')); return; }
       var gid = 'g' + Date.now().toString(36), imgs = [];
-      qs.forEach(function (q, i) { if (q.image) { imgs.push([i, q.image]); q.image = true; } });
+      qs.forEach(function (q, i) { if (q.image) { imgs.push([i, q.image]); q.image = 'GI:' + gid + ':' + i; } });
       $('gInfo').textContent = '올리는 중… 그림 ' + imgs.length + '장';
       /* 그림은 data: 글 또는 인터넷 주소(퀴즈온 그림 등) — 주소면 받아서 글로 바꿔 넣는다 */
       function asData(u) {
@@ -1468,7 +1445,7 @@ function lineThru(p, r, a, col) {
       .map(function (x, i, arr) { x.rank = i > 0 && arr[i - 1].total === x.total ? arr[i - 1].rank : i + 1; return x; });
   }
   function pubQ(i) {
-    var q = G.set.questions[i], o = { type: q.type, prompt: String(q.prompt || ''), img: !!q.image, time: Number(q.time) || 60, points: Number(q.points) || 1000, round: GROUND[q.round] ? q.round : '' };
+    var q = G.set.questions[i], o = { type: q.type, prompt: String(q.prompt || ''), img: imgKey(q, G.sid, i), time: Number(q.time) || 60, points: Number(q.points) || 1000, round: GROUND[q.round] ? q.round : '' };
     if (q.choices) o.choices = q.choices.map(String);
     if (q.type === 'ox') o.choices = ['O', 'X'];
     if (q.type === 'order') o.items = G.perm[i].map(function (j) { return String(q.items[j]); });
@@ -1633,7 +1610,7 @@ function lineThru(p, r, a, col) {
       h = '<div class="gc"><div class="gbig">🎡 스페셜 룰렛</div><div class="roul" id="gRoul">' + ROUL.map(function (x, k) { return '<span data-k="' + k + '">' + x[0] + '</span>'; }).join('') + '</div><div class="gsub">이번 문제를 맞히면 이 효과를 받아요</div></div>';
     } else if (g.phase === 'q' || g.phase === 'reveal') {
       var rv = g.phase === 'reveal', d = g.dist || {};
-      h = '<div class="gp">' + esc(q.prompt) + '</div>' + (q.img ? '<div class="gi"><img data-gi="GI:' + g.sid + ':' + g.qi + '" alt=""></div>' : '');
+      h = '<div class="gp">' + esc(q.prompt) + '</div>' + (q.img ? '<div class="gi"><img data-gi="' + (q.img === true ? 'GI:' + g.sid + ':' + g.qi : q.img) + '" alt=""></div>' : '');
       if (q.type === 'chosung') h += '<div class="gcho">' + esc(q.hint) + '</div>';
       if (q.choices) h += '<div class="gch">' + q.choices.map(function (c, k) {
         var isOk = (g.okIdx || []).indexOf(k) >= 0;

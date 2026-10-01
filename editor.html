@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>수업 허브 — 문항 편집</title>
+<script defer src="https://cdn.jsdelivr.net/npm/mathlive@0.111.0/mathlive.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#2f5bff;--ink:#1a1d29;--tint:#eef0ff;--paper:#f6f8ff;--line:#e3e7f2;--mut:#6b7488;--coral:#ff6b4a;--g:#22b07d}
+*{box-sizing:border-box}body{margin:0;font-family:"IBM Plex Sans KR","Noto Sans KR","Malgun Gothic",sans-serif;background:#fafbff;color:var(--ink);font-size:15px}
+button,select,input,textarea{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 12px;color:var(--ink)}
+button.pri{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}button.soft{background:var(--tint);border-color:transparent;color:var(--blue);font-weight:600}
+button:disabled{opacity:.45;cursor:default}input,select,textarea{border:1px solid var(--line);border-radius:10px;padding:7px 10px;background:#fff}textarea{width:100%;resize:vertical}
+#login{max-width:360px;margin:16vh auto;background:#fff;padding:28px;border-radius:16px;text-align:center;border:1px solid var(--line)}#login input{font-size:22px;width:170px;text-align:center;margin:12px 0}
+#app{display:none;height:100vh;flex-direction:column}
+header{display:flex;gap:8px;align-items:center;padding:10px 16px;background:#fff;border-bottom:1px solid var(--line);flex-wrap:wrap}header h1{font-size:18px;margin:0 8px 0 0;color:var(--blue)}
+#title{font-size:17px;font-weight:600;min-width:220px}#saveSt{color:var(--mut);font-size:13px}#saveSt.dirty{color:var(--coral)}
+.cols{flex:1;display:grid;grid-template-columns:250px minmax(380px,1fr) minmax(320px,440px);min-height:0}
+@media (max-width:1150px){.cols{grid-template-columns:210px 1fr}#prev{display:none}#prevIn{display:block!important}}#prevIn{display:none;margin-top:18px}
+#list{border-right:1px solid var(--line);overflow:auto;padding:10px;background:#fff}
+.qi{display:flex;gap:8px;align-items:flex-start;padding:8px;border-radius:12px;border:2px solid transparent;cursor:pointer;margin-bottom:4px}.qi:hover{background:var(--paper)}.qi.on{border-color:var(--blue);background:var(--tint)}
+.qi b{min-width:22px;color:var(--mut)}.qi .tp{font-size:12px;background:var(--tint);color:var(--blue);border-radius:6px;padding:1px 6px;font-weight:600;white-space:nowrap}.qi .tx{font-size:13px;color:var(--ink);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#addBar{display:flex;flex-wrap:wrap;gap:4px;margin:10px 0}#addBar button{font-size:13px;padding:5px 8px}
+#form{overflow:auto;padding:16px 20px}.f{margin-bottom:14px}.f>label{display:block;font-weight:600;margin-bottom:6px}.f .hint{color:var(--mut);font-size:12.5px;margin-top:4px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}.seg button,button{white-space:nowrap}.seg button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.row{display:flex;gap:8px;align-items:center;margin-bottom:6px}.row input[type=text]{flex:1}.row .ok{white-space:nowrap}
+#drop{border:2px dashed #c9d3ff;border-radius:12px;padding:14px;text-align:center;color:var(--mut);cursor:pointer;background:var(--paper)}#drop img{max-width:100%;max-height:200px;border-radius:8px;display:block;margin:0 auto 8px}
+#prev{background:var(--paper);border-left:1px solid var(--line);overflow:auto;padding:16px}
+.pv{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;text-align:center}.pv .pp{font-size:19px;font-weight:700;margin:6px 0 12px;line-height:1.5;white-space:pre-line}.pv img{max-width:100%;max-height:220px;border-radius:10px}
+.pv .ch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.pv .ch div{color:#fff;border-radius:12px;padding:14px 8px;font-size:16px;font-weight:600;position:relative}.pv .ch div.ok::after{content:'✓';position:absolute;right:8px;top:4px}
+.pv .cho{font-size:38px;letter-spacing:10px;font-weight:800;color:var(--blue)}.pv .ans{margin-top:12px;color:var(--blue);font-weight:700}.pv .ex{margin-top:10px;text-align:left;background:var(--paper);border-radius:10px;padding:10px;font-size:14px;white-space:pre-line}
+.pv .meta{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:6px}.pv .meta span{background:var(--tint);color:var(--blue);border-radius:20px;padding:2px 10px;font-size:12px;font-weight:600}
+.empty{color:var(--mut);text-align:center;margin-top:20vh}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:12px;z-index:99}
+</style>
+</head><body>
+<div id="login"><h2 style="color:var(--blue)">문항 편집</h2><div>진도판 접속코드</div><input id="code" type="password" inputmode="numeric"><br><button class="pri" id="go">들어가기</button><p id="loginMsg" style="color:var(--mut)"></p></div>
+<div id="app">
+<header>
+  <h1>✏️ 문항 편집</h1>
+  <select id="sets"></select><button class="soft" id="bNew">+ 새 세트</button><button id="bCopy">복사본 만들기</button>
+  <input id="title" placeholder="세트 제목"><label><input type="checkbox" id="speed"> 빠르기 점수(기본값)</label>
+  <span style="flex:1"></span><span id="saveSt"></span>
+  <label class="soft" style="border-radius:10px;padding:7px 12px;background:var(--tint);color:var(--blue);font-weight:600;cursor:pointer">JSON 가져오기<input type="file" id="fImp" accept=".json" hidden></label>
+  <button id="bExp">JSON 내려받기</button><button id="bDel">목록에서 빼기</button><button class="pri" id="bSave">저장 (Ctrl+S)</button>
+</header>
+<div class="cols">
+  <div id="list"><div id="qs"></div><div id="addBar"></div></div>
+  <div id="form"></div>
+  <div id="prev"></div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+/* 활동 목록 — 학생 화면과 진도판이 같이 읽는다. 새 단원 활동은 여기에 하나 더 넣는다.
+ *  id: { title, screens: [ { t: 화면 이름, html: 학생 화면 내용 } ] }
+ *  html 안의 입력칸에 data-k="이름" 을 붙이면 학생 태블릿에 저장되고(임시저장), 쓸 때마다 '진행'으로 기록된다.
+ */
+var ACTS = {
+  demo: {
+    title: '예시 — 넓이가 2인 정사각형',
+    screens: [
+      { t: '어림하기', html:
+        '<h2>넓이가 2인 정사각형</h2>' +
+        '<p>넓이가 1인 정사각형 두 개를 잘라 붙이면 넓이가 2인 정사각형을 만들 수 있습니다.</p>' +
+        '<div class="sq"><div style="width:100px;height:100px"></div><div style="width:141px;height:141px"></div></div>' +
+        '<p class="ask">이 정사각형의 한 변의 길이는 1과 2 사이 어디쯤일까요?</p>' +
+        '<input data-k="g1" inputmode="decimal" placeholder="예: 1.3">' },
+      { t: '범위 좁히기', html:
+        '<h2>제곱해서 2와 비교하기</h2>' +
+        '<p>계산해서 빈칸을 채워 보세요.</p>' +
+        '<table class="tb"><tr><th>수</th><th>1.3</th><th>1.4</th><th>1.5</th></tr>' +
+        '<tr><th>제곱</th><td><input data-k="a13" inputmode="decimal"></td><td><input data-k="a14" inputmode="decimal"></td><td><input data-k="a15" inputmode="decimal"></td></tr></table>' +
+        '<p class="ask">한 변의 길이는 어느 두 수 사이에 있나요?</p>' +
+        '<input data-k="g2" placeholder="예: 1.4 와 1.5 사이">' },
+      { t: '정리', html:
+        '<h2>정리</h2>' +
+        '<p class="ask">계속 범위를 좁히면 끝이 날까요? 한 줄로 써 보세요.</p>' +
+        '<textarea data-k="g3" rows="3"></textarea>' }
+    ]
+  },
+  /* ③ 탐구 부품 예시 — 좌표평면 점 찍기·수식 답(정답 있음)·S펜 그림·사진·서술. 부품 규칙은 wview.js 맨 위 */
+  slope: {
+    title: '예시 — 직선의 기울기 탐구',
+    screens: [
+      { t: '두 점 찍기', html:
+        '<h2>원점을 지나지 않는 직선 만들기</h2>' +
+        '<p>좌표평면에 점 두 개를 찍어 직선을 만드세요. 찍은 점은 끌어서 옮길 수 있습니다.</p>' +
+        '<div data-k="p" data-kind="graph" data-range="-5,5,-5,5" data-pts="2" data-line="1"></div>' +
+        '<p class="ask">내 직선의 기울기는? (분수는 키패드의 분수 칸으로)</p>' +
+        '<math-field data-k="m"></math-field>' },
+      { t: '기울기가 1/2', html:
+        '<h2>기울기가 $\\frac{1}{2}$ 인 직선</h2>' +
+        '<p>점 $(0,1)$ 을 지나고 기울기가 $\\frac{1}{2}$ 인 직선 위의 점 $(4,\\square)$ 의 $y$ 좌표는?</p>' +
+        '<math-field data-k="y" data-ans="3"></math-field>' },
+      { t: '그려서 설명', html:
+        '<h2>기울기가 클수록?</h2>' +
+        '<p>기울기가 1, 2, 3 인 직선을 대강 그려 보고, 기울기가 클수록 어떻게 되는지 화살표로 표시해 보세요.</p>' +
+        '<div data-k="sk" data-kind="sketch" data-bg="grid" data-h="0.55"></div>' },
+      { t: '종이 풀이', html:
+        '<h2>학습지 풀이 올리기</h2>' +
+        '<p>학습지 2번 풀이를 사진으로 찍어 올리세요.</p>' +
+        '<div data-k="ph" data-kind="photo"></div>' +
+        '<p class="ask">한 줄 정리</p><textarea data-k="t" rows="2"></textarea>' }
+    ]
+  }
+};
+
+var HUB = (function () {
+/* 배포본 저장소 — Supabase. build.py 가 이 파일 + server.js 를 함수 하나로 감싸 배포본(site/*.html)에 넣는다.
+ * 생각: 모든 공용 상태(kv 표, 몇 KB)를 브라우저에 '거울'로 들고 있고 실시간 알림으로 맞춘다 → server.js 는 거울만 읽어서 바로 답한다.
+ *  - 쓰기: 선생님 = t_put(코드 확인) · 학생 = s_login·s_answer(DB 함수가 묶음 확인). 학생은 kv 에 직접 못 쓴다(RLS).
+ *  - 학생 현재 상태(S:)는 DB 에 안 쓰고 반 채널 Presence 로만 — 접속이 끊기면 저절로 빠진다.
+ *  - 발표 쪽 그림은 files 표(실시간 알림 없음), 필요할 때 한 장씩 받는다.
+ * 키는 공개용(publishable) 열쇠만. 관리자 열쇠는 절대 넣지 않는다. */
+var SB_URL = 'https://faiemcomvhlahrssrfex.supabase.co';
+var SB_KEY = 'sb_publishable_S4gxcXRMSJb6K0G5ncQYGw_I8ZRLONa';
+var sb = supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: false } });
+var MIR = {}, PRES = {}, LAT = {}, ROOM = {}, CODE = null, TEACHER = /teacher|editor/.test(location.pathname), WQ = Promise.resolve();
+window.__SB = { MIR: MIR, PRES: PRES, ROOM: ROOM };   // 확인용
+
+function fail_(m) { console.warn('저장 실패', m); window.dispatchEvent(new CustomEvent('hubfail', { detail: m })); }
+/* 선생님 쓰기 — 순서가 뒤바뀌지 않게 하나씩 */
+function put_(k, v) {
+  if (MIR[k] === v) return;
+  if (v === '' || v == null) delete MIR[k]; else MIR[k] = v;
+  WQ = WQ.then(function () {
+    return sb.rpc('t_put', { c: CODE, k: k, v: v === '' ? null : v }).then(function (r) { if (r.error || r.data === false) fail_(r.error ? r.error.message : '진도판 코드가 맞지 않아요'); });
+  });
+}
+/* 반 채널 하나 = Presence(학생 상태). 학생은 자기 키로 들어가 track, 선생님은 듣기만 */
+function room_(cls, key) {
+  if (ROOM[cls]) return ROOM[cls];
+  if (key) watch_(cls);
+  var ch = sb.channel('room:' + cls, { config: { presence: { key: key || 'T' + Math.random().toString(36).slice(2) } } });
+  ch.on('presence', { event: 'sync' }, function () {
+    var st = ch.presenceState(), now = Date.now();
+    Object.keys(PRES).forEach(function (k) { if (k.indexOf('S:' + cls + ':') === 0 && !st[k]) delete PRES[k]; });
+    Object.keys(st).forEach(function (k) {
+      if (k.indexOf('S:') !== 0) return;
+      var m = st[k][st[k].length - 1];
+      /* 반영 시간 = 선생님이 바꾼 시각(v, 선생님 시계) → 학생이 받았다고 알려 온 시각(선생님 시계). 왕복이라 기기 시계 차이가 없다 */
+      if (m.gv && !LAT[k + m.gv]) LAT[k + m.gv] = now - m.gv;
+      m.lat = LAT[k + m.gv] || 0;
+      PRES[k] = m;
+    });
+  });
+  ch.subscribe(function (s) {
+    if (s === 'SUBSCRIBED') { if (ch._me) ch.track(ch._me); return; }
+    if (ROOM[cls] === ch) { delete ROOM[cls]; sb.removeChannel(ch); }   // 끊기면 다음 묻기 때 새로 들어간다
+  });
+  return (ROOM[cls] = ch);
+}
+var ST = {
+  code: function () { return CODE; },
+  url: function () { return location.href.replace(/[^/]*([?#].*)?$/, ''); },
+  now: function () { return Date.now(); },   // ponytail: 기기 시계를 그대로 씀(태블릿은 자동 시각이라 1초 안팎). 타이머가 어긋나면 서버 시각 받기
+  cget: function (k) {
+    if (k.indexOf('S:') === 0) { var m = PRES[k]; if (!m) return null; m.t = Date.now(); return JSON.stringify(m); }
+    return MIR[k] == null ? null : MIR[k];
+  },
+  cgetAll: function (ks) { var o = {}; ks.forEach(function (k) { var v = ST.cget(k); if (v != null) o[k] = v; }); return o; },
+  cscan: function (p) {
+    var cls = p.split(':')[1]; if (cls) room_(cls);
+    return Object.keys(PRES).filter(function (k) { return k.indexOf(p) === 0; }).map(function (k) { return k.slice(p.length); });
+  },
+  cput: function (k, v) {
+    if (k.indexOf('S:') === 0) {   // 학생 자기 상태 → Presence. 바뀐 것만(t 빼고 비교)
+      var m = j_(v, {}), cls = k.split(':')[1], ch = room_(cls, k);
+      delete m.t; delete m.lat; delete m.presence_ref;   // 서버가 붙이는 꼬리표까지 비교하면 끝없이 다시 보내다 채널이 닫힌다
+      var js = JSON.stringify(m); if (ch._js === js) return; ch._js = js; ch._me = m;
+      if (ch.state === 'joined') ch.track(m);
+      return;
+    }
+    if (k.indexOf('L:') === 0 || k.indexOf('RJ:') === 0 && v === '') return;   // 진도판 열림 신호는 필요 없음(언제나 바로), 거절 알림 지우기는 s_login 이 함
+    put_(k, v);
+  },
+  pget: function (k) { return MIR[k] == null ? null : MIR[k]; },
+  pset: put_,
+  lock: function (fn) { return fn(); },   // ponytail: 선생님 한 명 기준(마지막 저장이 이김). 학생 쓰기는 DB 함수가 잠근다
+  deckFolder: function () { return 'D' + Date.now(); },
+  delPrefix: function (p) {
+    Object.keys(MIR).forEach(function (k) { if (k.indexOf(p) === 0) delete MIR[k]; });
+    WQ = WQ.then(function () { return sb.rpc('t_del', { c: CODE, p: p }); });
+  },
+  fileData: function (id) {
+    return sb.from('files').select('v').eq('k', id).single().then(function (r) { if (r.error) throw r.error.message; return r.data.v; });
+  }
+};
+/* 시작: kv 거울 채우기 + 바뀔 때마다 알림.
+ * 선생님 기기는 전부, 학생은 답(A:·GA:)을 빼고 받고, 실시간은 자기 반 키만(watch_ — 반을 알게 된 뒤) */
+function sub_(filter, keys) {
+  var o = { event: '*', schema: 'public', table: 'kv' }; if (filter) o.filter = filter;
+  var ch = sb.channel('kv:' + (filter || 'all')).on('postgres_changes', o, function (e) {
+    if (e.eventType === 'DELETE') { delete MIR[e.old.k]; return; }
+    MIR[e.new.k] = e.new.v;
+  });
+  ch.subscribe(function (s) {   // 구독 전에 바뀐 것을 놓치지 않게 한 번 더 읽는다
+    if (s === 'SUBSCRIBED' && keys) sb.from('kv').select('k,v').in('k', keys).then(function (r) {
+      if (r.error) return;
+      keys.forEach(function (k) { delete MIR[k]; }); r.data.forEach(function (x) { MIR[x.k] = x.v; });
+    });
+  });
+}
+var WATCH = null;
+function watch_(cls) {
+  if (TEACHER || WATCH === cls) return; WATCH = cls;
+  var keys = ['P:' + cls, 'B:' + cls, 'GQ:' + cls, 'SNAP:' + cls, 'STK:' + cls, 'NICK:' + cls, 'STAR:' + cls, 'HW:' + cls, 'DECK', 'CLASSES'];
+  sub_('k=in.(' + keys.map(function (k) { return '"' + k + '"'; }).join(',') + ')', keys);
+}
+var HUB_READY = (function () {
+  var q = sb.from('kv').select('k,v');
+  if (!TEACHER) q = q.not('k', 'like', 'A:%').not('k', 'like', 'GA:%');
+  return q.then(function (r) {
+    if (r.error) throw r.error.message;
+    r.data.forEach(function (x) { MIR[x.k] = x.v; });   // ponytail: 1000 줄까지 한 번에(Supabase 기본). 답은 질문·게임이 끝나면 지워서 넘지 않게
+    if (TEACHER) sub_(null, null);
+  });
+})();
+
+/* 수학 수업 허브 — 서버 로직. 브라우저 안에서 돈다(build.py 가 저장소 어댑터와 함께 감싼다).
+ *  - 로컬 확인: fake.js(localStorage) · 배포: supa.js(Supabase 거울 + 실시간). 학생이 쓰는 login·answer 는 supa 에선 DB 함수(supabase.sql)가 같은 규칙으로 대신한다.
+ * 저장은 모두 ST(저장소 어댑터)를 거친다: cget/cput/cgetAll/cscan(캐시) · pget/pset(속성) · lock · now · code · 파일.
+ * 키: CLASSES · B:반(태블릿 묶음) · Q:반(허락 대기) · RJ:…(거절 알림) · P:반(수업 상태) · L:반(진도판 열림) · SEQ:활동 · DECK · DECK:t
+ *     S:반:번호(학생 현재 상태 — supa 에선 Presence) · A:반:질문:번호(즉석 질문 답)
+ *     게임: GQ:반(공개 상태, 정답은 공개 단계에서만) · GC:반(리모컨 '다음' 신호) · GA:반:게임:문항:번호(답) · GSETS(세트 목록)
+ *     세트 본문(정답)·게임 기록은 비공개 저장소(setSave/setLoad — supa 는 sets 표), 문제 그림은 파일(GI:게임:문항)
+ * 명렬표 없음: 학생이 학년·반·번호를 넣고 수업마다 닉네임을 정한다. 실명은 저장하지 않는다.
+ */
+var DEMO = '체험';
+var PACE_KEYS = ['act', 'sync', 'from', 'to', 'pause', 'msg', 'timer', 'show', 'page', 'q'];
+
+function j_(s, d) { try { return s ? JSON.parse(s) : d; } catch (e) { return d; } }
+/* 캐시 먼저, 없으면 속성에서 읽어 캐시에 다시 올린다 */
+function rd_(k, d) {
+  var v = ST.cget(k);
+  if (v == null) { v = ST.pget(k); if (v != null) ST.cput(k, v); }
+  return j_(v, d);
+}
+function wr_(k, o) { var s = JSON.stringify(o); ST.pset(k, s); ST.cput(k, s); return o; }
+function okCode_(c) { var k = ST.code(); return !!k && String(c) === String(k); }
+function str_(s, n) { return String(s == null ? '' : s).replace(/[<>]/g, '').slice(0, n || 100); }
+function paceBlank_() { return { v: 0, act: null, sync: null, from: null, to: null, pause: false, msg: '', timer: null, show: null, page: 0, q: null }; }
+/* 반 이름은 '학년-반'(1~3학년, 1~15반) 또는 체험. 번호는 1~45(체험은 1~5) */
+function okWho_(cls, no) { return cls === DEMO ? no >= 1 && no <= 5 : /^[1-3]-([1-9]|1[0-5])$/.test(cls) && no >= 1 && no <= 45; }
+/* 진도판에 보일 번호 = 태블릿이 묶인 번호 + 지금 접속한 번호 */
+/* 선생님이 바꾼 닉네임(NICK:반 {번호:{n, d}}) — 그날만 */
+function day_() { var d = new Date(ST.now()); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+function nick_(cls) { var a = rd_('NICK:' + cls, {}) || {}, o = {}, d = day_(); Object.keys(a).forEach(function (n) { if (a[n] && a[n].d === d && a[n].n) o[n] = a[n].n; }); return o; }
+function nos_(cls) {
+  var s = {};
+  if (cls === DEMO) [1, 2, 3, 4, 5].forEach(function (n) { s[n] = 1; });
+  Object.keys(rd_('B:' + cls, {})).forEach(function (n) { s[n] = 1; });
+  ST.cscan('S:' + cls + ':').forEach(function (n) { s[n] = 1; });
+  return Object.keys(s).map(Number).filter(function (n) { return n > 0; }).sort(function (a, b) { return a - b; });
+}
+
+/* ---------------- 학생 ---------------- */
+/* 학년·반·번호를 넣으면: 처음이면 이 태블릿에 묶고, 다른 태블릿에 묶여 있으면 선생님 허락을 기다린다.
+ * supabase.sql 의 s_login 이 같은 규칙 — 여기를 고치면 거기도 고칠 것 */
+function login(cls, no, dev) {
+  cls = String(cls); no = Number(no); dev = str_(dev, 40);
+  if (!okWho_(cls, no)) return { ok: false, msg: '학년·반·번호를 다시 확인해 주세요' };
+  if (cls === DEMO) return { ok: true };
+  var rj = 'RJ:' + cls + ':' + no + ':' + dev;
+  if (ST.cget(rj)) { ST.cput(rj, '', 1); return { ok: false, rejected: true }; }
+  var b = rd_('B:' + cls, {});
+  if (b[no] === dev) return { ok: true };
+  return ST.lock(function () {
+    b = j_(ST.pget('B:' + cls), {});
+    if (!b[no] || b[no] === dev) {
+      b[no] = dev; wr_('B:' + cls, b);
+      var l = rd_('CLASSES', []);
+      if (l.indexOf(cls) < 0) { l.push(cls); l.sort(function (x, y) { return x.localeCompare(y, 'ko', { numeric: true }); }); wr_('CLASSES', l); }
+      return { ok: true };
+    }
+    var q = j_(ST.pget('Q:' + cls), []), has = false;
+    q.forEach(function (x) { if (x.no === no && x.dev === dev) has = true; });
+    if (!has) { q.push({ no: no, dev: dev, t: ST.now() }); wr_('Q:' + cls, q); }
+    return { ok: false, pending: true };
+  });
+}
+
+/* 학생이 자주 부른다(로컬 2~5초, supa 는 거울만 읽어서 0.4초). 바뀐 게 없으면 상태를 보내지 않는다.
+ * info = { act, scr, sig, prog, help, nick, ani } — 진도판 현황표용 */
+function pull(cls, no, dev, v, info, seen) {
+  seen = typeof seen === 'object' && seen ? seen : { g: seen };
+  cls = String(cls); no = Number(no);
+  var now = ST.now(), sk = 'S:' + cls + ':' + no;
+  var c = ST.cgetAll(['P:' + cls, 'B:' + cls, 'DECK', 'L:' + cls, sk]);
+  var p = c['P:' + cls] != null ? j_(c['P:' + cls], null) : rd_('P:' + cls, null);
+  if (!p) p = paceBlank_();
+  if (cls !== DEMO) {
+    var b = c['B:' + cls] != null ? j_(c['B:' + cls], {}) : rd_('B:' + cls, {});
+    if (b[no] !== dev) return { kick: true };
+  }
+  var d = c.DECK != null ? j_(c.DECK, null) : rd_('DECK', null);
+  var s = j_(c[sk], {}), out = { now: now, fast: !!c['L:' + cls], deck: d ? { t: d.t, n: d.n } : null };
+  var g = rd_('GQ:' + cls, null);
+  if ((g ? g.t : 0) !== (seen.g || 0)) out.g = g || { t: 0 };
+  var sn = rd_('SNAP:' + cls, null), stk = (rd_('STK:' + cls, {}) || {})[no];   // 스냅샷(학생 화면에도), 나에게 온 스티커
+  if (sn && sn.t !== (seen.sn || 0)) out.sn = sn;
+  if (stk && stk.t !== (seen.sk || 0)) out.sk = stk;
+  var hw = rd_('HW:' + cls, null); if (hw && hw.t !== (seen.hw || 0)) out.hw = hw;   // 과제 목록
+  var my = (rd_('STAR:' + cls, {}) || {})[no]; if (my && my.t !== (seen.st || 0)) out.st = my;   // 내 누적 별
+  var nk = nick_(cls)[no]; if (nk && nk !== (info && info.nick)) out.nk = nk;   // 선생님이 바꾼 닉네임
+  if (p.v !== v) {
+    out.p = p;
+    if (p.v > (s.gv || 0)) { s.gv = p.v; s.lat = now - p.v; }   // 선생님이 바꾼 뒤 이 학생에게 닿기까지 걸린 시간
+  }
+  info = info || {};
+  s.t = now; s.dev = String(dev).slice(-4);
+  s.act = info.act == null ? null : str_(info.act, 30);
+  s.scr = info.scr == null ? null : Number(info.scr);
+  s.sig = ['g', 'y', 'r'].indexOf(info.sig) >= 0 ? info.sig : null;
+  s.prog = Number(info.prog) || 0;
+  s.help = Number(info.help) || 0;
+  s.nick = str_(info.nick, 12); s.ani = str_(info.ani, 4);
+  ST.cput(sk, JSON.stringify(s));
+  return out;
+}
+
+/* 즉석 질문 답 — 질문이 열려 있을 때만, 닫힐 때까지 고칠 수 있다 */
+function answer(cls, no, dev, qid, val) {
+  cls = String(cls); no = Number(no);
+  if (cls !== DEMO && rd_('B:' + cls, {})[no] !== dev) return { ok: false, msg: '다시 들어와 주세요' };
+  var p = rd_('P:' + cls, paceBlank_());
+  if (!p.q || p.q.id !== qid) return { ok: false, msg: '질문이 닫혔어요' };
+  ST.cput('A:' + cls + ':' + qid + ':' + no, JSON.stringify({ v: str_(val, 200), t: ST.now() }));
+  return { ok: true };
+}
+
+/* t 가 있으면 그 자료(예전에 올린 것도 — 활동 사이에 끼운 쪽), 없으면 마지막 자료 */
+function getSlide(i, t) {
+  var d = t ? rd_('DECK:' + t, null) : null;
+  if (!d) { d = rd_('DECK', null); if (d && t && d.t !== t) d = null; }   // 이 기능 전에 올린 자료는 DECK 에만 있다
+  if (!d || i < 0 || i >= d.n) return { ok: false };
+  return { ok: true, i: i, t: d.t, img: ST.fileData(d.ids[i]) };
+}
+
+/* ---------------- 선생님 ---------------- */
+function tLogin(code) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  return { ok: true, classes: rd_('CLASSES', []).concat([DEMO]), url: ST.url(), deck: rd_('DECK', null) };
+}
+
+function approve(code, cls, no, dev, yes) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  cls = String(cls); no = Number(no);
+  return ST.lock(function () {
+    var q = j_(ST.pget('Q:' + cls), []).filter(function (x) { return !(x.no === no && x.dev === dev); });
+    wr_('Q:' + cls, q);
+    if (yes) { var b = j_(ST.pget('B:' + cls), {}); b[no] = dev; wr_('B:' + cls, b); }
+    else ST.cput('RJ:' + cls + ':' + no + ':' + dev, '1', 600);
+    return { ok: true };
+  });
+}
+
+/* no 가 없으면 반 전체 묶음 풀기 */
+function unbind(code, cls, no) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  cls = String(cls);
+  return ST.lock(function () {
+    var b = j_(ST.pget('B:' + cls), {});
+    if (no == null) b = {}; else delete b[Number(no)];
+    wr_('B:' + cls, b);
+    wr_('Q:' + cls, no == null ? [] : j_(ST.pget('Q:' + cls), []).filter(function (x) { return x.no !== Number(no); }));
+    return { ok: true };
+  });
+}
+
+/* patch 의 키만 바꾼다. v = 바꾼 시각(학생 쪽 도착 시간 계산에 쓴다) */
+function setPace(code, cls, patch) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  cls = String(cls);
+  var p = rd_('P:' + cls, paceBlank_());
+  if (patch && 'act' in patch) {   // 활동을 바꾸면 화면 제한부터 풀고(같이 온 sync 는 아래에서 다시 건다) 그 활동의 구성을 싣는다
+    p.sync = p.from = p.to = null;
+    p.seq = patch.act ? rd_('SEQ:' + str_(patch.act, 30), null) : null;
+  }
+  PACE_KEYS.forEach(function (k) {
+    if (!patch || !(k in patch)) return;
+    var x = patch[k];
+    if (k === 'timer') p.timer = x && Number(x.min) > 0 ? { end: ST.now() + Number(x.min) * 60000, min: Number(x.min), label: str_(x.label, 30) } : null;
+    else if (k === 'q') {
+      if (p.q) ST.delPrefix('A:' + cls + ':' + p.q.id + ':');   // 닫거나 바꾼 질문의 답은 지운다(쌓이지 않게)
+      p.q = x ? { id: ST.now().toString(36), type: ['ox', 'choice', 'num', 'text'].indexOf(x.type) >= 0 ? x.type : 'text', n: Math.max(2, Math.min(5, Number(x.n) || 5)), text: str_(x.text, 120) } : null;
+    }
+    else if (k === 'act' || k === 'msg' || k === 'show') p[k] = x == null ? (k === 'msg' ? '' : null) : str_(x, 120);
+    else if (k === 'pause') p.pause = !!x;
+    else p[k] = x == null ? null : Math.max(0, Number(x) || 0);
+  });
+  p.v = ST.now();
+  wr_('P:' + cls, p);
+  return { ok: true, pace: p };
+}
+
+/* 진도판이 2~3초마다 부른다. 진도판이 열려 있는 동안 학생은 2초 간격으로 묻는다(L:반) */
+function board(code, cls) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  cls = String(cls);
+  ST.cput('L:' + cls, '1', 30);
+  var ns = nos_(cls), p = rd_('P:' + cls, paceBlank_());
+  var ks = ns.map(function (n) { return 'S:' + cls + ':' + n; });
+  if (p.q) ns.forEach(function (n) { ks.push('A:' + cls + ':' + p.q.id + ':' + n); });
+  var c = ks.length ? ST.cgetAll(ks) : {}, pres = {}, ans = {};
+  ns.forEach(function (n) {
+    var s = c['S:' + cls + ':' + n]; if (s) pres[n] = j_(s, null);
+    if (p.q) { var a = c['A:' + cls + ':' + p.q.id + ':' + n]; if (a) ans[n] = j_(a, null); }
+  });
+  /* roster = [[번호, 닉네임, 캐릭터]] — 진도판이 예전 명렬표 자리에 그대로 쓴다 */
+  var NK = nick_(cls), ro = ns.map(function (n) { var s = pres[n] || {}; return [n, NK[n] || s.nick || '', s.ani || '', !!NK[n]]; });
+  var b = rd_('B:' + cls, {}), bound = {};
+  Object.keys(b).forEach(function (k) { bound[k] = String(b[k]).slice(-4); });
+  /* 게임: 공개 상태 + 지금 문항(또는 베팅)에 답한 수 + 리모컨 신호 + 세트 목록 */
+  var g = rd_('GQ:' + cls, null), gcnt = 0;
+  if (g && (g.phase === 'q' || g.phase === 'bet' || g.phase === 'lobby' && g.teams)) {
+    var pre = 'GA:' + cls + ':' + g.gid + ':' + (g.phase === 'lobby' ? 't' : (g.phase === 'bet' ? 'b' : '') + g.qi) + ':';
+    gcnt = Object.keys(ST.cgetAll(ns.map(function (n) { return pre + n; }))).length;
+  }
+  return { ok: true, now: ST.now(), classes: rd_('CLASSES', []).concat([DEMO]), game: g, gcnt: gcnt, gc: rd_('GC:' + cls, null), gsets: rd_('GSETS', []), snap: rd_('SNAP:' + cls, null), ink: rd_('INK:' + cls, null), stk: rd_('STK:' + cls, {}), nick: rd_('NICK:' + cls, {}), star: rd_('STAR:' + cls, {}), hw: rd_('HW:' + cls, null), pace: p, roster: ro, bound: bound, reqs: rd_('Q:' + cls, []), pres: pres, ans: ans };
+}
+
+/* 발표 자료: 진도판이 쪽마다 JPG 로 올린다. 모든 반이 같은 자료를 쓴다 */
+function deckBegin(code, name) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  return { ok: true, key: ST.deckFolder(str_(name, 60)) };
+}
+function deckPage(code, key, i, img) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  return { ok: true, i: i, id: ST.fileSave(key, 'p' + ('0' + (i + 1)).slice(-2) + '.jpg', img) };
+}
+function deckEnd(code, key, ids, name) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  var d = { key: key, ids: ids, n: ids.length, name: str_(name, 80), t: ST.now() };
+  wr_('DECK:' + d.t, d);
+  return { ok: true, deck: wr_('DECK', d) };
+}
+
+/* 활동 화면 순서(구성) — 활동마다 하나, 모든 반이 같이 쓴다.
+ * seq = [ {s: 활동 화면 번호} | {d: 자료 t, p: 쪽 번호} , … ]. 지금 이 활동을 연 반이면 바로 반영(화면 제한은 푼다) */
+function saveSeq(code, cls, act, seq) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  act = str_(act, 30);
+  var clean = (seq || []).map(function (x) {
+    return x && x.d ? { d: Number(x.d), p: Math.max(0, Number(x.p) || 0) } : { s: Math.max(0, Number(x && x.s) || 0) };
+  }).slice(0, 80);
+  wr_('SEQ:' + act, clean);
+  var p = rd_('P:' + String(cls), paceBlank_());
+  if (p.act === act) { p.seq = clean; p.sync = p.from = p.to = null; p.v = ST.now(); wr_('P:' + String(cls), p); }
+  return { ok: true, pace: p };
+}
+
+/* ---------------- 게임 (퀴즈온식) ----------------
+ * 진행·채점은 게임을 시작한 진도판 기기(엔진)가 한다. 학생은 답만 보내고(gans), 정답은 공개 단계 전엔 학생에게 가지 않는다. */
+function bad_() { return { ok: false, msg: '접속코드가 맞지 않아요' }; }
+function gput(code, k, v) {
+  if (!okCode_(code)) return bad_();
+  k = String(k); if (!/^(GQ|GC|SNAP|INK|STK|NICK|STAR|HW):|^GSETS$/.test(k)) return { ok: false, msg: '쓸 수 없는 키' };
+  if (v == null) ST.pset(k, ''); else wr_(k, v);
+  return { ok: true };
+}
+/* supabase.sql 의 s_gans 가 같은 규칙. qi 가 'b3' 이면 3번 문제 파이널 베팅 */
+function gans(cls, no, dev, gid, qi, val, ms) {
+  cls = String(cls); no = Number(no); qi = String(qi);
+  if (cls !== DEMO && rd_('B:' + cls, {})[no] !== dev) return { ok: false, msg: '다시 들어와 주세요' };
+  var g = rd_('GQ:' + cls, null), bet = qi.charAt(0) === 'b';
+  if (!g || g.gid !== gid || (qi === 't' ? g.phase !== 'lobby' || !g.teams : bet ? g.phase !== 'bet' || 'b' + g.qi !== qi : g.phase !== 'q' || String(g.qi) !== qi)) return { ok: false, msg: '시간이 끝났어요' };   // 't' = 대기실에서 모둠 고르기
+  ST.cput('GA:' + cls + ':' + gid + ':' + qi + ':' + no, JSON.stringify({ v: str_(val, 300), ms: Math.max(0, Number(ms) || 0) }));
+  return { ok: true };
+}
+/* 엔진·TV 가 부른다: 그 문항(또는 베팅)의 답 + 리모컨 신호 */
+function gboard(code, cls, gid, qi) {
+  if (!okCode_(code)) return bad_();
+  cls = String(cls);
+  var ns = nos_(cls), pre = 'GA:' + cls + ':' + gid + ':' + qi + ':';
+  var c = ns.length ? ST.cgetAll(ns.map(function (n) { return pre + n; })) : {}, ans = {};
+  ns.forEach(function (n) { var a = c[pre + n]; if (a) ans[n] = j_(a, null); });
+  return { ok: true, ans: ans, gc: rd_('GC:' + cls, null) };
+}
+function gsets(code) { if (!okCode_(code)) return bad_(); return { ok: true, list: rd_('GSETS', []) }; }   // 문항 편집기용 세트 목록
+function gclear(code, prefix) { if (!okCode_(code)) return bad_(); if (!/^GA:/.test(prefix)) return { ok: false }; ST.delPrefix(prefix); return { ok: true }; }
+/* 비공개 저장소: SET:게임(세트 본문), RUN:반(진행 중 상태 — 진도판을 새로 열어도 이어서), LOG:반:게임:시각(기록) */
+function setSave(code, k, v) { if (!okCode_(code)) return bad_(); ST.sset(str_(k, 80), v == null ? null : String(v)); return { ok: true }; }
+function setLoad(code, k) { if (!okCode_(code)) return bad_(); return { ok: true, v: ST.sget(str_(k, 80)) }; }
+function filePut(code, id, data) { if (!okCode_(code)) return bad_(); ST.filePut(str_(id, 80), data); return { ok: true }; }
+function fileGet(id) { var v = ST.fileData(str_(id, 80)); return v && v.then ? v.then(function (x) { return { ok: true, v: x }; }) : { ok: !!v, v: v }; }
+
+/* ---------------- 탐구 화면 답(③) ----------------
+ * 학생이 활동 화면에 쓴 답 전체(키별)를 활동마다 한 덩어리로. supabase.sql 의 s_work·t_works 가 같은 규칙 */
+function work(cls, no, dev, act, data) {
+  cls = String(cls); no = Number(no);
+  if (cls !== DEMO && rd_('B:' + cls, {})[no] !== dev) return { ok: false, msg: '다시 들어와 주세요' };
+  data = String(data || ''); if (data.length > 600000) return { ok: false, msg: '답이 너무 커요(사진을 줄여 주세요)' };
+  ST.cput('W:' + cls + ':' + str_(act, 30) + ':' + no, JSON.stringify({ v: data, t: ST.now() }));
+  return { ok: true };
+}
+function works(code, cls, act) {
+  if (!okCode_(code)) return bad_();
+  cls = String(cls); var ns = nos_(cls), pre = 'W:' + cls + ':' + str_(act, 30) + ':', c = ST.cgetAll(ns.map(function (n) { return pre + n; })), out = {};
+  ns.forEach(function (n) { var x = j_(c[pre + n], null); if (x) out[n] = { w: j_(x.v, {}), t: x.t }; });
+  return { ok: true, works: out };
+}
+
+
+/* server.js 위에 덮어쓰기 — 학생 쓰기는 DB 함수로, 진도판 코드는 DB 가 확인, 그림은 files 표에서 */
+login = function (cls, no, dev) {
+  return sb.rpc('s_login', { cls: String(cls), no: Number(no), dev: String(dev) }).then(function (r) {
+    if (r.error) throw r.error.message;
+    if (r.data.ok) { var b = j_(MIR['B:' + cls], {}); b[no] = dev; MIR['B:' + cls] = JSON.stringify(b); }   // 알림보다 먼저 들어가도 밀려나지 않게
+    return r.data;
+  });
+};
+answer = function (cls, no, dev, qid, val) {
+  return sb.rpc('s_answer', { cls: String(cls), no: Number(no), dev: String(dev), qid: String(qid), val: str_(val, 200) })
+    .then(function (r) { if (r.error) throw r.error.message; return r.data; });
+};
+var tLogin0 = tLogin;
+tLogin = function (code) {
+  return sb.rpc('t_check', { c: String(code) }).then(function (r) {
+    if (r.error) throw r.error.message;
+    if (!r.data) return { ok: false, msg: '접속코드가 맞지 않아요' };
+    CODE = String(code); return tLogin0(code);
+  });
+};
+var getSlide0 = getSlide;
+getSlide = function (i, t) {
+  var r = getSlide0(i, t); if (!r.ok) return r;
+  return r.img.then(function (img) { r.img = img; return r; });
+};
+gans = function (cls, no, dev, gid, qi, val, ms) {
+  return sb.rpc('s_gans', { cls: String(cls), no: Number(no), dev: String(dev), gid: String(gid), qi: String(qi), val: str_(val, 300), ms: Math.round(Number(ms) || 0) })
+    .then(function (r) { if (r.error) throw r.error.message; return r.data; });
+};
+setSave = function (code, k, v) {
+  return sb.rpc('t_set_put', { c: String(code), k: str_(k, 80), v: v == null ? null : String(v) })
+    .then(function (r) { return r.error || r.data === false ? { ok: false, msg: r.error ? r.error.message : '진도판 코드가 맞지 않아요' } : { ok: true }; });
+};
+setLoad = function (code, k) {
+  return sb.rpc('t_set_get', { c: String(code), k: str_(k, 80) }).then(function (r) { return r.error ? { ok: false, msg: r.error.message } : { ok: true, v: r.data }; });
+};
+filePut = function (code, id, data) {
+  return sb.rpc('t_file', { c: String(code), k: str_(id, 80), v: data })
+    .then(function (r) { return r.error || r.data === false ? { ok: false, msg: r.error ? r.error.message : '진도판 코드가 맞지 않아요' } : { ok: true }; });
+};
+work = function (cls, no, dev, act, data) {
+  return sb.rpc('s_work', { cls: String(cls), no: Number(no), dev: String(dev), act: str_(act, 30), v: String(data || '') })
+    .then(function (r) { if (r.error) throw r.error.message; return r.data; });
+};
+works = function (code, cls, act) {
+  return sb.rpc('t_works', { c: String(code), cls: String(cls), act: str_(act, 30) }).then(function (r) {
+    if (r.error) return { ok: false, msg: r.error.message };
+    var out = {}; Object.keys(r.data || {}).forEach(function (no) { out[no] = { w: j_(r.data[no].v, {}), t: r.data[no].t }; });
+    return { ok: true, works: out };
+  });
+};
+deckPage = function (code, key, i, img) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  var id = key + '/p' + ('0' + (i + 1)).slice(-2);
+  return sb.rpc('t_file', { c: CODE, k: id, v: img }).then(function (r) { return r.error || r.data === false ? { ok: false, msg: r.error ? r.error.message : '진도판 코드가 맞지 않아요' } : { ok: true, i: i, id: id }; });
+};
+
+return { login: login, pull: pull, answer: answer, getSlide: getSlide, tLogin: tLogin, approve: approve, unbind: unbind, setPace: setPace, board: board, deckBegin: deckBegin, deckPage: deckPage, deckEnd: deckEnd, saveSeq: saveSeq, gput: gput, gans: gans, gboard: gboard, gsets: gsets, gclear: gclear, setSave: setSave, setLoad: setLoad, filePut: filePut, fileGet: fileGet, work: work, works: works, ready: HUB_READY, online: true };
+})();
+/* 서버 부르기 — server.js 가 브라우저 안(HUB)에서 돈다. 배포본은 Supabase 거울(supa.js), 로컬은 localStorage(fake.js).
+ * 서버 함수는 값이나 Promise 를 돌려준다. 로컬은 120~400ms 늦게 답해 실제 통신처럼 */
+var ONLINE = typeof HUB !== 'undefined' && HUB.online;
+var TICK = ONLINE ? 400 : 0;   // 배포본은 거울만 읽으니 0.4초마다 봐도 통신이 없다. 0 이면 예전처럼 2~5초
+function srv(fn, args, ok, fail) {
+  ok = ok || function () {}; fail = fail || function (e) { console.warn(fn, e); };
+  if (typeof HUB === 'undefined' || !HUB[fn]) { setTimeout(function () { fail('없는 기능: ' + fn); }, 0); return; }
+  HUB.ready.then(function () {
+    return new Promise(function (res) { setTimeout(res, ONLINE ? 0 : 120 + Math.random() * 280); });
+  }).then(function () { return HUB[fn].apply(null, args || []); })
+    .then(function (r) { ok(JSON.parse(JSON.stringify(r))); }, function (e) { fail(e && e.message || String(e)); });
+}
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+/* 수식 도우미 — 학생·진도판·TV 공용.
+ *  mrender(el): 글 속 $…$ 를 수식으로 그림(MathLive 가 있을 때)
+ *  eqAns(학생 답, 허용 답): 글자가 같거나 값이 같으면 정답. 1/2 = 0.5 = \frac{2}{4}, \sqrt{8} = 2\sqrt{2}, 35° = 35
+ *  lnum(s): LaTeX·글자 수식을 수로(못 읽으면 NaN). 학생이 쓴 글이라 eval 은 쓰지 않는다.
+ *  cho(s): 한글 초성 */
+/* CDN 에서 불러오면 MathLive 가 글꼴 폴더를 잘못 짐작한다 → 직접 알려 주고, 누를 때 소리는 끈다 */
+document.addEventListener('DOMContentLoaded', function () {
+  if (window.MathfieldElement) { MathfieldElement.fontsDirectory = 'https://cdn.jsdelivr.net/npm/mathlive@0.111.0/fonts'; MathfieldElement.soundsDirectory = null; }
+});
+function mrender(el) {
+  if (el && window.MathLive && MathLive.renderMathInElement)
+    MathLive.renderMathInElement(el, { TeX: { delimiters: { inline: [['$', '$']], display: [['$$', '$$']] } } });
+}
+function anorm(s) {
+  return String(s == null ? '' : s).replace(/\\left|\\right|\\[,!; ]|\s/g, '').replace(/\^\{?\\circ\}?|°|\\degree/g, '')
+    .replace(/\\[dt]frac/g, '\\frac').replace(/\\cdot|\\times|×/g, '*').replace(/\\div|÷/g, '/').replace(/−/g, '-')
+    .replace(/√/g, '\\sqrt').replace(/\\pi|π/g, 'p').replace(/\\text\{([^}]*)\}/g, '$1').toLowerCase();
+}
+function lnum(s) {
+  s = anorm(s); var i = 0;
+  function grp() { if (s[i] === '{') { i++; var v = expr(); if (s[i] !== '}') throw 0; i++; return v; } return atom(); }
+  function atom() {
+    var c = s[i];
+    if (c === '(' ) { i++; var v = expr(); if (s[i] !== ')') throw 0; i++; return v; }
+    if (c === '{') return grp();
+    if (s.substr(i, 5) === '\\frac') { i += 5; var a = grp(), b = grp(); return a / b; }
+    if (s.substr(i, 5) === '\\sqrt') { i += 5; var n = 2; if (s[i] === '[') { i++; n = expr(); if (s[i] !== ']') throw 0; i++; } return Math.pow(grp(), 1 / n); }
+    if (c === 'p') { i++; return Math.PI; }
+    var m = /^\d*\.?\d+/.exec(s.slice(i)); if (m) { i += m[0].length; return parseFloat(m[0]); }
+    throw 0;
+  }
+  function pow() {
+    var b = atom();
+    if (s[i] === '^') { i++; if (/\d/.test(s[i])) return Math.pow(b, +s[i++]); return Math.pow(b, s[i] === '-' ? (i++, -grp()) : grp()); }   // x^23 은 LaTeX 처럼 x^2·3
+    return b;
+  }
+  function unary() { if (s[i] === '-') { i++; return -unary(); } if (s[i] === '+') { i++; return unary(); } return pow(); }
+  function term() {
+    var v = unary();
+    for (;;) {
+      var c = s[i];
+      if (c === '*' || c === '/') { i++; var r = unary(); v = c === '*' ? v * r : v / r; }
+      else if (c && /[\d(p\\{]/.test(c)) v *= pow();   // 2\sqrt{2}, 2p 처럼 곱셈 기호 없이
+      else return v;
+    }
+  }
+  function expr() { var v = term(); while (s[i] === '+' || s[i] === '-') { var c = s[i++], r = term(); v = c === '+' ? v + r : v - r; } return v; }
+  try { var v = expr(); return i === s.length ? v : NaN; } catch (e) { return NaN; }
+}
+function eqAns(a, b) {
+  var x = anorm(a), y = anorm(b);
+  if (!x) return false;
+  if (x === y) return true;
+  var p = lnum(a), q = lnum(b);
+  return isFinite(p) && isFinite(q) && Math.abs(p - q) <= 1e-9 * Math.max(1, Math.abs(q));
+}
+function cho(s) {
+  return String(s).replace(/[가-힣]/g, function (c) { return 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ'[Math.floor((c.charCodeAt(0) - 0xAC00) / 588)]; });
+}
+
+/* 문항 채점(게임 엔진·과제 공용). v = 학생이 보낸 값(선택·OX 는 누른 칸 번호 0부터, 순서는 '보인 칸 번호,…'), perm = 순서형에서 보여 준 차례 */
+function okIdx(q) { return q.type === 'ox' ? [String(q.answer).toUpperCase() === 'O' ? 0 : 1] : q.type === 'choice' ? [].concat(q.answer).map(function (k) { return Number(k) - 1; }) : []; }   // 세트 파일의 선택형 정답은 1부터
+function gradeQ(q, v, perm) {
+  v = String(v == null ? '' : v);
+  if (q.type === 'choice' || q.type === 'ox') return v !== '' && okIdx(q).indexOf(Number(v)) >= 0;
+  if (q.type === 'short') return [].concat(q.answer).some(function (a) { return eqAns(v, a); });
+  if (q.type === 'chosung') return anorm(v) === anorm(q.answer);
+  if (q.type === 'order') { var seq = v.split(',').map(Number); return !!perm && seq.length === perm.length && seq.every(function (d, k) { return perm[d] === k; }); }
+  return false;
+}
+
+/* 문제 그림 열쇠: 'GI:…' 글자면 그대로, 예전 세트(true)면 'GI:세트:번호', 없으면 '' */
+function imgKey(q, sid, i) { return !q.image ? '' : typeof q.image === 'string' && q.image.indexOf('GI:') === 0 ? q.image : 'GI:' + sid + ':' + i; }
+
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  function toast(t) { var d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(function () { d.remove(); }, 2600); }
+  function ss(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v); } catch (e) { return null; } }
+  var TY = { slide: '설명', choice: '선택', ox: 'OX', short: '단답', chosung: '초성', order: '순서', survey: '설문' };
+  var RD = { '': '없음', double: '2배', lightning: '번개', catchup: '역전', roulette: '스페셜 룰렛', final: '파이널 베팅' };
+  var TIMES = [10, 20, 30, 45, 60, 90, 120, 180], PTS = [500, 1000, 2000];
+  var SHAPE = ['▲', '◆', '●', '■', '★'], SCOL = ['#3b6fe0', '#f2852b', '#2fa84f', '#8e5bd8', '#e04646'];
+  var CODE = ss('HUB_CODE'), GS = [], S = null, CUR = 0, DIRTY = false, IMG = {};
+  function call(fn, args) { return new Promise(function (res, rej) { srv(fn, args, function (r) { r && r.ok === false ? rej(r.msg) : res(r); }, rej); }); }
+
+  /* ---------- 들어가기 · 세트 목록 ---------- */
+  function enter(code) {
+    call('tLogin', [code]).then(function () {
+      CODE = code; ss('HUB_CODE', code); $('login').style.display = 'none'; $('app').style.display = 'flex';
+      return call('gsets', [CODE]);
+    }).then(function (r) { GS = r.list || []; fillSets(); if (GS.length) openSet(GS[GS.length - 1].id); else newSet(); })
+      .catch(function (e) { $('loginMsg').textContent = String(e); });
+  }
+  $('go').onclick = function () { enter($('code').value.trim()); };
+  $('code').onkeydown = function (e) { if (e.key === 'Enter') $('go').onclick(); };
+  function fillSets() {
+    $('sets').innerHTML = GS.slice().reverse().map(function (s) { return '<option value="' + esc(s.id) + '">' + esc(s.title) + ' (' + s.n + ')</option>'; }).join('') + (S && !GS.some(function (x) { return x.id === S.sid; }) ? '<option value="' + S.sid + '">(저장 전) ' + esc(S.set.title) + '</option>' : '');
+    if (S) $('sets').value = S.sid;
+  }
+  function leaveOk() { return !DIRTY || confirm('저장하지 않은 바뀐 곳이 있어요. 버리고 넘어갈까요?'); }
+  $('sets').onchange = function () { var v = this.value; if (!leaveOk()) { this.value = S.sid; return; } openSet(v); };
+  function openSet(sid) {
+    call('setLoad', [CODE, 'SET:' + sid]).then(function (r) {
+      var set = r.v ? JSON.parse(r.v) : { title: '새 세트', questions: [] };
+      set.questions.forEach(function (q, i) { if (q.image === true) q.image = 'GI:' + sid + ':' + i; });   // 예전 세트: 번호 대신 열쇠로(순서를 바꿔도 그대로)
+      S = { sid: sid, set: set }; CUR = 0; mark(false); fillSets(); paint();
+    }).catch(function (e) { toast('⚠ ' + e); });
+  }
+  function newSet(from) {
+    var sid = 'g' + Date.now().toString(36);
+    S = { sid: sid, set: from ? JSON.parse(JSON.stringify(from)) : { title: '새 세트', speed: false, questions: [blank('slide')] } };
+    if (from) S.set.title = from.title + ' (복사)';
+    CUR = 0; mark(true); fillSets(); paint();
+  }
+  $('bNew').onclick = function () { if (leaveOk()) newSet(); };
+  $('bCopy').onclick = function () { if (S) newSet(S.set); };
+  $('bDel').onclick = function () {
+    if (!S || !confirm('「' + S.set.title + '」을 세트 목록에서 뺄까요? (진도판·과제 목록에서 사라짐)')) return;
+    GS = GS.filter(function (x) { return x.id !== S.sid; });
+    call('gput', [CODE, 'GSETS', GS]).then(function () { toast('목록에서 뺐어요'); S = null; DIRTY = false; fillSets(); if (GS.length) openSet(GS[GS.length - 1].id); else newSet(); });
+  };
+
+  /* ---------- 문항 ---------- */
+  function blank(t) {
+    var q = { type: t, prompt: '', time: t === 'slide' ? 30 : 60 };
+    if (t !== 'slide' && t !== 'survey') q.points = 1000;
+    if (t === 'choice') { q.choices = ['', '', '', '']; q.answer = 1; }
+    if (t === 'survey') q.choices = ['', ''];
+    if (t === 'ox') q.answer = 'O';
+    if (t === 'short') q.answer = [''];
+    if (t === 'chosung') q.answer = '';
+    if (t === 'order') q.items = ['', '', ''];
+    return q;
+  }
+  function mark(d) { DIRTY = d; $('saveSt').textContent = d ? '● 저장 안 됨' : '저장됨'; $('saveSt').className = d ? 'dirty' : ''; }
+  window.addEventListener('beforeunload', function (e) { if (DIRTY) { e.preventDefault(); e.returnValue = ''; } });
+  $('addBar').innerHTML = '<div style="width:100%;color:var(--mut);font-size:12px">+ 문항 추가 (지금 문항 뒤에)</div>' + Object.keys(TY).map(function (t) { return '<button data-add="' + t + '">' + TY[t] + '</button>'; }).join('');
+  $('addBar').onclick = function (e) { var b = e.target.closest('[data-add]'); if (!b) return; S.set.questions.splice(CUR + 1, 0, blank(b.getAttribute('data-add'))); CUR++; mark(true); paint(); };
+  function snip(q) { var t = (q.prompt || '').replace(/\$[^$]*\$/g, '수식').slice(0, 40); return t || (q.image ? '(그림)' : '(비어 있음)'); }
+  function paintList() {
+    $('qs').innerHTML = S.set.questions.map(function (q, i) {
+      return '<div class="qi' + (i === CUR ? ' on' : '') + '" data-i="' + i + '"><b>' + (i + 1) + '</b><div><span class="tp">' + TY[q.type] + (q.round ? ' · ' + RD[q.round] : '') + '</span>' + (q.image ? ' 🖼' : '') + '<div class="tx">' + esc(snip(q)) + '</div></div></div>';
+    }).join('') || '<p style="color:var(--mut)">문항이 없어요</p>';
+  }
+  $('qs').onclick = function (e) { var d = e.target.closest('.qi'); if (d) { CUR = Number(d.getAttribute('data-i')); paint(); } };
+  function paint() {
+    $('title').value = S.set.title || ''; $('speed').checked = !!S.set.speed;
+    paintList(); paintForm(); paintPrev();
+  }
+  function seg(name, opts, cur, fmt) { return '<div class="seg" data-seg="' + name + '">' + opts.map(function (o) { return '<button data-v="' + o + '" class="' + (String(o) === String(cur) ? 'on' : '') + '">' + (fmt ? fmt(o) : o) + '</button>'; }).join('') + '</div>'; }
+  function paintForm() {
+    var q = S.set.questions[CUR];
+    if (!q) { $('form').innerHTML = '<div class="empty">왼쪽 아래에서 문항을 추가하세요</div>'; return; }
+    var h = '<div class="row"><b style="font-size:20px">' + (CUR + 1) + '번 문항</b><span style="flex:1"></span><button data-op="up" title="앞으로">▲</button><button data-op="down" title="뒤로">▼</button><button data-op="dup">복제</button><button data-op="del">삭제</button></div>' +
+      '<div class="f"><label>유형</label>' + seg('type', Object.keys(TY), q.type, function (t) { return TY[t]; }) + '</div>';
+    h += '<div class="f"><label>' + (q.type === 'slide' ? '설명 글' : '발문') + '</label><textarea id="fP" rows="3" placeholder="수식은 $...$ 로 — 예: $y=x^2$, $\\frac{1}{2}$, $\\sqrt{3}$">' + esc(q.prompt || '') + '</textarea></div>';
+    h += '<div class="f"><label>그림</label><div id="drop">' + (q.image ? '<img id="dImg" alt="">' : '') + '여기를 눌러 고르거나, <b>Ctrl+V</b> 로 붙여넣기' + (q.image ? ' · <a href="#" id="dDel">그림 빼기</a>' : '') + '</div><input type="file" id="fImg" accept="image/*" hidden></div>';
+    if (q.type === 'choice' || q.type === 'survey') {
+      var ans = [].concat(q.answer || []).map(Number);
+      h += '<div class="f"><label>보기' + (q.type === 'choice' ? ' — 정답에 체크(여러 개 가능)' : '') + '</label>' + q.choices.map(function (c, k) {
+        return '<div class="row"><span style="color:' + SCOL[k] + ';font-size:20px">' + SHAPE[k] + '</span><input type="text" data-ch="' + k + '" value="' + esc(c) + '" placeholder="보기 ' + (k + 1) + '">' +
+          (q.type === 'choice' ? '<label class="ok"><input type="checkbox" data-ok="' + k + '"' + (ans.indexOf(k + 1) >= 0 ? ' checked' : '') + '> 정답</label>' : '') + (q.choices.length > 2 ? '<button data-chdel="' + k + '">✕</button>' : '') + '</div>';
+      }).join('') + (q.choices.length < 5 ? '<button class="soft" data-op="chadd">+ 보기</button>' : '') + '</div>';
+    }
+    if (q.type === 'ox') h += '<div class="f"><label>정답</label>' + seg('ox', ['O', 'X'], String(q.answer).toUpperCase(), function (o) { return o === 'O' ? '⭕ 맞다' : '❌ 아니다'; }) + '</div>';
+    if (q.type === 'short') h += '<div class="f"><label>허용 답 (하나라도 같으면 정답)</label>' + [].concat(q.answer).map(function (a, k) {
+      return '<div class="row"><input type="text" data-an="' + k + '" value="' + esc(a) + '" placeholder="예: 360  또는  \\frac{1}{2}">' + ([].concat(q.answer).length > 1 ? '<button data-andel="' + k + '">✕</button>' : '') + '</div>';
+    }).join('') + '<button class="soft" data-op="anadd">+ 허용 답</button><div class="hint">값이 같으면 저절로 정답: 1/2 = 0.5 = 2/4, √8 = 2√2, 35° = 35. 낱말·식 꼴이 다른 답(예: 정9각형·정구각형)만 따로 적으세요.</div></div>';
+    if (q.type === 'chosung') h += '<div class="f"><label>정답 낱말</label><input type="text" id="fCho" value="' + esc(q.answer || '') + '" style="width:100%"><div class="hint">학생에게는 초성(' + esc(cho(q.answer || '')) + ')이 보입니다.</div></div>';
+    if (q.type === 'order') h += '<div class="f"><label>항목 — 올바른 순서대로 (학생에게는 섞여서 보임)</label>' + q.items.map(function (x, k) {
+      return '<div class="row"><b>' + (k + 1) + '</b><input type="text" data-it="' + k + '" value="' + esc(x) + '"><button data-itup="' + k + '">▲</button>' + (q.items.length > 2 ? '<button data-itdel="' + k + '">✕</button>' : '') + '</div>';
+    }).join('') + (q.items.length < 8 ? '<button class="soft" data-op="itadd">+ 항목</button>' : '') + '</div>';
+    if (q.type !== 'slide') {
+      h += '<div class="f"><label>제한 시간</label>' + seg('time', TIMES, q.time, function (t) { return t + '초'; }) + '</div>';
+      if (q.type !== 'survey') {
+        h += '<div class="f"><label>배점</label>' + seg('points', PTS, q.points, function (p) { return p + '점'; }) + '</div>';
+        h += '<div class="f"><label>라운드</label>' + seg('round', Object.keys(RD), q.round || '', function (r) { return RD[r]; }) + '<div class="hint">번개: 가장 빨리 맞힌 1~3등 보너스 · 역전: 아래 절반이 맞히면 2배 · 룰렛: 문제 전 ×2/×3/+500/×0.5/×1 · 파이널: 점수를 걸고 풂</div></div>';
+      }
+      h += '<div class="f"><label>해설 (정답 공개 때·과제에서 보임)</label><textarea id="fEx" rows="3" placeholder="풀이를 짧게 — 수식은 $...$">' + esc(q.explain || '') + '</textarea></div>';
+    }
+    $('form').innerHTML = h + '<div id="prevIn"></div>';
+    if (q.image) loadImg(q.image, function (u) { var im = $('dImg'); if (im) im.src = u; });
+  }
+  function loadImg(k, cb) { if (/^data:|^https?:/.test(k)) return cb(k); if (IMG[k]) return cb(IMG[k]); srv('fileGet', [k], function (r) { if (r.ok && r.v) { IMG[k] = r.v; cb(r.v); } }); }
+  function paintPrev() {
+    var q = S.set.questions[CUR]; if (!q) { $('prev').innerHTML = ''; return; }
+    var h = '<div style="color:var(--mut);font-size:13px;margin-bottom:8px">학생 태블릿·TV 에 이렇게 보여요</div><div class="pv"><div class="meta"><span>' + TY[q.type] + '</span>' + (q.type !== 'slide' ? '<span>' + q.time + '초</span>' : '') + (q.points ? '<span>' + q.points + '점</span>' : '') + (q.round ? '<span>' + RD[q.round] + '</span>' : '') + '</div>' +
+      '<div class="pp">' + esc(q.prompt || '') + '</div>' + (q.image ? '<img id="pImg" alt="">' : '');
+    if (q.type === 'choice' || q.type === 'survey' || q.type === 'ox') {
+      var ch = q.type === 'ox' ? ['⭕', '❌'] : q.choices, ok = q.type === 'survey' ? [] : okIdx(q);
+      h += '<div class="ch">' + ch.map(function (c, k) { return '<div class="' + (ok.indexOf(k) >= 0 ? 'ok' : '') + '" style="background:' + SCOL[k] + '">' + SHAPE[k] + ' ' + esc(c) + '</div>'; }).join('') + '</div>';
+    }
+    if (q.type === 'chosung') h += '<div class="cho">' + esc(cho(q.answer || '')) + '</div>';
+    if (q.type === 'order') h += '<div style="text-align:left;margin-top:8px">' + q.items.map(function (x, k) { return '<div>' + (k + 1) + '. ' + esc(x) + '</div>'; }).join('') + '</div>';
+    if (q.type === 'short') h += '<div class="ans">정답: ' + [].concat(q.answer).filter(Boolean).map(function (a) { return /[\\^_{}]/.test(a) ? '$' + esc(a) + '$' : esc(a); }).join(' · ') + '</div>';
+    if (q.explain) h += '<div class="ex">' + esc(q.explain) + '</div>';
+    [$('prev'), $('prevIn')].forEach(function (el) { if (!el) return; el.innerHTML = h + '</div>'; mrender(el); });
+    if (q.image) loadImg(q.image, function (u) { [].forEach.call(document.querySelectorAll('#pImg'), function (im) { im.src = u; }); });
+  }
+
+  /* ---------- 고치기 ---------- */
+  function q() { return S.set.questions[CUR]; }
+  function changed(list) { mark(true); if (list) paintList(); paintPrev(); }
+  $('title').oninput = function () { S.set.title = this.value; mark(true); };
+  $('speed').onchange = function () { S.set.speed = this.checked; mark(true); };
+  $('form').addEventListener('input', function (e) {
+    var t = e.target, x = q();
+    if (t.id === 'fP') { x.prompt = t.value; return changed(true); }
+    if (t.id === 'fEx') { x.explain = t.value; return changed(); }
+    if (t.id === 'fCho') { x.answer = t.value.trim(); t.parentNode.querySelector('.hint').textContent = '학생에게는 초성(' + cho(x.answer) + ')이 보입니다.'; return changed(); }
+    if (t.hasAttribute('data-ch')) { x.choices[Number(t.getAttribute('data-ch'))] = t.value; return changed(); }
+    if (t.hasAttribute('data-an')) { x.answer[Number(t.getAttribute('data-an'))] = t.value.trim(); return changed(); }
+    if (t.hasAttribute('data-it')) { x.items[Number(t.getAttribute('data-it'))] = t.value; return changed(); }
+  });
+  $('form').addEventListener('change', function (e) {
+    var t = e.target, x = q();
+    if (t.hasAttribute('data-ok')) { var a = [].concat(x.answer || []).map(Number), k = Number(t.getAttribute('data-ok')) + 1; a = t.checked ? a.concat([k]) : a.filter(function (v) { return v !== k; }); x.answer = a.length === 1 ? a[0] : a.sort(); changed(); }
+    if (t.id === 'fImg' && t.files[0]) setImg(t.files[0]);
+  });
+  $('form').addEventListener('click', function (e) {
+    var b = e.target.closest('button,a,#drop'); if (!b) return;
+    var x = q(), qs = S.set.questions, sg = b.parentNode && b.parentNode.getAttribute && b.parentNode.getAttribute('data-seg');
+    if (b.id === 'dDel') { e.preventDefault(); e.stopPropagation(); delete x.image; changed(true); return paintForm(); }
+    if (b.id === 'drop') { $('fImg').click(); return; }
+    if (sg) {
+      var v = b.getAttribute('data-v');
+      if (sg === 'type') { if (v === x.type) return; var n = blank(v); n.prompt = x.prompt; if (x.image) n.image = x.image; if (x.explain) n.explain = x.explain; qs[CUR] = n; changed(true); return paintForm(); }
+      if (sg === 'ox') x.answer = v;
+      if (sg === 'time') x.time = Number(v);
+      if (sg === 'points') x.points = Number(v);
+      if (sg === 'round') { if (v) x.round = v; else delete x.round; }
+      changed(true); return paintForm();
+    }
+    var op = b.getAttribute('data-op');
+    if (op === 'up' && CUR > 0) { qs.splice(CUR - 1, 0, qs.splice(CUR, 1)[0]); CUR--; }
+    else if (op === 'down' && CUR < qs.length - 1) { qs.splice(CUR + 1, 0, qs.splice(CUR, 1)[0]); CUR++; }
+    else if (op === 'dup') { qs.splice(CUR + 1, 0, JSON.parse(JSON.stringify(x))); CUR++; }
+    else if (op === 'del') { if (!confirm((CUR + 1) + '번 문항을 지울까요?')) return; qs.splice(CUR, 1); CUR = Math.max(0, Math.min(CUR, qs.length - 1)); }
+    else if (op === 'chadd') x.choices.push('');
+    else if (op === 'anadd') x.answer = [].concat(x.answer).concat(['']);
+    else if (op === 'itadd') x.items.push('');
+    else if (b.hasAttribute('data-chdel')) { var k = Number(b.getAttribute('data-chdel')); x.choices.splice(k, 1); if (x.type === 'choice') { var a = [].concat(x.answer).map(Number).filter(function (v) { return v !== k + 1; }).map(function (v) { return v > k + 1 ? v - 1 : v; }); x.answer = a.length === 1 ? a[0] : a.length ? a : 1; } }
+    else if (b.hasAttribute('data-andel')) x.answer.splice(Number(b.getAttribute('data-andel')), 1);
+    else if (b.hasAttribute('data-itdel')) x.items.splice(Number(b.getAttribute('data-itdel')), 1);
+    else if (b.hasAttribute('data-itup')) { var j = Number(b.getAttribute('data-itup')); if (j > 0) x.items.splice(j - 1, 0, x.items.splice(j, 1)[0]); }
+    else return;
+    changed(true); paint();
+  });
+  /* 그림: 고르기·붙여넣기 → 긴 변 1280px WebP 로 줄여서(저장할 때 올림) */
+  function setImg(f) {
+    var im = new Image(); im.onload = function () {
+      var k = Math.min(1, 1280 / Math.max(im.width, im.height)), cv = document.createElement('canvas');
+      cv.width = Math.round(im.width * k); cv.height = Math.round(im.height * k);
+      var g = cv.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, cv.width, cv.height); g.drawImage(im, 0, 0, cv.width, cv.height);
+      q().image = cv.toDataURL('image/webp', 0.85); URL.revokeObjectURL(im.src); changed(true); paintForm();
+    };
+    im.src = URL.createObjectURL(f);
+  }
+  document.addEventListener('paste', function (e) {
+    if (!S || !q()) return;
+    var it = [].filter.call(e.clipboardData.items || [], function (x) { return x.type.indexOf('image') === 0; })[0];
+    if (it) { e.preventDefault(); setImg(it.getAsFile()); toast('그림을 넣었어요'); }
+  });
+
+  /* ---------- 저장: 새 그림을 먼저 올리고(열쇠 GI:세트:무작위), 세트 본문, 목록 ---------- */
+  function save() {
+    if (!S) return;
+    var qs = S.set.questions, bad = [];
+    qs.forEach(function (x, i) {
+      if (x.type === 'choice' && ![].concat(x.answer).length) bad.push((i + 1) + '번 정답 없음');
+      if (x.type === 'short' && ![].concat(x.answer).filter(Boolean).length) bad.push((i + 1) + '번 허용 답 없음');
+      if (x.type === 'chosung' && !x.answer) bad.push((i + 1) + '번 정답 낱말 없음');
+    });
+    if (bad.length && !confirm('확인할 곳: ' + bad.join(', ') + '\n그래도 저장할까요?')) return;
+    $('bSave').disabled = true; $('saveSt').textContent = '저장 중…';
+    var ups = qs.filter(function (x) { return /^data:|^https?:/.test(x.image || ''); }).map(function (x) {
+      var key = 'GI:' + S.sid + ':' + Math.random().toString(36).slice(2, 9), src = x.image;
+      var get = /^https?:/.test(src) ? fetch(src).then(function (r) { return r.blob(); }).then(function (b) { return new Promise(function (res) { var fr = new FileReader(); fr.onload = function () { res(fr.result); }; fr.readAsDataURL(b); }); }) : Promise.resolve(src);
+      return get.then(function (d) { return call('filePut', [CODE, key, d]); }).then(function () { IMG[key] = src; x.image = key; });
+    });
+    Promise.all(ups).then(function () { return call('setSave', [CODE, 'SET:' + S.sid, JSON.stringify(S.set)]); })
+      .then(function () { return call('gsets', [CODE]); })
+      .then(function (r) {
+        GS = (r.list || []).filter(function (x) { return x.id !== S.sid; }).concat([{ id: S.sid, title: S.set.title || '세트', n: qs.length, speed: !!S.set.speed }]);
+        return call('gput', [CODE, 'GSETS', GS]);
+      }).then(function () { $('bSave').disabled = false; mark(false); fillSets(); toast('✅ 저장했어요 — 진도판 게임·과제에서 바로 쓸 수 있어요'); })
+      .catch(function (e) { $('bSave').disabled = false; mark(true); toast('⚠ 저장하지 못했어요: ' + e); });
+  }
+  $('bSave').onclick = save;
+  document.addEventListener('keydown', function (e) { if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); save(); } });
+
+  /* ---------- JSON 가져오기·내려받기 (클로드가 만든 세트 파일) ---------- */
+  $('fImp').onchange = function () {
+    var f = this.files[0]; this.value = ''; if (!f || !leaveOk()) return;
+    f.text().then(function (t) {
+      var set = JSON.parse(t); if (!set.questions) throw 'questions 가 없어요';
+      newSet(set); S.set.title = set.title || f.name.replace(/\.json$/, ''); paint(); toast('가져왔어요 — 확인하고 저장하세요');
+    }).catch(function (e) { toast('⚠ ' + e); });
+  };
+  $('bExp').onclick = function () {
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(S.set, null, 2)], { type: 'application/json' }));
+    a.download = (S.set.title || '세트') + '.json'; a.click();
+  };
+
+  window.__ED = { st: function () { return { S: S, CUR: CUR, DIRTY: DIRTY, GS: GS }; } };
+  if (CODE) enter(CODE);
+})();
+</script>
+</body></html>
