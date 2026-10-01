@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>수업 허브 — 진도판</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root{--navy:#1d2b4f;--or:#f28c28;--bg:#f4f6fa;--line:#d9dee8;--g:#2fa84f;--y:#f2b705;--r:#e04646;--mut:#6b7488}
+*{box-sizing:border-box}body{margin:0;font-family:"Pretendard","Noto Sans KR","Malgun Gothic",sans-serif;background:var(--bg);color:#1c2333;font-size:15px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 11px}
+button.pri{background:var(--navy);color:#fff;border-color:var(--navy)}button.hot{background:var(--or);color:#fff;border-color:var(--or)}
+button:disabled{opacity:.45;cursor:default}
+input,select{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:7px}
+#login{max-width:360px;margin:18vh auto;background:#fff;padding:28px;border-radius:14px;text-align:center}
+#login input{font-size:22px;width:160px;text-align:center;margin:12px 0}
+#app{display:none}
+header{display:flex;align-items:center;gap:10px;background:var(--navy);color:#fff;padding:10px 16px;flex-wrap:wrap}
+header h1{font-size:18px;margin:0 8px 0 0}header select{font-size:16px}
+header .sp{flex:1}header button{background:#2c3d66;color:#fff;border-color:#3d4f7a}
+main{padding:12px 16px;max-width:1400px;margin:0 auto}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:4px 0}
+.lab{font-weight:700;color:var(--navy);min-width:64px}
+.chip{border:2px solid var(--line);border-radius:10px;padding:6px 10px;background:#fff;text-align:left;line-height:1.25}
+.chip small{display:block;color:var(--mut);font-size:12px}
+.chip.out{opacity:.4}.chip.rng{background:#fff6ec;border-color:#f6c089}.chip.sync{background:var(--or);border-color:var(--or);color:#fff}.chip.sync small{color:#fff}
+.chip.sel{outline:3px solid var(--navy)}
+.tool.on{background:var(--navy);color:#fff}
+#status{font-size:15px}#status b{color:var(--navy)}#status .late{color:var(--r)}
+#reqs .req{background:#fff3e6;border:2px solid var(--or);border-radius:10px;padding:8px 12px;margin:4px 0;display:flex;gap:10px;align-items:center}
+table{border-collapse:collapse;width:100%;background:#fff}th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;white-space:nowrap}
+th{background:#eef1f7;font-size:13px;color:var(--mut)}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;background:#c5cbd8;margin-right:4px}.dot.on{background:var(--g)}
+.sg{display:inline-block;width:20px;height:20px;border-radius:50%;vertical-align:middle}.sg.g{background:var(--g)}.sg.y{background:var(--y)}.sg.r{background:var(--r)}
+.stop{color:var(--r);font-weight:700}.mut{color:var(--mut)}
+#sigSum span{margin-right:12px;font-size:16px}
+#qPanel{display:none}
+.bars{display:flex;gap:16px;align-items:flex-end;height:160px;padding:8px 0}
+.bar{flex:1;max-width:140px;text-align:center}.bar i{display:block;background:var(--or);border-radius:6px 6px 0 0;min-height:3px}
+.bar b{display:block;font-size:22px}.bar span{font-size:20px}
+.vals{display:flex;flex-wrap:wrap;gap:8px}.vals span{background:#eef1f7;border-radius:8px;padding:6px 10px;font-size:18px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}.cards div{background:#fffbe9;border:1px solid #f0dfa0;border-radius:8px;padding:8px;font-size:17px}
+.cards small{display:block;color:var(--mut);font-size:12px}
+/* 덮개 */
+.ov{position:fixed;inset:0;background:rgba(15,20,35,.6);display:none;align-items:center;justify-content:center;z-index:50}.ov.on{display:flex}
+.box{background:#fff;border-radius:14px;padding:18px 20px;width:min(860px,94vw);max-height:90vh;overflow:auto}
+.box h2{margin:0 0 10px;color:var(--navy);font-size:20px}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.thumbs img{height:70px;border:1px solid var(--line)}
+#pres{background:#111;flex-direction:column;z-index:60}#pres .bar2{display:flex;gap:8px;padding:8px;background:#222;color:#fff;width:100%;align-items:center}
+#pres .bar2 .sp{flex:1}#presImg{flex:1;min-height:0;max-width:100%;object-fit:contain}
+#presStrip{display:flex;gap:6px;overflow-x:auto;padding:6px;background:#222;width:100%}#presStrip img{height:60px;opacity:.6;cursor:pointer}#presStrip img.on{opacity:1;outline:3px solid var(--or)}
+#tv{background:#fff;z-index:65;flex-direction:column;align-items:stretch;justify-content:flex-start;padding:24px 36px}
+#tv h1{color:var(--navy);font-size:34px;margin:0 0 10px}#tv .bars{height:50vh}#tv .bar b{font-size:40px}#tv .bar span{font-size:34px}
+#tv .vals span{font-size:30px}#tv .cards div{font-size:26px}#tvX{position:absolute;right:20px;top:16px}
+#pickOv{background:var(--navy);color:#fff;z-index:66;flex-direction:column}
+#pickName{font-size:min(16vw,140px);font-weight:800;margin:20px 0}#pickName.done{color:var(--or)}
+#pickOv .row{justify-content:center}#pickOv button{font-size:18px}
+#qrBox{text-align:center}#qrBox img{width:min(60vh,420px);image-rendering:pixelated}
+/* 📺 TV 화면(?tv) — 학생에게 보일 것만 크게. 🕹 리모컨(?remote) — 휴대폰용 큰 버튼 */
+body.tvm header,body.tvm main{display:none}body.tvm #pres .bar2,body.tvm #presStrip,body.tvm #tvX{display:none}
+#tvIdle{display:none;position:fixed;inset:0;background:var(--navy);color:#fff;align-items:center;justify-content:center;flex-direction:column;text-align:center;z-index:40}
+body.tvm.in #tvIdle{display:flex}#tvIdle .big{font-size:52px;font-weight:800;margin:10px 0}#tvIdle .m{font-size:34px;opacity:.9}
+#tvIdle img{background:#fff;padding:12px;border-radius:12px;width:min(42vh,360px);image-rendering:pixelated}#tvIdle select{font-size:18px;margin-top:18px}
+#rmBar{display:none}body.rm #rmBar{display:flex;gap:10px;position:sticky;top:0;z-index:30;background:#fff;padding:10px;border-bottom:2px solid var(--line)}
+#rmBar button{flex:1;font-size:26px;padding:18px 0}body.rm table,body.rm #seqEd{display:none}body.rm button{font-size:17px;padding:10px 14px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1c2333;color:#fff;padding:10px 18px;border-radius:10px;z-index:99}
+</style>
+</head><body>
+
+<div id="login"><h2>수업 허브 — 진도판</h2><div>접속코드</div><input id="code" type="password" inputmode="numeric"><br><button class="pri" id="go">들어가기</button><p id="loginMsg" class="mut"></p></div>
+
+<div id="app">
+<div id="rmBar"><button id="rmPrev">◀</button><button id="rmPause">⏸</button><button id="rmNext">▶</button></div>
+<header>
+  <h1>수업 허브</h1>
+  <select id="cls"></select>
+  <span class="sp"></span>
+  <button id="bRoster">📋 반 관리</button><button id="bQr">📱 학생 접속 QR</button><button id="bPick">🎲 이름 뽑기</button>
+</header>
+<main>
+  <div class="card">
+    <div class="row"><span class="lab">활동</span><select id="actSel"></select><button class="pri" id="actOpen">열기</button><button id="actClose">닫기</button><span id="actNow" class="mut"></span></div>
+    <div class="row" id="scrRow" style="display:none"><span class="lab">화면</span><button class="tool" data-t="sync">🔗 동기화</button><button class="tool" data-t="range">⏱ 구간</button><button id="free">제한 풀기</button><button id="seqB">✏ 구성</button><span id="chips" class="row" style="margin:0"></span><span id="toolHint" class="mut"></span></div>
+    <div id="seqEd" class="card" style="display:none;background:#fff8f0;border-color:#f6c089">
+      <div class="row"><b>✏ 구성 편집</b><span class="mut">① 위에서 넣을 자리(그 화면 뒤)를 누르고 ② 아래 발표 쪽을 누르면 끼워집니다. 끼운 쪽은 눌러서 ◀ ▶ 로 옮기거나 ✕ 로 뺍니다. 활동마다 저장되어 모든 반이 같이 씁니다.</span></div>
+      <div class="row"><button id="seqL">◀ 앞으로</button><button id="seqR">뒤로 ▶</button><button id="seqX">✕ 빼기</button><span class="sp" style="flex:1"></span><button id="seqReset">처음 상태로</button><button id="seqCancel">취소</button><button class="hot" id="seqSave">저장</button></div>
+      <div class="thumbs" id="seqThumbs"></div>
+    </div>
+    <div class="row"><span class="lab">멈춤</span><button id="pauseB">⏸ 일시 정지</button><input id="pauseMsg" placeholder="학생 화면에 띄울 한 줄" style="width:260px">
+      <span id="presets"></span></div>
+    <div class="row"><span class="lab">타이머</span><button data-m="-1">−1</button><input id="tMin" type="number" value="5" min="1" max="60" style="width:64px">분<button data-m="1">+1</button><input id="tLab" placeholder="활동 이름(선택)" style="width:160px"><button id="tGo">▶ 시작</button><button id="tOff">끄기</button><span id="tNow" class="mut"></span></div>
+    <div class="row"><span class="lab">발표</span><button id="bDeck">📽 발표 자료</button><button id="bPres">발표 화면 열기</button><span id="deckNow" class="mut"></span></div>
+    <div class="row"><span class="lab">즉석 질문</span><button data-q="ox">O / X</button><button data-q="choice">①~⑤</button><select id="qN"><option>2</option><option>3</option><option selected>4</option><option>5</option></select>지 · <button data-q="num">숫자</button><button data-q="text">한 줄</button><input id="qText" placeholder="질문 문장(선택) — 칠판 문제면 비워 두세요" style="width:300px"></div>
+  </div>
+
+  <div class="card" id="qPanel">
+    <div class="row"><span class="lab">❓ 질문</span><b id="qTitle"></b><span id="qCount" class="mut"></span><span class="sp" style="flex:1"></span>
+      <label><input type="checkbox" id="qNames"> 이름 보기</label><button id="qTv">📺 크게</button><button id="qPick">🎲 답한 학생 중 뽑기</button><button class="hot" id="qClose">질문 닫기</button></div>
+    <div id="qRes"></div>
+  </div>
+
+  <div class="card">
+    <div id="status" class="row"></div>
+    <div id="reqs"></div>
+    <div class="row" id="sigSum"></div>
+  </div>
+  <table><thead><tr><th>번호</th><th>닉네임</th><th>접속</th><th>화면</th><th>이해도</th><th>받음</th><th>진행</th><th>도움</th><th>태블릿</th></tr></thead><tbody id="tb"></tbody></table>
+</main>
+</div>
+
+<div class="ov" id="rosterOv"><div class="box"><h2>📋 반 관리</h2>
+  <p class="mut">명렬표는 없습니다. 학생이 학년·반·번호를 넣고 들어오면 그 반이 여기에 생깁니다. 처음 들어온 태블릿이 그 번호에 묶입니다.</p>
+  <div id="rNow"></div><div class="row"><button id="rX">닫기</button></div></div></div>
+<div class="ov" id="deckOv"><div class="box"><h2>📽 발표 자료</h2>
+  <p class="mut">PDF 를 올리면 쪽마다 그림으로 바꿔 올립니다. 학생 태블릿은 올라온 자료를 미리 받아 두어서 쪽을 넘길 때 바로 바뀝니다. (PPT 는 PDF 로 저장해서 넣어 주세요)</p>
+  <input type="file" id="deckFile" accept=".pdf"><p id="deckMsg"></p><div class="thumbs" id="deckThumbs"></div>
+  <div class="row"><button class="hot" id="deckGo" disabled>이 자료로 발표 시작</button><button id="deckX">닫기</button></div></div></div>
+
+<div class="ov" id="pres"><div class="bar2"><b id="presPg"></b><span id="presSt"></span><span class="sp"></span><button id="presPrev">◀ 이전</button><button id="presNext">다음 ▶</button><button id="presPause">⏸ 일시 정지</button><button id="presHide">진도판 보기</button><button class="hot" id="presEnd">■ 발표 끝내기</button></div><img id="presImg" alt=""><div id="presStrip"></div></div>
+
+<div id="tvIdle"><div class="m" id="tvCls"></div><div class="big" id="tvBig">수업 허브</div><div class="m" id="tvMsg"></div><div id="tvQr"></div><select id="tvSel"></select></div>
+<div class="ov" id="tv"><button id="tvX">닫기</button><h1 id="tvT"></h1><div id="tvRes"></div></div>
+
+<div class="ov" id="pickOv"><div class="row"><label><input type="radio" name="pool" value="on" checked> 접속한 학생</label><label><input type="radio" name="pool" value="ans"> 질문에 답한 학생</label><label><input type="radio" name="pool" value="all"> 반 전체</label><label><input type="checkbox" id="pickEx" checked> 뽑힌 학생 빼기</label></div>
+  <div id="pickName">?</div><div class="row"><button class="hot" id="pickGo">🎲 뽑기</button><button id="pickReset">뽑힌 기록 지우기</button><button id="pickX">닫기</button></div><div id="pickInfo" class="mut"></div></div>
+
+<div class="ov" id="qrOv"><div class="box" id="qrBox"><h2>📱 학생 접속</h2><div id="qrImg"></div><p id="qrUrl" class="mut"></p><button id="qrX">닫기</button></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+/* qrcode-generator 1.4.4 (Kazuhiko Arase, MIT) — 진도판의 학생 접속 QR 용 */
+var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,(function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1}))},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(n*r,o*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(){var t=n("友");if(2!=t.length||38726!=(t[0]<<8|t[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}((function(){return qrcode}));
+
+/* 활동 목록 — 학생 화면과 진도판이 같이 읽는다. 새 단원 활동은 여기에 하나 더 넣는다.
+ *  id: { title, screens: [ { t: 화면 이름, html: 학생 화면 내용 } ] }
+ *  html 안의 입력칸에 data-k="이름" 을 붙이면 학생 태블릿에 저장되고(임시저장), 쓸 때마다 '진행'으로 기록된다.
+ */
+var ACTS = {
+  demo: {
+    title: '예시 — 넓이가 2인 정사각형',
+    screens: [
+      { t: '어림하기', html:
+        '<h2>넓이가 2인 정사각형</h2>' +
+        '<p>넓이가 1인 정사각형 두 개를 잘라 붙이면 넓이가 2인 정사각형을 만들 수 있습니다.</p>' +
+        '<div class="sq"><div style="width:100px;height:100px"></div><div style="width:141px;height:141px"></div></div>' +
+        '<p class="ask">이 정사각형의 한 변의 길이는 1과 2 사이 어디쯤일까요?</p>' +
+        '<input data-k="g1" inputmode="decimal" placeholder="예: 1.3">' },
+      { t: '범위 좁히기', html:
+        '<h2>제곱해서 2와 비교하기</h2>' +
+        '<p>계산해서 빈칸을 채워 보세요.</p>' +
+        '<table class="tb"><tr><th>수</th><th>1.3</th><th>1.4</th><th>1.5</th></tr>' +
+        '<tr><th>제곱</th><td><input data-k="a13" inputmode="decimal"></td><td><input data-k="a14" inputmode="decimal"></td><td><input data-k="a15" inputmode="decimal"></td></tr></table>' +
+        '<p class="ask">한 변의 길이는 어느 두 수 사이에 있나요?</p>' +
+        '<input data-k="g2" placeholder="예: 1.4 와 1.5 사이">' },
+      { t: '정리', html:
+        '<h2>정리</h2>' +
+        '<p class="ask">계속 범위를 좁히면 끝이 날까요? 한 줄로 써 보세요.</p>' +
+        '<textarea data-k="g3" rows="3"></textarea>' }
+    ]
+  }
+};
+
+var HUB = (function () {
+/* 배포본 저장소 — Supabase. build.py 가 이 파일 + server.js 를 함수 하나로 감싸 배포본(site/*.html)에 넣는다.
+ * 생각: 모든 공용 상태(kv 표, 몇 KB)를 브라우저에 '거울'로 들고 있고 실시간 알림으로 맞춘다 → server.js 는 거울만 읽어서 바로 답한다.
+ *  - 쓰기: 선생님 = t_put(코드 확인) · 학생 = s_login·s_answer(DB 함수가 묶음 확인). 학생은 kv 에 직접 못 쓴다(RLS).
+ *  - 학생 현재 상태(S:)는 DB 에 안 쓰고 반 채널 Presence 로만 — 접속이 끊기면 저절로 빠진다.
+ *  - 발표 쪽 그림은 files 표(실시간 알림 없음), 필요할 때 한 장씩 받는다.
+ * 키는 공개용(publishable) 열쇠만. 관리자 열쇠는 절대 넣지 않는다. */
+var SB_URL = 'https://faiemcomvhlahrssrfex.supabase.co';
+var SB_KEY = 'sb_publishable_S4gxcXRMSJb6K0G5ncQYGw_I8ZRLONa';
+var sb = supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: false } });
+var MIR = {}, PRES = {}, LAT = {}, ROOM = {}, CODE = null, TEACHER = /teacher/.test(location.pathname), WQ = Promise.resolve();
+window.__SB = { MIR: MIR, PRES: PRES, ROOM: ROOM };   // 확인용
+
+function fail_(m) { console.warn('저장 실패', m); window.dispatchEvent(new CustomEvent('hubfail', { detail: m })); }
+/* 선생님 쓰기 — 순서가 뒤바뀌지 않게 하나씩 */
+function put_(k, v) {
+  if (MIR[k] === v) return;
+  if (v === '' || v == null) delete MIR[k]; else MIR[k] = v;
+  WQ = WQ.then(function () {
+    return sb.rpc('t_put', { c: CODE, k: k, v: v === '' ? null : v }).then(function (r) { if (r.error || r.data === false) fail_(r.error ? r.error.message : '진도판 코드가 맞지 않아요'); });
+  });
+}
+/* 반 채널 하나 = Presence(학생 상태). 학생은 자기 키로 들어가 track, 선생님은 듣기만 */
+function room_(cls, key) {
+  if (ROOM[cls]) return ROOM[cls];
+  var ch = sb.channel('room:' + cls, { config: { presence: { key: key || 'T' + Math.random().toString(36).slice(2) } } });
+  ch.on('presence', { event: 'sync' }, function () {
+    var st = ch.presenceState(), now = Date.now();
+    Object.keys(PRES).forEach(function (k) { if (k.indexOf('S:' + cls + ':') === 0 && !st[k]) delete PRES[k]; });
+    Object.keys(st).forEach(function (k) {
+      if (k.indexOf('S:') !== 0) return;
+      var m = st[k][st[k].length - 1];
+      /* 반영 시간 = 선생님이 바꾼 시각(v, 선생님 시계) → 학생이 받았다고 알려 온 시각(선생님 시계). 왕복이라 기기 시계 차이가 없다 */
+      if (m.gv && !LAT[k + m.gv]) LAT[k + m.gv] = now - m.gv;
+      m.lat = LAT[k + m.gv] || 0;
+      PRES[k] = m;
+    });
+  });
+  ch.subscribe(function (s) {
+    if (s === 'SUBSCRIBED') { if (ch._me) ch.track(ch._me); return; }
+    if (ROOM[cls] === ch) { delete ROOM[cls]; sb.removeChannel(ch); }   // 끊기면 다음 묻기 때 새로 들어간다
+  });
+  return (ROOM[cls] = ch);
+}
+var ST = {
+  code: function () { return CODE; },
+  url: function () { return location.href.replace(/[^/]*([?#].*)?$/, ''); },
+  now: function () { return Date.now(); },   // ponytail: 기기 시계를 그대로 씀(태블릿은 자동 시각이라 1초 안팎). 타이머가 어긋나면 서버 시각 받기
+  cget: function (k) {
+    if (k.indexOf('S:') === 0) { var m = PRES[k]; if (!m) return null; m.t = Date.now(); return JSON.stringify(m); }
+    return MIR[k] == null ? null : MIR[k];
+  },
+  cgetAll: function (ks) { var o = {}; ks.forEach(function (k) { var v = ST.cget(k); if (v != null) o[k] = v; }); return o; },
+  cscan: function (p) {
+    var cls = p.split(':')[1]; if (cls) room_(cls);
+    return Object.keys(PRES).filter(function (k) { return k.indexOf(p) === 0; }).map(function (k) { return k.slice(p.length); });
+  },
+  cput: function (k, v) {
+    if (k.indexOf('S:') === 0) {   // 학생 자기 상태 → Presence. 바뀐 것만(t 빼고 비교)
+      var m = j_(v, {}), cls = k.split(':')[1], ch = room_(cls, k);
+      delete m.t; delete m.lat; delete m.presence_ref;   // 서버가 붙이는 꼬리표까지 비교하면 끝없이 다시 보내다 채널이 닫힌다
+      var js = JSON.stringify(m); if (ch._js === js) return; ch._js = js; ch._me = m;
+      if (ch.state === 'joined') ch.track(m);
+      return;
+    }
+    if (k.indexOf('L:') === 0 || k.indexOf('RJ:') === 0 && v === '') return;   // 진도판 열림 신호는 필요 없음(언제나 바로), 거절 알림 지우기는 s_login 이 함
+    put_(k, v);
+  },
+  pget: function (k) { return MIR[k] == null ? null : MIR[k]; },
+  pset: put_,
+  lock: function (fn) { return fn(); },   // ponytail: 선생님 한 명 기준(마지막 저장이 이김). 학생 쓰기는 DB 함수가 잠근다
+  deckFolder: function () { return 'D' + Date.now(); },
+  fileData: function (id) {
+    return sb.from('files').select('v').eq('k', id).single().then(function (r) { if (r.error) throw r.error.message; return r.data.v; });
+  }
+};
+/* 시작: kv 거울 채우기 + 바뀔 때마다 알림. 학생은 즉석 질문 답(A:)을 받지 않는다(남의 답·양) */
+var HUB_READY = (function () {
+  var q = sb.from('kv').select('k,v');
+  if (!TEACHER) q = q.not('k', 'like', 'A:%');
+  return q.then(function (r) {
+    if (r.error) throw r.error.message;
+    r.data.forEach(function (x) { MIR[x.k] = x.v; });
+    sb.channel('kv').on('postgres_changes', { event: '*', schema: 'public', table: 'kv' }, function (e) {
+      if (e.eventType === 'DELETE') { delete MIR[e.old.k]; return; }
+      if (!TEACHER && e.new.k.indexOf('A:') === 0) return;
+      MIR[e.new.k] = e.new.v;
+    }).subscribe();
+  });
+})();
+
+/* 수학 수업 허브 — 서버 로직. 브라우저 안에서 돈다(build.py 가 저장소 어댑터와 함께 감싼다).
+ *  - 로컬 확인: fake.js(localStorage) · 배포: supa.js(Supabase 거울 + 실시간). 학생이 쓰는 login·answer 는 supa 에선 DB 함수(supabase.sql)가 같은 규칙으로 대신한다.
+ * 저장은 모두 ST(저장소 어댑터)를 거친다: cget/cput/cgetAll/cscan(캐시) · pget/pset(속성) · lock · now · code · 파일.
+ * 키: CLASSES · B:반(태블릿 묶음) · Q:반(허락 대기) · RJ:…(거절 알림) · P:반(수업 상태) · L:반(진도판 열림) · SEQ:활동 · DECK · DECK:t
+ *     S:반:번호(학생 현재 상태 — supa 에선 Presence) · A:반:질문:번호(즉석 질문 답)
+ * 명렬표 없음: 학생이 학년·반·번호를 넣고 수업마다 닉네임을 정한다. 실명은 저장하지 않는다.
+ */
+var DEMO = '체험';
+var PACE_KEYS = ['act', 'sync', 'from', 'to', 'pause', 'msg', 'timer', 'show', 'page', 'q'];
+
+function j_(s, d) { try { return s ? JSON.parse(s) : d; } catch (e) { return d; } }
+/* 캐시 먼저, 없으면 속성에서 읽어 캐시에 다시 올린다 */
+function rd_(k, d) {
+  var v = ST.cget(k);
+  if (v == null) { v = ST.pget(k); if (v != null) ST.cput(k, v); }
+  return j_(v, d);
+}
+function wr_(k, o) { var s = JSON.stringify(o); ST.pset(k, s); ST.cput(k, s); return o; }
+function okCode_(c) { var k = ST.code(); return !!k && String(c) === String(k); }
+function str_(s, n) { return String(s == null ? '' : s).replace(/[<>]/g, '').slice(0, n || 100); }
+function paceBlank_() { return { v: 0, act: null, sync: null, from: null, to: null, pause: false, msg: '', timer: null, show: null, page: 0, q: null }; }
+/* 반 이름은 '학년-반'(1~3학년, 1~15반) 또는 체험. 번호는 1~45(체험은 1~5) */
+function okWho_(cls, no) { return cls === DEMO ? no >= 1 && no <= 5 : /^[1-3]-([1-9]|1[0-5])$/.test(cls) && no >= 1 && no <= 45; }
+/* 진도판에 보일 번호 = 태블릿이 묶인 번호 + 지금 접속한 번호 */
+function nos_(cls) {
+  var s = {};
+  if (cls === DEMO) [1, 2, 3, 4, 5].forEach(function (n) { s[n] = 1; });
+  Object.keys(rd_('B:' + cls, {})).forEach(function (n) { s[n] = 1; });
+  ST.cscan('S:' + cls + ':').forEach(function (n) { s[n] = 1; });
+  return Object.keys(s).map(Number).filter(function (n) { return n > 0; }).sort(function (a, b) { return a - b; });
+}
+
+/* ---------------- 학생 ---------------- */
+/* 학년·반·번호를 넣으면: 처음이면 이 태블릿에 묶고, 다른 태블릿에 묶여 있으면 선생님 허락을 기다린다.
+ * supabase.sql 의 s_login 이 같은 규칙 — 여기를 고치면 거기도 고칠 것 */
+function login(cls, no, dev) {
+  cls = String(cls); no = Number(no); dev = str_(dev, 40);
+  if (!okWho_(cls, no)) return { ok: false, msg: '학년·반·번호를 다시 확인해 주세요' };
+  if (cls === DEMO) return { ok: true };
+  var rj = 'RJ:' + cls + ':' + no + ':' + dev;
+  if (ST.cget(rj)) { ST.cput(rj, '', 1); return { ok: false, rejected: true }; }
+  var b = rd_('B:' + cls, {});
+  if (b[no] === dev) return { ok: true };
+  return ST.lock(function () {
+    b = j_(ST.pget('B:' + cls), {});
+    if (!b[no] || b[no] === dev) {
+      b[no] = dev; wr_('B:' + cls, b);
+      var l = rd_('CLASSES', []);
+      if (l.indexOf(cls) < 0) { l.push(cls); l.sort(function (x, y) { return x.localeCompare(y, 'ko', { numeric: true }); }); wr_('CLASSES', l); }
+      return { ok: true };
+    }
+    var q = j_(ST.pget('Q:' + cls), []), has = false;
+    q.forEach(function (x) { if (x.no === no && x.dev === dev) has = true; });
+    if (!has) { q.push({ no: no, dev: dev, t: ST.now() }); wr_('Q:' + cls, q); }
+    return { ok: false, pending: true };
+  });
+}
+
+/* 학생이 자주 부른다(로컬 2~5초, supa 는 거울만 읽어서 0.4초). 바뀐 게 없으면 상태를 보내지 않는다.
+ * info = { act, scr, sig, prog, help, nick, ani } — 진도판 현황표용 */
+function pull(cls, no, dev, v, info) {
+  cls = String(cls); no = Number(no);
+  var now = ST.now(), sk = 'S:' + cls + ':' + no;
+  var c = ST.cgetAll(['P:' + cls, 'B:' + cls, 'DECK', 'L:' + cls, sk]);
+  var p = c['P:' + cls] != null ? j_(c['P:' + cls], null) : rd_('P:' + cls, null);
+  if (!p) p = paceBlank_();
+  if (cls !== DEMO) {
+    var b = c['B:' + cls] != null ? j_(c['B:' + cls], {}) : rd_('B:' + cls, {});
+    if (b[no] !== dev) return { kick: true };
+  }
+  var d = c.DECK != null ? j_(c.DECK, null) : rd_('DECK', null);
+  var s = j_(c[sk], {}), out = { now: now, fast: !!c['L:' + cls], deck: d ? { t: d.t, n: d.n } : null };
+  if (p.v !== v) {
+    out.p = p;
+    if (p.v > (s.gv || 0)) { s.gv = p.v; s.lat = now - p.v; }   // 선생님이 바꾼 뒤 이 학생에게 닿기까지 걸린 시간
+  }
+  info = info || {};
+  s.t = now; s.dev = String(dev).slice(-4);
+  s.act = info.act == null ? null : str_(info.act, 30);
+  s.scr = info.scr == null ? null : Number(info.scr);
+  s.sig = ['g', 'y', 'r'].indexOf(info.sig) >= 0 ? info.sig : null;
+  s.prog = Number(info.prog) || 0;
+  s.help = Number(info.help) || 0;
+  s.nick = str_(info.nick, 12); s.ani = str_(info.ani, 4);
+  ST.cput(sk, JSON.stringify(s));
+  return out;
+}
+
+/* 즉석 질문 답 — 질문이 열려 있을 때만, 닫힐 때까지 고칠 수 있다 */
+function answer(cls, no, dev, qid, val) {
+  cls = String(cls); no = Number(no);
+  if (cls !== DEMO && rd_('B:' + cls, {})[no] !== dev) return { ok: false, msg: '다시 들어와 주세요' };
+  var p = rd_('P:' + cls, paceBlank_());
+  if (!p.q || p.q.id !== qid) return { ok: false, msg: '질문이 닫혔어요' };
+  ST.cput('A:' + cls + ':' + qid + ':' + no, JSON.stringify({ v: str_(val, 200), t: ST.now() }));
+  return { ok: true };
+}
+
+/* t 가 있으면 그 자료(예전에 올린 것도 — 활동 사이에 끼운 쪽), 없으면 마지막 자료 */
+function getSlide(i, t) {
+  var d = t ? rd_('DECK:' + t, null) : null;
+  if (!d) { d = rd_('DECK', null); if (d && t && d.t !== t) d = null; }   // 이 기능 전에 올린 자료는 DECK 에만 있다
+  if (!d || i < 0 || i >= d.n) return { ok: false };
+  return { ok: true, i: i, t: d.t, img: ST.fileData(d.ids[i]) };
+}
+
+/* ---------------- 선생님 ---------------- */
+function tLogin(code) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  return { ok: true, classes: rd_('CLASSES', []).concat([DEMO]), url: ST.url(), deck: rd_('DECK', null) };
+}
+
+function approve(code, cls, no, dev, yes) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  cls = String(cls); no = Number(no);
+  return ST.lock(function () {
+    var q = j_(ST.pget('Q:' + cls), []).filter(function (x) { return !(x.no === no && x.dev === dev); });
+    wr_('Q:' + cls, q);
+    if (yes) { var b = j_(ST.pget('B:' + cls), {}); b[no] = dev; wr_('B:' + cls, b); }
+    else ST.cput('RJ:' + cls + ':' + no + ':' + dev, '1', 600);
+    return { ok: true };
+  });
+}
+
+/* no 가 없으면 반 전체 묶음 풀기 */
+function unbind(code, cls, no) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  cls = String(cls);
+  return ST.lock(function () {
+    var b = j_(ST.pget('B:' + cls), {});
+    if (no == null) b = {}; else delete b[Number(no)];
+    wr_('B:' + cls, b);
+    wr_('Q:' + cls, no == null ? [] : j_(ST.pget('Q:' + cls), []).filter(function (x) { return x.no !== Number(no); }));
+    return { ok: true };
+  });
+}
+
+/* patch 의 키만 바꾼다. v = 바꾼 시각(학생 쪽 도착 시간 계산에 쓴다) */
+function setPace(code, cls, patch) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  cls = String(cls);
+  var p = rd_('P:' + cls, paceBlank_());
+  if (patch && 'act' in patch) {   // 활동을 바꾸면 화면 제한부터 풀고(같이 온 sync 는 아래에서 다시 건다) 그 활동의 구성을 싣는다
+    p.sync = p.from = p.to = null;
+    p.seq = patch.act ? rd_('SEQ:' + str_(patch.act, 30), null) : null;
+  }
+  PACE_KEYS.forEach(function (k) {
+    if (!patch || !(k in patch)) return;
+    var x = patch[k];
+    if (k === 'timer') p.timer = x && Number(x.min) > 0 ? { end: ST.now() + Number(x.min) * 60000, min: Number(x.min), label: str_(x.label, 30) } : null;
+    else if (k === 'q') p.q = x ? { id: ST.now().toString(36), type: ['ox', 'choice', 'num', 'text'].indexOf(x.type) >= 0 ? x.type : 'text', n: Math.max(2, Math.min(5, Number(x.n) || 5)), text: str_(x.text, 120) } : null;
+    else if (k === 'act' || k === 'msg' || k === 'show') p[k] = x == null ? (k === 'msg' ? '' : null) : str_(x, 120);
+    else if (k === 'pause') p.pause = !!x;
+    else p[k] = x == null ? null : Math.max(0, Number(x) || 0);
+  });
+  p.v = ST.now();
+  wr_('P:' + cls, p);
+  return { ok: true, pace: p };
+}
+
+/* 진도판이 2~3초마다 부른다. 진도판이 열려 있는 동안 학생은 2초 간격으로 묻는다(L:반) */
+function board(code, cls) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  cls = String(cls);
+  ST.cput('L:' + cls, '1', 30);
+  var ns = nos_(cls), p = rd_('P:' + cls, paceBlank_());
+  var ks = ns.map(function (n) { return 'S:' + cls + ':' + n; });
+  if (p.q) ns.forEach(function (n) { ks.push('A:' + cls + ':' + p.q.id + ':' + n); });
+  var c = ks.length ? ST.cgetAll(ks) : {}, pres = {}, ans = {};
+  ns.forEach(function (n) {
+    var s = c['S:' + cls + ':' + n]; if (s) pres[n] = j_(s, null);
+    if (p.q) { var a = c['A:' + cls + ':' + p.q.id + ':' + n]; if (a) ans[n] = j_(a, null); }
+  });
+  /* roster = [[번호, 닉네임, 캐릭터]] — 진도판이 예전 명렬표 자리에 그대로 쓴다 */
+  var ro = ns.map(function (n) { var s = pres[n] || {}; return [n, s.nick || '', s.ani || '']; });
+  var b = rd_('B:' + cls, {}), bound = {};
+  Object.keys(b).forEach(function (k) { bound[k] = String(b[k]).slice(-4); });
+  return { ok: true, now: ST.now(), classes: rd_('CLASSES', []).concat([DEMO]), pace: p, roster: ro, bound: bound, reqs: rd_('Q:' + cls, []), pres: pres, ans: ans };
+}
+
+/* 발표 자료: 진도판이 쪽마다 JPG 로 올린다. 모든 반이 같은 자료를 쓴다 */
+function deckBegin(code, name) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  return { ok: true, key: ST.deckFolder(str_(name, 60)) };
+}
+function deckPage(code, key, i, img) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  return { ok: true, i: i, id: ST.fileSave(key, 'p' + ('0' + (i + 1)).slice(-2) + '.jpg', img) };
+}
+function deckEnd(code, key, ids, name) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  var d = { key: key, ids: ids, n: ids.length, name: str_(name, 80), t: ST.now() };
+  wr_('DECK:' + d.t, d);
+  return { ok: true, deck: wr_('DECK', d) };
+}
+
+/* 활동 화면 순서(구성) — 활동마다 하나, 모든 반이 같이 쓴다.
+ * seq = [ {s: 활동 화면 번호} | {d: 자료 t, p: 쪽 번호} , … ]. 지금 이 활동을 연 반이면 바로 반영(화면 제한은 푼다) */
+function saveSeq(code, cls, act, seq) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  act = str_(act, 30);
+  var clean = (seq || []).map(function (x) {
+    return x && x.d ? { d: Number(x.d), p: Math.max(0, Number(x.p) || 0) } : { s: Math.max(0, Number(x && x.s) || 0) };
+  }).slice(0, 80);
+  wr_('SEQ:' + act, clean);
+  var p = rd_('P:' + String(cls), paceBlank_());
+  if (p.act === act) { p.seq = clean; p.sync = p.from = p.to = null; p.v = ST.now(); wr_('P:' + String(cls), p); }
+  return { ok: true, pace: p };
+}
+
+
+/* server.js 위에 덮어쓰기 — 학생 쓰기는 DB 함수로, 진도판 코드는 DB 가 확인, 그림은 files 표에서 */
+login = function (cls, no, dev) {
+  return sb.rpc('s_login', { cls: String(cls), no: Number(no), dev: String(dev) }).then(function (r) {
+    if (r.error) throw r.error.message;
+    if (r.data.ok) { var b = j_(MIR['B:' + cls], {}); b[no] = dev; MIR['B:' + cls] = JSON.stringify(b); }   // 알림보다 먼저 들어가도 밀려나지 않게
+    return r.data;
+  });
+};
+answer = function (cls, no, dev, qid, val) {
+  return sb.rpc('s_answer', { cls: String(cls), no: Number(no), dev: String(dev), qid: String(qid), val: str_(val, 200) })
+    .then(function (r) { if (r.error) throw r.error.message; return r.data; });
+};
+var tLogin0 = tLogin;
+tLogin = function (code) {
+  return sb.rpc('t_check', { c: String(code) }).then(function (r) {
+    if (r.error) throw r.error.message;
+    if (!r.data) return { ok: false, msg: '접속코드가 맞지 않아요' };
+    CODE = String(code); return tLogin0(code);
+  });
+};
+var getSlide0 = getSlide;
+getSlide = function (i, t) {
+  var r = getSlide0(i, t); if (!r.ok) return r;
+  return r.img.then(function (img) { r.img = img; return r; });
+};
+deckPage = function (code, key, i, img) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  var id = key + '/p' + ('0' + (i + 1)).slice(-2);
+  return sb.rpc('t_file', { c: CODE, k: id, v: img }).then(function (r) { return r.error || r.data === false ? { ok: false, msg: r.error ? r.error.message : '진도판 코드가 맞지 않아요' } : { ok: true, i: i, id: id }; });
+};
+
+return { login: login, pull: pull, answer: answer, getSlide: getSlide, tLogin: tLogin, approve: approve, unbind: unbind, setPace: setPace, board: board, deckBegin: deckBegin, deckPage: deckPage, deckEnd: deckEnd, saveSeq: saveSeq, ready: HUB_READY, online: true };
+})();
+/* 서버 부르기 — server.js 가 브라우저 안(HUB)에서 돈다. 배포본은 Supabase 거울(supa.js), 로컬은 localStorage(fake.js).
+ * 서버 함수는 값이나 Promise 를 돌려준다. 로컬은 120~400ms 늦게 답해 실제 통신처럼 */
+var ONLINE = typeof HUB !== 'undefined' && HUB.online;
+var TICK = ONLINE ? 400 : 0;   // 배포본은 거울만 읽으니 0.4초마다 봐도 통신이 없다. 0 이면 예전처럼 2~5초
+function srv(fn, args, ok, fail) {
+  ok = ok || function () {}; fail = fail || function (e) { console.warn(fn, e); };
+  if (typeof HUB === 'undefined' || !HUB[fn]) { setTimeout(function () { fail('없는 기능: ' + fn); }, 0); return; }
+  HUB.ready.then(function () {
+    return new Promise(function (res) { setTimeout(res, ONLINE ? 0 : 120 + Math.random() * 280); });
+  }).then(function () { return HUB[fn].apply(null, args || []); })
+    .then(function (r) { ok(JSON.parse(JSON.stringify(r))); }, function (e) { fail(e && e.message || String(e)); });
+}
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  function ss(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v); } catch (e) { return null; } }
+  function lsg(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  function toast(t) { var d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(function () { d.remove(); }, 2600); }
+  var CODE = ss('HUB_CODE'), CLS = lsg('HUB_TCLS'), CLASSES = [], URL0 = '', DECK = null;
+  var D = null, PACE = null, PEND = 0, SAVE = {}, TOOL = null, RSEL = null, SKEW = 0, bt = 0;
+
+  /* ---------- 들어가기 ---------- */
+  function enter(code) {
+    srv('tLogin', [code], function (r) {
+      if (!r.ok) { $('loginMsg').textContent = r.msg; return; }
+      CODE = code; ss('HUB_CODE', code); CLASSES = r.classes; URL0 = r.url; DECK = r.deck;
+      $('login').style.display = 'none'; $('app').style.display = 'block'; document.body.classList.add('in');
+      fillCls(); fillActs(); renderDeck(); boardLoop();
+    }, function (e) { $('loginMsg').textContent = '연결이 안 돼요: ' + e; });
+  }
+  $('go').onclick = function () { enter($('code').value.trim()); };
+  $('code').onkeydown = function (e) { if (e.key === 'Enter') $('go').onclick(); };
+  function fillCls() {
+    if (CLASSES.indexOf(CLS) < 0) CLS = CLASSES[0];
+    $('cls').innerHTML = CLASSES.map(function (c) { return '<option' + (c === CLS ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('');
+  }
+  $('cls').onchange = function () { EDIT = null; CLS = this.value; lsg('HUB_TCLS', CLS); D = PACE = null; renderAll(); clearTimeout(bt); boardLoop(); };
+  function fillActs() { $('actSel').innerHTML = Object.keys(ACTS).map(function (k) { return '<option value="' + k + '">' + esc(ACTS[k].title) + '</option>'; }).join(''); }
+
+  /* ---------- 진도판 새로고침(2.5초) — 진도판이 열려 있다는 신호도 겸한다 ---------- */
+  function boardLoop() {
+    clearTimeout(bt);
+    if (!CLS) return;
+    if (document.hidden) { bt = setTimeout(boardLoop, 4000); return; }
+    var c = CLS;
+    srv('board', [CODE, c], function (r) {
+      if (c !== CLS) return;
+      if (r.ok) {
+        D = r; SKEW = r.now - Date.now(); if (!PEND) PACE = r.pace;
+        if (r.classes.join() !== CLASSES.join()) { CLASSES = r.classes; fillCls(); }   // 학생이 새 반으로 들어오면 목록에 생김
+        renderAll();
+      }
+      bt = setTimeout(boardLoop, TICK || 2500);
+    }, function () { bt = setTimeout(boardLoop, 4000); });
+  }
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) boardLoop(); });
+
+  /* 누르는 즉시 진도판 화면을 바꾸고(낙관적), 저장은 뒤에서. 저장에 걸린 시간을 v 별로 기억 → 반영 시간 계산 */
+  function setPace(patch) {
+    if (!CLS || !PACE) { toast('반을 먼저 고르세요'); return; }
+    if ('act' in patch) PACE.sync = PACE.from = PACE.to = null;
+    Object.keys(patch).forEach(function (k) {
+      var x = patch[k];
+      if (k === 'act') { PACE.act = x; PACE.seq = null; }
+      else if (k === 'timer') PACE.timer = x ? { end: Date.now() + SKEW + x.min * 60000, min: x.min, label: x.label } : null;
+      else if (k === 'q') PACE.q = x ? { id: 'local', type: x.type, n: x.n, text: x.text } : null;
+      else PACE[k] = x;
+    });
+    renderAll();
+    var t0 = Date.now(); PEND++;
+    srv('setPace', [CODE, CLS, patch], function (r) {
+      PEND--;
+      if (!r.ok) { toast(r.msg); return; }
+      SAVE[r.pace.v] = Date.now() - t0;
+      if (!PEND) PACE = r.pace;
+      renderAll();
+    }, function (e) { PEND--; toast('저장하지 못했어요: ' + e); });
+  }
+
+  function online(s) { return s && D && D.now - s.t < 12000; }
+  function renderAll() { renderPace(); renderStatus(); renderTable(); renderQ(); if ($('pres').classList.contains('on')) presShow(); if (TVM) tvRender(); }
+
+  /* ---------- 📺 TV 화면: 발표 중이면 쪽, 질문 중이면 결과, 멈춤이면 메시지, 아니면 접속 QR ---------- */
+  var MODE = new URLSearchParams(location.search), TVM = MODE.has('tv'), RMM = MODE.has('remote');
+  if (TVM) document.body.classList.add('tvm');
+  if (RMM) document.body.classList.add('rm');
+  function tvRender() {
+    if (!PACE) return;
+    var deck = PACE.show === 'deck' && DECK;
+    if (deck && !$('pres').classList.contains('on')) openPres();
+    if (!deck) $('pres').classList.remove('on');
+    $('tv').classList.toggle('on', !!PACE.q && !deck);
+    $('tvCls').textContent = CLS === '체험' ? '체험' : CLS.replace('-', '학년 ') + '반';
+    $('tvBig').textContent = PACE.pause ? '⏸ 잠깐 멈춰요' : (PACE.act && ACTS[PACE.act] ? ACTS[PACE.act].title : '수업 허브');
+    $('tvMsg').textContent = PACE.pause ? PACE.msg || '' : '태블릿으로 QR 을 찍고 들어오세요';
+    if ($('tvQr').getAttribute('data-u') !== URL0) {
+      var q = qrcode(0, 'M'); q.addData(URL0); q.make(); $('tvQr').innerHTML = q.createImgTag(8, 8); $('tvQr').setAttribute('data-u', URL0);
+    }
+    $('tvSel').innerHTML = CLASSES.map(function (c) { return '<option' + (c === CLS ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('');
+  }
+  $('tvSel').onchange = function () { $('cls').value = this.value; $('cls').onchange(); };
+
+  /* ---------- 🕹 리모컨: 발표 중이면 쪽, 🔗 동기화 중이면 화면을 넘긴다 ---------- */
+  function rmStep(d) {
+    if (!PACE) return;
+    if (PACE.show === 'deck' && DECK) { presGo((PACE.page || 0) + d); renderAll(); return; }
+    if (PACE.sync != null) { setPace({ sync: Math.max(0, Math.min(items().length - 1, PACE.sync + d)) }); return; }
+    toast('📽 발표 중이거나 🔗 동기화 중일 때 넘길 수 있어요');
+  }
+  $('rmPrev').onclick = function () { rmStep(-1); };
+  $('rmNext').onclick = function () { rmStep(1); };
+  $('rmPause').onclick = function () { setPace({ pause: !PACE.pause, msg: $('pauseMsg').value }); };
+  window.addEventListener('hubfail', function (e) { toast('⚠ 저장하지 못했어요: ' + e.detail); });
+
+  /* ---------- 활동·화면 ---------- */
+  function renderPace() {
+    var p = PACE, a = p && p.act && ACTS[p.act];
+    $('actNow').textContent = !p ? '' : a ? '지금 열린 활동: ' + a.title : (p.act ? '알 수 없는 활동' : '열린 활동 없음 — 학생은 기다리는 화면');
+    $('scrRow').style.display = a ? 'flex' : 'none';
+    [].forEach.call(document.querySelectorAll('.tool'), function (b) { b.classList.toggle('on', b.getAttribute('data-t') === TOOL); });
+    $('toolHint').textContent = TOOL === 'sync' ? '← 모두 보낼 화면을 누르세요' : TOOL === 'range' ? (RSEL == null ? '← 첫 화면을 누르세요' : '← 끝 화면을 누르세요') : '';
+    $('seqEd').style.display = a && EDIT ? 'block' : 'none';
+    $('seqB').className = EDIT ? 'tool on' : '';
+    if (a) {
+      var cnt = {};
+      if (D) D.roster.forEach(function (r) { var s = D.pres[r[0]]; if (online(s) && s.act === p.act && s.scr != null) cnt[s.scr] = (cnt[s.scr] || 0) + 1; });
+      var L = EDIT || items();
+      $('chips').innerHTML = L.map(function (x, i) {
+        var c = EDIT ? (ESEL === i ? 'sel' : '') : p.sync === i ? 'sync' : p.sync != null ? 'out' : p.from != null ? (i >= p.from && i <= p.to ? 'rng' : 'out') : '';
+        var nm = x.d ? '📽 ' + (x.p + 1) + '쪽' : esc(a.screens[x.s].t);
+        return '<button class="chip ' + c + (RSEL === i ? ' sel' : '') + '" data-i="' + i + '">' + (i + 1) + '. ' + nm + '<small>' + (EDIT ? (x.d ? '발표 쪽' : '활동') : (cnt[i] || 0) + '명') + '</small></button>';
+      }).join('');
+    }
+    $('pauseB').textContent = p && p.pause ? '▶ 다시 시작' : '⏸ 일시 정지';
+    $('pauseB').className = p && p.pause ? 'hot' : '';
+    tTick();
+  }
+  $('actOpen').onclick = function () { EDIT = null; setPace({ act: $('actSel').value }); };
+  $('actClose').onclick = function () { EDIT = null; setPace({ act: null }); };
+  $('scrRow').onclick = function (e) {
+    var t = e.target.closest('.tool');
+    if (t) { var k = t.getAttribute('data-t'); TOOL = TOOL === k ? null : k; RSEL = null; renderPace(); return; }
+    var c = e.target.closest('.chip'); if (!c) return;
+    var i = Number(c.getAttribute('data-i'));
+    if (EDIT) { ESEL = i; renderPace(); return; }
+    if (TOOL === 'sync' || (!TOOL && PACE.sync != null)) { setPace(PACE.sync === i ? { sync: null } : { sync: i, from: null, to: null }); TOOL = null; return; }
+    if (TOOL === 'range') {
+      if (RSEL == null) { RSEL = i; renderPace(); return; }
+      setPace({ sync: null, from: Math.min(RSEL, i), to: Math.max(RSEL, i) }); RSEL = null; TOOL = null; return;
+    }
+    toast('🔗 동기화나 ⏱ 구간을 먼저 누르세요');
+  };
+  $('free').onclick = function () { TOOL = null; RSEL = null; setPace({ sync: null, from: null, to: null }); };
+
+  /* ---------- 구성: 활동 화면 사이에 발표 쪽 끼우기 (학생 화면 목록 = 이 순서) ---------- */
+  var EDIT = null, ESEL = null;
+  function items() {
+    var a = PACE && PACE.act && ACTS[PACE.act]; if (!a) return [];
+    return (PACE.seq && PACE.seq.length ? PACE.seq : a.screens.map(function (_, i) { return { s: i }; }))
+      .filter(function (x) { return x.d || a.screens[x.s]; });
+  }
+  $('seqB').onclick = function () {
+    if (EDIT) { EDIT = null; renderPace(); return; }
+    EDIT = JSON.parse(JSON.stringify(items())); ESEL = EDIT.length - 1; TOOL = null; RSEL = null;
+    var th = $('seqThumbs'); th.innerHTML = '';
+    if (!DECK) th.innerHTML = '<span class="mut">먼저 📽 발표 자료를 올려 주세요.</span>';
+    else for (var k = 0; k < DECK.n; k++) (function (k) {
+      var im = new Image(); im.title = (k + 1) + '쪽 끼우기'; im.style.cursor = 'pointer'; im.setAttribute('data-p', k); th.appendChild(im);
+      loadSlide(k, function (u) { im.src = u; });
+    })(k);
+    renderPace();
+  };
+  $('seqThumbs').onclick = function (e) {
+    var im = e.target.closest('img'); if (!im || !EDIT) return;
+    var at = ESEL == null ? EDIT.length : ESEL + 1;
+    EDIT.splice(at, 0, { d: DECK.t, p: Number(im.getAttribute('data-p')) }); ESEL = at; renderPace();
+  };
+  function mv(d) {
+    if (!EDIT || ESEL == null || !EDIT[ESEL].d) { toast('끼운 발표 쪽을 먼저 누르세요'); return; }
+    var j = ESEL + d; if (j < 0 || j >= EDIT.length) return;
+    var x = EDIT.splice(ESEL, 1)[0]; EDIT.splice(j, 0, x); ESEL = j; renderPace();
+  }
+  $('seqL').onclick = function () { mv(-1); };
+  $('seqR').onclick = function () { mv(1); };
+  $('seqX').onclick = function () {
+    if (!EDIT || ESEL == null || !EDIT[ESEL].d) { toast('활동 화면은 뺄 수 없어요 — 끼운 발표 쪽만'); return; }
+    EDIT.splice(ESEL, 1); ESEL = Math.min(ESEL, EDIT.length - 1); renderPace();
+  };
+  $('seqReset').onclick = function () { EDIT = ACTS[PACE.act].screens.map(function (_, i) { return { s: i }; }); ESEL = EDIT.length - 1; renderPace(); };
+  $('seqCancel').onclick = function () { EDIT = null; renderPace(); };
+  $('seqSave').onclick = function () {
+    var seq = EDIT; EDIT = null;
+    PACE.seq = seq; PACE.sync = PACE.from = PACE.to = null; renderAll();
+    var t0 = Date.now(); PEND++;
+    srv('saveSeq', [CODE, CLS, PACE.act, seq], function (r) {
+      PEND--; if (!r.ok) { toast(r.msg); return; }
+      SAVE[r.pace.v] = Date.now() - t0; if (!PEND) PACE = r.pace; renderAll(); toast('구성을 저장했어요 — 학생 화면에 바로 반영됩니다');
+    }, function (e) { PEND--; toast('저장하지 못했어요: ' + e); });
+  };
+
+  /* ---------- 일시 정지·타이머 ---------- */
+  var PRE = ['칠판을 보세요', '선생님 설명을 들어요', '짝과 이야기해요', '모둠과 이야기해요'];
+  $('presets').innerHTML = PRE.map(function (t) { return '<button data-p="' + esc(t) + '">' + esc(t) + '</button>'; }).join('');
+  $('presets').onclick = function (e) { var b = e.target.closest('button'); if (!b) return; $('pauseMsg').value = b.getAttribute('data-p'); setPace({ pause: true, msg: $('pauseMsg').value }); };
+  $('pauseB').onclick = function () { setPace(PACE && PACE.pause ? { pause: false } : { pause: true, msg: $('pauseMsg').value }); };
+  $('pauseMsg').onkeydown = function (e) { if (e.key === 'Enter') setPace({ pause: true, msg: this.value }); };
+  document.querySelectorAll('[data-m]').forEach(function (b) { b.onclick = function () { $('tMin').value = Math.max(1, Math.min(60, Number($('tMin').value) + Number(b.getAttribute('data-m')))); }; });
+  $('tGo').onclick = function () { setPace({ timer: { min: Number($('tMin').value) || 5, label: $('tLab').value } }); };
+  $('tOff').onclick = function () { setPace({ timer: null }); };
+  function tTick() {
+    var t = PACE && PACE.timer;
+    if (!t) { $('tNow').textContent = ''; return; }
+    var left = Math.round((t.end - (Date.now() + SKEW)) / 1000);
+    $('tNow').textContent = left <= 0 ? '⏲ 시간 끝' : '⏲ 남은 시간 ' + Math.floor(left / 60) + ':' + ('0' + left % 60).slice(-2);
+  }
+  setInterval(tTick, 1000);
+
+  /* ---------- 도착·반영 시간·허락 대기·신호등 ---------- */
+  function renderStatus() {
+    if (!D || !PACE) { $('status').textContent = CLS ? '불러오는 중…' : ''; $('reqs').innerHTML = ''; $('sigSum').innerHTML = ''; return; }
+    var on = 0, got = 0, lat = [], miss = [], v = PACE.v, sig = { g: 0, y: 0, r: 0 };
+    D.roster.forEach(function (r) {
+      var s = D.pres[r[0]]; if (!online(s)) return;
+      on++; if (s.sig) sig[s.sig]++;
+      if (s.gv >= v) { got++; if (s.gv === v) lat.push(s.lat); } else miss.push(r[0] + ' ' + r[1]);
+    });
+    var h = '<span>접속 <b>' + on + '</b> / ' + D.roster.length + '명</span>';
+    if (v && on) {
+      h += '<span>· 마지막 변경을 받은 학생 <b>' + got + '</b> / ' + on + '</span>';
+      if (lat.length) {
+        lat.sort(function (a, b) { return a - b; });
+        var add = SAVE[v] || 0, med = (lat[lat.length >> 1] + add) / 1000, mx = (lat[lat.length - 1] + add) / 1000;
+        h += '<span>· 반영 시간 중간 <b>' + med.toFixed(1) + '초</b>, 가장 늦은 <b' + (mx > 3 ? ' class="late"' : '') + '>' + mx.toFixed(1) + '초</b>' + (add ? ' <span class="mut">(진도판 저장 ' + (add / 1000).toFixed(1) + '초 포함)</span>' : '') + '</span>';
+      }
+      if (miss.length && miss.length <= 8) h += '<span class="mut">· 아직: ' + esc(miss.join(', ')) + '</span>';
+    }
+    $('status').innerHTML = h;
+    $('reqs').innerHTML = D.reqs.map(function (q) {
+      var r = D.roster.filter(function (x) { return x[0] === q.no; })[0];
+      return '<div class="req">📱 <b>' + q.no + '번 ' + esc(r ? r[1] : '') + '</b> — 다른 태블릿(…' + esc(q.dev.slice(-4)) + ')에서 들어오려고 해요.' +
+        '<button class="pri" data-ok="1" data-no="' + q.no + '" data-dev="' + esc(q.dev) + '">허락 (이 태블릿으로 바꾸기)</button><button data-ok="0" data-no="' + q.no + '" data-dev="' + esc(q.dev) + '">거절</button></div>';
+    }).join('');
+    $('sigSum').innerHTML = '<span class="mut">이해도</span><span><i class="sg g"></i> ' + sig.g + '</span><span><i class="sg y"></i> ' + sig.y + '</span><span><i class="sg r"></i> ' + sig.r + '</span>';
+  }
+  $('reqs').onclick = function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    srv('approve', [CODE, CLS, Number(b.getAttribute('data-no')), b.getAttribute('data-dev'), b.getAttribute('data-ok') === '1'], function () { boardLoop(); });
+    b.parentNode.remove();
+  };
+
+  /* ---------- 현황표 ---------- */
+  function renderTable() {
+    if (!D) { $('tb').innerHTML = ''; return; }
+    var a = PACE && PACE.act;
+    $('tb').innerHTML = D.roster.map(function (r) {
+      var s = D.pres[r[0]], on = online(s), scr = '', stop = '';
+      if (s && s.act && s.act === a) scr = (s.scr + 1) + '번 화면'; else if (s && s.act) scr = '<span class="mut">다른 활동</span>';
+      if (on && a && s.prog && D.now - s.prog > 120000) stop = '<span class="stop">' + Math.floor((D.now - s.prog) / 60000) + '분 멈춤</span>';
+      var ago = s ? Math.round((D.now - s.t) / 1000) : null;
+      return '<tr><td>' + r[0] + '</td><td>' + esc(r[2] + ' ' + r[1]) + '</td>' +
+        '<td><i class="dot' + (on ? ' on' : '') + '"></i>' + (on ? '접속' : s ? '<span class="mut">끊김 ' + (ago < 120 ? ago + '초' : Math.round(ago / 60) + '분') + '</span>' : '<span class="mut">-</span>') + '</td>' +
+        '<td>' + scr + '</td><td>' + (on && s.sig ? '<i class="sg ' + s.sig + '"></i>' : '') + '</td>' +
+        '<td>' + (on && PACE.v ? (s.gv >= PACE.v ? '✓' : '<span class="mut">…</span>') : '') + '</td><td>' + stop + '</td><td>' + (s && s.help ? '🧭 ' + s.help : '') + '</td>' +
+        '<td>' + (D.bound[r[0]] ? '…' + esc(D.bound[r[0]]) + ' <button data-ub="' + r[0] + '">풀기</button>' : '<span class="mut">아직</span>') + '</td></tr>';
+    }).join('');
+  }
+  $('tb').onclick = function (e) {
+    var b = e.target.closest('[data-ub]'); if (!b) return;
+    var no = Number(b.getAttribute('data-ub'));
+    if (!confirm(no + '번의 태블릿 묶음을 풀까요? 다음에 처음 이름을 누르는 태블릿에 다시 묶입니다.')) return;
+    srv('unbind', [CODE, CLS, no], function () { boardLoop(); });
+  };
+
+  /* ---------- 즉석 질문 ---------- */
+  document.querySelectorAll('[data-q]').forEach(function (b) {
+    b.onclick = function () { setPace({ q: { type: b.getAttribute('data-q'), n: Number($('qN').value), text: $('qText').value.trim() } }); };
+  });
+  $('qClose').onclick = function () { setPace({ q: null }); };
+  $('qNames').onchange = function () { renderQ(); };
+  var QL = { ox: 'O / X', choice: '고르기', num: '숫자', text: '한 줄' };
+  function qHtml(names) {
+    var q = PACE.q, ans = D && q && q.id !== 'local' ? D.ans : {}, keys = Object.keys(ans || {});
+    var nm = function (no) { var r = D.roster.filter(function (x) { return x[0] === Number(no); })[0]; return r ? r[1] : no; };
+    if (q.type === 'ox' || q.type === 'choice') {
+      var opts = q.type === 'ox' ? ['O', 'X'] : [], c = {}, mx = 1;
+      if (q.type === 'choice') for (var i = 1; i <= q.n; i++) opts.push(String(i));
+      keys.forEach(function (k) { c[ans[k].v] = (c[ans[k].v] || 0) + 1; mx = Math.max(mx, c[ans[k].v]); });
+      return '<div class="bars">' + opts.map(function (o) {
+        return '<div class="bar"><b>' + (c[o] || 0) + '</b><i style="height:' + Math.round((c[o] || 0) / mx * 100) + '%"></i><span>' + (q.type === 'ox' ? (o === 'O' ? '⭕' : '❌') : '①②③④⑤'[o - 1]) + '</span></div>';
+      }).join('') + '</div>';
+    }
+    if (q.type === 'num') {
+      var g = {};
+      keys.forEach(function (k) { var v = ans[k].v.replace(/\s/g, ''); (g[v] = g[v] || []).push(nm(k)); });
+      return '<div class="vals">' + Object.keys(g).sort(function (a, b) { return g[b].length - g[a].length; }).map(function (v) {
+        return '<span>' + esc(v) + ' <b>×' + g[v].length + '</b>' + (names ? ' <small class="mut">' + esc(g[v].join(', ')) + '</small>' : '') + '</span>';
+      }).join('') + '</div>';
+    }
+    return '<div class="cards">' + keys.map(function (k) { return '<div>' + esc(ans[k].v) + (names ? '<small>' + esc(nm(k)) + '</small>' : '') + '</div>'; }).join('') + '</div>';
+  }
+  function renderQ() {
+    var q = PACE && PACE.q;
+    $('qPanel').style.display = q ? 'block' : 'none';
+    if (!q) { $('tv').classList.remove('on'); return; }
+    var on = D ? D.roster.filter(function (r) { return online(D.pres[r[0]]); }).length : 0;
+    $('qTitle').textContent = QL[q.type] + (q.text ? ' — ' + q.text : '');
+    $('qCount').textContent = '답 ' + (D && q.id !== 'local' ? Object.keys(D.ans).length : 0) + ' / 접속 ' + on;
+    $('qRes').innerHTML = qHtml($('qNames').checked);
+    if ($('tv').classList.contains('on')) { $('tvT').textContent = (q.text || '선생님 질문') + '  ·  ' + $('qCount').textContent; $('tvRes').innerHTML = qHtml(false); }
+  }
+  $('qTv').onclick = function () { $('tv').classList.add('on'); renderQ(); };
+  $('tvX').onclick = function () { $('tv').classList.remove('on'); };
+
+  /* ---------- 이름 뽑기 (빠른뽑기 통합) ---------- */
+  var PICKED = [];
+  function pool() {
+    if (!D) return [];
+    var k = document.querySelector('[name=pool]:checked').value;
+    return D.roster.filter(function (r) {
+      if ($('pickEx').checked && PICKED.indexOf(r[0]) >= 0) return false;
+      if (k === 'on') return online(D.pres[r[0]]);
+      if (k === 'ans') return PACE && PACE.q && D.ans[r[0]];
+      return true;
+    });
+  }
+  function openPick(k) { if (k) document.querySelector('[name=pool][value=' + k + ']').checked = true; $('pickOv').classList.add('on'); $('pickName').textContent = '?'; $('pickName').className = ''; pickInfo(); }
+  function pickInfo() { $('pickInfo').textContent = '후보 ' + pool().length + '명' + (PICKED.length ? ' · 뽑힌 학생 ' + PICKED.length + '명' : ''); }
+  $('pickOv').onchange = pickInfo;
+  $('bPick').onclick = function () { openPick(); };
+  $('qPick').onclick = function () { openPick('ans'); };
+  $('pickX').onclick = function () { $('pickOv').classList.remove('on'); };
+  $('pickReset').onclick = function () { PICKED = []; pickInfo(); };
+  $('pickGo').onclick = function () {
+    var c = pool(); if (!c.length) { toast('후보가 없어요'); return; }
+    var win = c[Math.floor(Math.random() * c.length)], n = 0, el = $('pickName'); el.className = '';
+    (function spin() {
+      var r = c[Math.floor(Math.random() * c.length)]; el.textContent = r[1]; n++;
+      if (n < 22) { setTimeout(spin, 40 + n * n * 0.6); return; }
+      el.textContent = win[0] + '번 ' + win[1]; el.className = 'done'; PICKED.push(win[0]); pickInfo();
+    })();
+  };
+
+  /* ---------- 반 관리(태블릿 묶음 풀기) ---------- */
+  $('bRoster').onclick = function () { $('rosterOv').classList.add('on'); rNow(); };
+  $('rX').onclick = function () { $('rosterOv').classList.remove('on'); };
+  function rNow() {
+    $('rNow').innerHTML = CLASSES.filter(function (c) { return c !== '체험'; }).map(function (c) {
+      return '<div class="row"><b>' + esc(c) + '</b><button data-ua="' + esc(c) + '">이 반 태블릿 묶음 모두 풀기</button></div>';
+    }).join('') || '<p class="mut">아직 없어요</p>';
+  }
+  $('rNow').onclick = function (e) {
+    var b = e.target.closest('[data-ua]'); if (!b) return;
+    var c = b.getAttribute('data-ua');
+    if (confirm(c + ' 학생 모두의 태블릿 묶음을 풀까요? (새 학기·태블릿 교체 때)')) srv('unbind', [CODE, c, null], function () { toast(c + ' 묶음을 모두 풀었어요'); });
+  };
+  /* ---------- QR ---------- */
+  $('bQr').onclick = function () {
+    var q = qrcode(0, 'M'); q.addData(URL0); q.make();
+    $('qrImg').innerHTML = q.createImgTag(8, 16); $('qrUrl').textContent = URL0; $('qrOv').classList.add('on');
+  };
+  $('qrX').onclick = function () { $('qrOv').classList.remove('on'); };
+
+  /* ---------- 발표 (PDF → 쪽 그림, PPT → 서버에서 PDF 로 바꾼 뒤) ---------- */
+  var IMG = {};
+  function renderDeck() { $('deckNow').textContent = DECK ? '지금 자료: ' + DECK.name + ' (' + DECK.n + '쪽)' : '올린 자료 없음'; $('bPres').disabled = !DECK; }
+  function loadSlide(i, cb) {
+    if (!DECK) return; var k = DECK.t + ':' + i;
+    if (IMG[k]) { cb(IMG[k]); return; }
+    srv('getSlide', [i, DECK.t], function (r) { if (r.ok) { IMG[r.t + ':' + r.i] = r.img; cb(r.img); } });
+  }
+  $('bDeck').onclick = function () {
+    $('deckOv').classList.add('on'); $('deckMsg').textContent = DECK ? '지금 자료: ' + DECK.name + ' (' + DECK.n + '쪽)' : '아직 올린 자료가 없어요';
+    $('deckGo').disabled = !DECK; var th = $('deckThumbs'); th.innerHTML = '';
+    if (DECK) for (var i = 0; i < DECK.n; i++) (function (i) { var im = new Image(); th.appendChild(im); loadSlide(i, function (u) { im.src = u; }); })(i);
+  };
+  $('deckX').onclick = function () { $('deckOv').classList.remove('on'); };
+  $('deckGo').onclick = function () { $('deckOv').classList.remove('on'); startPres(); };
+  $('deckFile').onchange = function () {
+    var f = this.files && this.files[0]; this.value = ''; if (!f) return;
+    var name = f.name.replace(/\.[^.]+$/, ''); $('deckGo').disabled = true; $('deckThumbs').innerHTML = '';
+    if (/\.pdf$/i.test(f.name)) { $('deckMsg').textContent = 'PDF 읽는 중…'; f.arrayBuffer().then(function (b) { renderPdf(new Uint8Array(b), name); }); return; }
+    $('deckMsg').textContent = '⚠ PDF 만 올릴 수 있어요 — PPT 는 [파일 → 다른 이름으로 저장 → PDF] 로 저장해 넣어 주세요';
+  };
+  function renderPdf(u8, name) {
+    if (!window.pdfjsLib) { $('deckMsg').textContent = '⚠ PDF 도구를 불러오지 못했어요(인터넷 확인)'; return; }
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    pdfjsLib.getDocument({ data: u8 }).promise.then(function (pdf) {
+      var n = Math.min(pdf.numPages, 60), imgs = [];
+      (function one(i) {
+        if (i >= n) { uploadDeck(imgs, name); return; }
+        $('deckMsg').textContent = '쪽 그림 만드는 중… ' + (i + 1) + ' / ' + n;
+        pdf.getPage(i + 1).then(function (pg) {
+          var v0 = pg.getViewport({ scale: 1 }), vp = pg.getViewport({ scale: (ONLINE ? 1280 : 1000) / v0.width });
+          var cv = document.createElement('canvas'); cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
+          var g = cv.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, cv.width, cv.height);
+          pg.render({ canvasContext: g, viewport: vp }).promise.then(function () {
+            var u = (ONLINE ? cv.toDataURL('image/webp', 0.8) : cv.toDataURL('image/jpeg', 0.55)); imgs.push(u);
+            var im = new Image(); im.src = u; $('deckThumbs').appendChild(im); one(i + 1);
+          });
+        });
+      })(0);
+    }).catch(function (e) { $('deckMsg').textContent = '⚠ PDF 를 열지 못했어요: ' + e.message; });
+  }
+  function uploadDeck(imgs, name) {
+    $('deckMsg').textContent = '올리는 중… 0 / ' + imgs.length;
+    srv('deckBegin', [CODE, name], function (r) {
+      if (!r.ok) { $('deckMsg').textContent = '⚠ ' + r.msg; return; }
+      var ids = [], left = imgs.length, next = 0, fail = false;
+      function pump() {
+        if (fail || next >= imgs.length) return;
+        var i = next++;
+        srv('deckPage', [CODE, r.key, i, imgs[i]], function (q) {
+          if (!q.ok) { fail = true; $('deckMsg').textContent = '⚠ ' + q.msg; return; }
+          ids[q.i] = q.id; left--; $('deckMsg').textContent = '올리는 중… ' + (imgs.length - left) + ' / ' + imgs.length;
+          if (!left) srv('deckEnd', [CODE, r.key, ids, name], function (z) {
+            DECK = z.deck; imgs.forEach(function (u, i) { IMG[DECK.t + ':' + i] = u; }); renderDeck();
+            $('deckMsg').textContent = '✅ ' + imgs.length + '쪽 올렸어요. 학생 태블릿이 지금부터 미리 받아 둡니다.'; $('deckGo').disabled = false;
+          }); else pump();
+        }, function (e) { fail = true; $('deckMsg').textContent = '⚠ ' + e; });
+      }
+      pump(); pump(); pump();
+    }, function (e) { $('deckMsg').textContent = '⚠ ' + e; });
+  }
+  var presT = 0;
+  function startPres() { if (!DECK) { $('bDeck').onclick(); return; } if (PACE.show !== 'deck') setPace({ show: 'deck', page: PACE.page < DECK.n ? PACE.page : 0 }); openPres(); }
+  $('bPres').onclick = startPres;
+  function openPres() {
+    $('pres').classList.add('on');
+    var st = $('presStrip');
+    if (st.getAttribute('data-t') !== String(DECK.t)) {
+      st.setAttribute('data-t', DECK.t); st.innerHTML = '';
+      for (var i = 0; i < DECK.n; i++) (function (i) { var im = new Image(); im.setAttribute('data-i', i); st.appendChild(im); loadSlide(i, function (u) { im.src = u; }); })(i);
+    }
+    presShow();
+  }
+  function presShow() {
+    if (!DECK || !PACE) return;
+    var i = Math.min(PACE.page || 0, DECK.n - 1);
+    $('presPg').textContent = (i + 1) + ' / ' + DECK.n;
+    $('presSt').textContent = PACE.show === 'deck' ? ' · 학생 화면에 나오는 중' : ' · ⚠ 학생 화면에는 안 나오는 중';
+    $('presPause').textContent = PACE.pause ? '▶ 다시 시작' : '⏸ 일시 정지';
+    loadSlide(i, function (u) { if ((PACE.page || 0) === i) $('presImg').src = u; });
+    [].forEach.call(document.querySelectorAll('#presStrip img'), function (im) { var on = Number(im.getAttribute('data-i')) === i; im.classList.toggle('on', on); if (on) im.scrollIntoView({ block: 'nearest', inline: 'center' }); });
+  }
+  function presGo(i) {
+    i = Math.max(0, Math.min(DECK.n - 1, i)); if (PACE.page === i) return;
+    PACE.page = i; presShow();
+    clearTimeout(presT); presT = setTimeout(function () { setPace({ page: i }); }, 150);
+  }
+  $('presNext').onclick = function () { presGo((PACE.page || 0) + 1); };
+  $('presPrev').onclick = function () { presGo((PACE.page || 0) - 1); };
+  $('presStrip').onclick = function (e) { var im = e.target.closest('img'); if (im) presGo(Number(im.getAttribute('data-i'))); };
+  $('presEnd').onclick = function () { setPace({ show: null }); $('pres').classList.remove('on'); };
+  $('presHide').onclick = function () { $('pres').classList.remove('on'); };
+  $('presPause').onclick = function () { setPace({ pause: !PACE.pause, msg: $('pauseMsg').value }); };
+  document.addEventListener('keydown', function (e) {
+    if (!$('pres').classList.contains('on') || /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); $('presNext').onclick(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); $('presPrev').onclick(); }
+  });
+
+  window.__HUBT = { st: function () { return { CLS: CLS, PACE: PACE, D: D, SAVE: SAVE }; } };
+  if (CODE) enter(CODE);
+})();
+</script>
+</body></html>

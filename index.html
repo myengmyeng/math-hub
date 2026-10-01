@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>수업 허브</title>
+<style>
+:root{--navy:#1d2b4f;--or:#f28c28;--bg:#f4f6fa;--line:#d9dee8;--g:#2fa84f;--y:#f2b705;--r:#e04646}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:"Pretendard","Noto Sans KR","Malgun Gothic",sans-serif;background:var(--bg);color:#1c2333}
+button{font:inherit;cursor:pointer;border:0;border-radius:12px}
+input,textarea{font:inherit;font-size:20px;padding:10px 12px;border:2px solid var(--line);border-radius:10px;width:100%;max-width:420px}
+.scr{display:none;min-height:100%;padding:24px}.scr.on{display:block}
+h1{color:var(--navy);margin:8px 0 18px;font-size:28px}
+.hint{color:#5a6478;font-size:17px;margin:4px 0 16px}
+.grade{margin:14px 0}.grade b{display:block;color:#5a6478;margin-bottom:8px}
+.cls,.nm{background:#fff;border:2px solid var(--line);padding:16px 22px;font-size:22px;margin:0 10px 10px 0;min-width:110px}
+.cls:active,.nm:active{border-color:var(--or)}
+.nm small{display:block;font-size:14px;color:#8a93a6}
+.pad{display:flex;flex-wrap:wrap;max-width:760px}.pad .cls{min-width:84px;padding:14px 0}.cls.on{border-color:var(--or);background:#fff3e6}
+.anis{display:flex;flex-wrap:wrap;gap:8px;max-width:760px;margin:10px 0 18px}.anis button{font-size:34px;width:64px;height:64px;background:#fff;border:3px solid var(--line)}.anis button.on{border-color:var(--or);background:#fff3e6}
+.go{background:var(--or);color:#fff;font-size:24px;padding:14px 40px;margin-top:8px}.go:disabled{background:#c5cbd8}
+.back{background:none;color:#5a6478;font-size:17px;padding:6px 0;margin-bottom:6px}
+.msg{background:#fff3e6;border:2px solid var(--or);border-radius:12px;padding:12px 16px;margin:0 0 14px;font-size:18px}
+.msg:empty{display:none}
+#waitBox{max-width:560px;margin:12vh auto;text-align:center;font-size:22px;background:#fff;border-radius:18px;padding:36px}
+/* 주 화면 */
+#main{padding:0}
+#top{display:flex;align-items:center;gap:12px;background:var(--navy);color:#fff;padding:10px 16px;font-size:18px;position:sticky;top:0;z-index:5}
+#top .who{font-weight:700}#top .act{flex:1;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#body{padding:22px 24px 120px;max-width:1100px;margin:0 auto}
+#body h2{color:var(--navy);margin-top:0}#body p{font-size:20px;line-height:1.6}
+#body .ask{font-weight:700}
+.tb{border-collapse:collapse;font-size:20px;margin:10px 0}.tb th,.tb td{border:2px solid var(--line);padding:8px 12px;text-align:center}.tb input{width:110px}
+.sq{display:flex;align-items:flex-end;gap:30px;margin:14px 0}.sq div{background:#ffe3c4;border:3px solid var(--or)}
+.pgSlide{text-align:center}.pgSlide img{max-width:100%;max-height:calc(100vh - 170px);border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.15)}#pgLd{font-size:20px;color:#5a6478;margin-top:20vh}
+#idle{text-align:center;margin-top:16vh;font-size:24px;color:#5a6478}
+#nav{position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:14px;padding:12px;background:#fff;border-top:2px solid var(--line);z-index:6}
+#nav button{background:var(--navy);color:#fff;font-size:20px;padding:12px 22px}#nav button:disabled{background:#c5cbd8}
+#nav .pg{font-size:19px;min-width:150px;text-align:center}
+#nav .lock{font-size:15px;color:var(--or)}
+#sig{position:fixed;right:14px;bottom:84px;display:flex;flex-direction:column;gap:8px;z-index:7}
+#sig button{width:64px;height:54px;font-size:26px;background:#fff;border:3px solid var(--line)}
+#sig button.on[data-s=g]{border-color:var(--g);background:#e5f6ea}#sig button.on[data-s=y]{border-color:var(--y);background:#fff7d6}#sig button.on[data-s=r]{border-color:var(--r);background:#fde8e8}
+#sig small{font-size:12px;color:#5a6478;text-align:center}
+#timer{position:fixed;top:56px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:6px 18px;border-radius:30px;font-size:20px;z-index:8;display:none}
+#timer.warn{background:var(--or)}#timer.end{background:var(--r)}
+/* 덮개: 발표 < 질문 < 일시 정지 */
+.ov{position:fixed;inset:0;display:none;z-index:70}.ov.on{display:flex}
+#slideOv{background:#111;align-items:center;justify-content:center}#slideOv img{max-width:100%;max-height:100%}
+#slideOv .ld{color:#fff;font-size:22px}
+#qOv{z-index:80;background:rgba(20,28,50,.88);align-items:center;justify-content:center}
+#qBox{background:#fff;border-radius:20px;padding:28px;min-width:min(600px,92vw);max-width:92vw;text-align:center}
+#qBox h3{margin:0 0 6px;color:var(--navy);font-size:26px}#qBox .qt{font-size:21px;margin:6px 0 18px}
+.qb{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.qb button{font-size:34px;min-width:96px;padding:16px 22px;background:#eef1f7;border:3px solid var(--line)}
+.qb button.on{border-color:var(--or);background:#fff3e6}
+#qBox input{font-size:26px;text-align:center;margin:0 auto}
+#qSend{background:var(--or);color:#fff;font-size:22px;padding:12px 36px;margin-top:16px}
+#qState{margin-top:10px;color:var(--g);font-size:18px;min-height:24px}
+#pauseOv{z-index:90;background:var(--navy);color:#fff;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:30px}
+#pauseOv .big{font-size:44px;font-weight:800;margin-bottom:14px}#pauseOv .m{font-size:30px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#1c2333;color:#fff;padding:12px 20px;border-radius:12px;font-size:18px;z-index:100}
+</style>
+</head><body>
+
+<div id="pick" class="scr"><h1>수업 허브</h1><div class="msg" id="pickMsg"></div>
+  <div class="grade"><b>학년</b><div class="pad" id="pG"></div></div>
+  <div class="grade"><b>반</b><div class="pad" id="pC"></div></div>
+  <div class="grade"><b>번호</b><div class="pad" id="pN"></div></div>
+  <button class="go" id="pGo" disabled>다음 ▶</button>
+  <p class="hint" style="margin-top:28px">처음 들어온 태블릿이 내 태블릿으로 기억됩니다. <button class="back" id="pDemo">공개수업 체험 계정 →</button></p></div>
+<div id="nickS" class="scr"><button class="back" id="nickBack">← 학년·반·번호 다시 고르기</button><h1>오늘의 닉네임</h1><p class="hint" id="nickWho"></p>
+  <input id="nickIn" maxlength="10" placeholder="닉네임 (10글자까지)" autocomplete="off">
+  <div class="anis" id="anis"></div>
+  <button class="go" id="nickGo" disabled>들어가기 ▶</button></div>
+<div id="wait" class="scr"><div id="waitBox"><div style="font-size:48px">⏳</div><p id="waitT"></p><p class="hint">이 번호는 다른 태블릿에서 먼저 쓰고 있어요.<br>선생님이 확인하면 바로 들어갑니다.</p><button class="back" id="waitBack">← 다시 고르기</button></div></div>
+
+<div id="main" class="scr">
+  <div id="top"><span class="who" id="who"></span><span class="act" id="actT"></span></div>
+  <div id="body"></div>
+  <div id="nav"><button id="prev">◀ 이전</button><span class="pg"><span id="pg"></span><br><span class="lock" id="lockT"></span></span><button id="next">다음 ▶</button></div>
+  <div id="sig"><button data-s="g" title="알겠어요">🟢</button><button data-s="y" title="긴가민가">🟡</button><button data-s="r" title="모르겠어요">🔴</button><small>내 이해도</small></div>
+  <div id="timer"></div>
+</div>
+
+<div id="slideOv" class="ov"><img id="slideImg" alt=""><div class="ld" id="slideLd">발표 화면 불러오는 중…</div></div>
+<div id="qOv" class="ov"><div id="qBox"><h3>❓ 선생님 질문</h3><div class="qt" id="qText"></div><div id="qIn"></div><button id="qSend">보내기</button><div id="qState"></div></div></div>
+<div id="pauseOv" class="ov"><div class="big">⏸ 잠깐 멈춰요</div><div class="m" id="pauseMsg"></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+/* 활동 목록 — 학생 화면과 진도판이 같이 읽는다. 새 단원 활동은 여기에 하나 더 넣는다.
+ *  id: { title, screens: [ { t: 화면 이름, html: 학생 화면 내용 } ] }
+ *  html 안의 입력칸에 data-k="이름" 을 붙이면 학생 태블릿에 저장되고(임시저장), 쓸 때마다 '진행'으로 기록된다.
+ */
+var ACTS = {
+  demo: {
+    title: '예시 — 넓이가 2인 정사각형',
+    screens: [
+      { t: '어림하기', html:
+        '<h2>넓이가 2인 정사각형</h2>' +
+        '<p>넓이가 1인 정사각형 두 개를 잘라 붙이면 넓이가 2인 정사각형을 만들 수 있습니다.</p>' +
+        '<div class="sq"><div style="width:100px;height:100px"></div><div style="width:141px;height:141px"></div></div>' +
+        '<p class="ask">이 정사각형의 한 변의 길이는 1과 2 사이 어디쯤일까요?</p>' +
+        '<input data-k="g1" inputmode="decimal" placeholder="예: 1.3">' },
+      { t: '범위 좁히기', html:
+        '<h2>제곱해서 2와 비교하기</h2>' +
+        '<p>계산해서 빈칸을 채워 보세요.</p>' +
+        '<table class="tb"><tr><th>수</th><th>1.3</th><th>1.4</th><th>1.5</th></tr>' +
+        '<tr><th>제곱</th><td><input data-k="a13" inputmode="decimal"></td><td><input data-k="a14" inputmode="decimal"></td><td><input data-k="a15" inputmode="decimal"></td></tr></table>' +
+        '<p class="ask">한 변의 길이는 어느 두 수 사이에 있나요?</p>' +
+        '<input data-k="g2" placeholder="예: 1.4 와 1.5 사이">' },
+      { t: '정리', html:
+        '<h2>정리</h2>' +
+        '<p class="ask">계속 범위를 좁히면 끝이 날까요? 한 줄로 써 보세요.</p>' +
+        '<textarea data-k="g3" rows="3"></textarea>' }
+    ]
+  }
+};
+
+var HUB = (function () {
+/* 배포본 저장소 — Supabase. build.py 가 이 파일 + server.js 를 함수 하나로 감싸 배포본(site/*.html)에 넣는다.
+ * 생각: 모든 공용 상태(kv 표, 몇 KB)를 브라우저에 '거울'로 들고 있고 실시간 알림으로 맞춘다 → server.js 는 거울만 읽어서 바로 답한다.
+ *  - 쓰기: 선생님 = t_put(코드 확인) · 학생 = s_login·s_answer(DB 함수가 묶음 확인). 학생은 kv 에 직접 못 쓴다(RLS).
+ *  - 학생 현재 상태(S:)는 DB 에 안 쓰고 반 채널 Presence 로만 — 접속이 끊기면 저절로 빠진다.
+ *  - 발표 쪽 그림은 files 표(실시간 알림 없음), 필요할 때 한 장씩 받는다.
+ * 키는 공개용(publishable) 열쇠만. 관리자 열쇠는 절대 넣지 않는다. */
+var SB_URL = 'https://faiemcomvhlahrssrfex.supabase.co';
+var SB_KEY = 'sb_publishable_S4gxcXRMSJb6K0G5ncQYGw_I8ZRLONa';
+var sb = supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: false } });
+var MIR = {}, PRES = {}, LAT = {}, ROOM = {}, CODE = null, TEACHER = /teacher/.test(location.pathname), WQ = Promise.resolve();
+window.__SB = { MIR: MIR, PRES: PRES, ROOM: ROOM };   // 확인용
+
+function fail_(m) { console.warn('저장 실패', m); window.dispatchEvent(new CustomEvent('hubfail', { detail: m })); }
+/* 선생님 쓰기 — 순서가 뒤바뀌지 않게 하나씩 */
+function put_(k, v) {
+  if (MIR[k] === v) return;
+  if (v === '' || v == null) delete MIR[k]; else MIR[k] = v;
+  WQ = WQ.then(function () {
+    return sb.rpc('t_put', { c: CODE, k: k, v: v === '' ? null : v }).then(function (r) { if (r.error || r.data === false) fail_(r.error ? r.error.message : '진도판 코드가 맞지 않아요'); });
+  });
+}
+/* 반 채널 하나 = Presence(학생 상태). 학생은 자기 키로 들어가 track, 선생님은 듣기만 */
+function room_(cls, key) {
+  if (ROOM[cls]) return ROOM[cls];
+  var ch = sb.channel('room:' + cls, { config: { presence: { key: key || 'T' + Math.random().toString(36).slice(2) } } });
+  ch.on('presence', { event: 'sync' }, function () {
+    var st = ch.presenceState(), now = Date.now();
+    Object.keys(PRES).forEach(function (k) { if (k.indexOf('S:' + cls + ':') === 0 && !st[k]) delete PRES[k]; });
+    Object.keys(st).forEach(function (k) {
+      if (k.indexOf('S:') !== 0) return;
+      var m = st[k][st[k].length - 1];
+      /* 반영 시간 = 선생님이 바꾼 시각(v, 선생님 시계) → 학생이 받았다고 알려 온 시각(선생님 시계). 왕복이라 기기 시계 차이가 없다 */
+      if (m.gv && !LAT[k + m.gv]) LAT[k + m.gv] = now - m.gv;
+      m.lat = LAT[k + m.gv] || 0;
+      PRES[k] = m;
+    });
+  });
+  ch.subscribe(function (s) {
+    if (s === 'SUBSCRIBED') { if (ch._me) ch.track(ch._me); return; }
+    if (ROOM[cls] === ch) { delete ROOM[cls]; sb.removeChannel(ch); }   // 끊기면 다음 묻기 때 새로 들어간다
+  });
+  return (ROOM[cls] = ch);
+}
+var ST = {
+  code: function () { return CODE; },
+  url: function () { return location.href.replace(/[^/]*([?#].*)?$/, ''); },
+  now: function () { return Date.now(); },   // ponytail: 기기 시계를 그대로 씀(태블릿은 자동 시각이라 1초 안팎). 타이머가 어긋나면 서버 시각 받기
+  cget: function (k) {
+    if (k.indexOf('S:') === 0) { var m = PRES[k]; if (!m) return null; m.t = Date.now(); return JSON.stringify(m); }
+    return MIR[k] == null ? null : MIR[k];
+  },
+  cgetAll: function (ks) { var o = {}; ks.forEach(function (k) { var v = ST.cget(k); if (v != null) o[k] = v; }); return o; },
+  cscan: function (p) {
+    var cls = p.split(':')[1]; if (cls) room_(cls);
+    return Object.keys(PRES).filter(function (k) { return k.indexOf(p) === 0; }).map(function (k) { return k.slice(p.length); });
+  },
+  cput: function (k, v) {
+    if (k.indexOf('S:') === 0) {   // 학생 자기 상태 → Presence. 바뀐 것만(t 빼고 비교)
+      var m = j_(v, {}), cls = k.split(':')[1], ch = room_(cls, k);
+      delete m.t; delete m.lat; delete m.presence_ref;   // 서버가 붙이는 꼬리표까지 비교하면 끝없이 다시 보내다 채널이 닫힌다
+      var js = JSON.stringify(m); if (ch._js === js) return; ch._js = js; ch._me = m;
+      if (ch.state === 'joined') ch.track(m);
+      return;
+    }
+    if (k.indexOf('L:') === 0 || k.indexOf('RJ:') === 0 && v === '') return;   // 진도판 열림 신호는 필요 없음(언제나 바로), 거절 알림 지우기는 s_login 이 함
+    put_(k, v);
+  },
+  pget: function (k) { return MIR[k] == null ? null : MIR[k]; },
+  pset: put_,
+  lock: function (fn) { return fn(); },   // ponytail: 선생님 한 명 기준(마지막 저장이 이김). 학생 쓰기는 DB 함수가 잠근다
+  deckFolder: function () { return 'D' + Date.now(); },
+  fileData: function (id) {
+    return sb.from('files').select('v').eq('k', id).single().then(function (r) { if (r.error) throw r.error.message; return r.data.v; });
+  }
+};
+/* 시작: kv 거울 채우기 + 바뀔 때마다 알림. 학생은 즉석 질문 답(A:)을 받지 않는다(남의 답·양) */
+var HUB_READY = (function () {
+  var q = sb.from('kv').select('k,v');
+  if (!TEACHER) q = q.not('k', 'like', 'A:%');
+  return q.then(function (r) {
+    if (r.error) throw r.error.message;
+    r.data.forEach(function (x) { MIR[x.k] = x.v; });
+    sb.channel('kv').on('postgres_changes', { event: '*', schema: 'public', table: 'kv' }, function (e) {
+      if (e.eventType === 'DELETE') { delete MIR[e.old.k]; return; }
+      if (!TEACHER && e.new.k.indexOf('A:') === 0) return;
+      MIR[e.new.k] = e.new.v;
+    }).subscribe();
+  });
+})();
+
+/* 수학 수업 허브 — 서버 로직. 브라우저 안에서 돈다(build.py 가 저장소 어댑터와 함께 감싼다).
+ *  - 로컬 확인: fake.js(localStorage) · 배포: supa.js(Supabase 거울 + 실시간). 학생이 쓰는 login·answer 는 supa 에선 DB 함수(supabase.sql)가 같은 규칙으로 대신한다.
+ * 저장은 모두 ST(저장소 어댑터)를 거친다: cget/cput/cgetAll/cscan(캐시) · pget/pset(속성) · lock · now · code · 파일.
+ * 키: CLASSES · B:반(태블릿 묶음) · Q:반(허락 대기) · RJ:…(거절 알림) · P:반(수업 상태) · L:반(진도판 열림) · SEQ:활동 · DECK · DECK:t
+ *     S:반:번호(학생 현재 상태 — supa 에선 Presence) · A:반:질문:번호(즉석 질문 답)
+ * 명렬표 없음: 학생이 학년·반·번호를 넣고 수업마다 닉네임을 정한다. 실명은 저장하지 않는다.
+ */
+var DEMO = '체험';
+var PACE_KEYS = ['act', 'sync', 'from', 'to', 'pause', 'msg', 'timer', 'show', 'page', 'q'];
+
+function j_(s, d) { try { return s ? JSON.parse(s) : d; } catch (e) { return d; } }
+/* 캐시 먼저, 없으면 속성에서 읽어 캐시에 다시 올린다 */
+function rd_(k, d) {
+  var v = ST.cget(k);
+  if (v == null) { v = ST.pget(k); if (v != null) ST.cput(k, v); }
+  return j_(v, d);
+}
+function wr_(k, o) { var s = JSON.stringify(o); ST.pset(k, s); ST.cput(k, s); return o; }
+function okCode_(c) { var k = ST.code(); return !!k && String(c) === String(k); }
+function str_(s, n) { return String(s == null ? '' : s).replace(/[<>]/g, '').slice(0, n || 100); }
+function paceBlank_() { return { v: 0, act: null, sync: null, from: null, to: null, pause: false, msg: '', timer: null, show: null, page: 0, q: null }; }
+/* 반 이름은 '학년-반'(1~3학년, 1~15반) 또는 체험. 번호는 1~45(체험은 1~5) */
+function okWho_(cls, no) { return cls === DEMO ? no >= 1 && no <= 5 : /^[1-3]-([1-9]|1[0-5])$/.test(cls) && no >= 1 && no <= 45; }
+/* 진도판에 보일 번호 = 태블릿이 묶인 번호 + 지금 접속한 번호 */
+function nos_(cls) {
+  var s = {};
+  if (cls === DEMO) [1, 2, 3, 4, 5].forEach(function (n) { s[n] = 1; });
+  Object.keys(rd_('B:' + cls, {})).forEach(function (n) { s[n] = 1; });
+  ST.cscan('S:' + cls + ':').forEach(function (n) { s[n] = 1; });
+  return Object.keys(s).map(Number).filter(function (n) { return n > 0; }).sort(function (a, b) { return a - b; });
+}
+
+/* ---------------- 학생 ---------------- */
+/* 학년·반·번호를 넣으면: 처음이면 이 태블릿에 묶고, 다른 태블릿에 묶여 있으면 선생님 허락을 기다린다.
+ * supabase.sql 의 s_login 이 같은 규칙 — 여기를 고치면 거기도 고칠 것 */
+function login(cls, no, dev) {
+  cls = String(cls); no = Number(no); dev = str_(dev, 40);
+  if (!okWho_(cls, no)) return { ok: false, msg: '학년·반·번호를 다시 확인해 주세요' };
+  if (cls === DEMO) return { ok: true };
+  var rj = 'RJ:' + cls + ':' + no + ':' + dev;
+  if (ST.cget(rj)) { ST.cput(rj, '', 1); return { ok: false, rejected: true }; }
+  var b = rd_('B:' + cls, {});
+  if (b[no] === dev) return { ok: true };
+  return ST.lock(function () {
+    b = j_(ST.pget('B:' + cls), {});
+    if (!b[no] || b[no] === dev) {
+      b[no] = dev; wr_('B:' + cls, b);
+      var l = rd_('CLASSES', []);
+      if (l.indexOf(cls) < 0) { l.push(cls); l.sort(function (x, y) { return x.localeCompare(y, 'ko', { numeric: true }); }); wr_('CLASSES', l); }
+      return { ok: true };
+    }
+    var q = j_(ST.pget('Q:' + cls), []), has = false;
+    q.forEach(function (x) { if (x.no === no && x.dev === dev) has = true; });
+    if (!has) { q.push({ no: no, dev: dev, t: ST.now() }); wr_('Q:' + cls, q); }
+    return { ok: false, pending: true };
+  });
+}
+
+/* 학생이 자주 부른다(로컬 2~5초, supa 는 거울만 읽어서 0.4초). 바뀐 게 없으면 상태를 보내지 않는다.
+ * info = { act, scr, sig, prog, help, nick, ani } — 진도판 현황표용 */
+function pull(cls, no, dev, v, info) {
+  cls = String(cls); no = Number(no);
+  var now = ST.now(), sk = 'S:' + cls + ':' + no;
+  var c = ST.cgetAll(['P:' + cls, 'B:' + cls, 'DECK', 'L:' + cls, sk]);
+  var p = c['P:' + cls] != null ? j_(c['P:' + cls], null) : rd_('P:' + cls, null);
+  if (!p) p = paceBlank_();
+  if (cls !== DEMO) {
+    var b = c['B:' + cls] != null ? j_(c['B:' + cls], {}) : rd_('B:' + cls, {});
+    if (b[no] !== dev) return { kick: true };
+  }
+  var d = c.DECK != null ? j_(c.DECK, null) : rd_('DECK', null);
+  var s = j_(c[sk], {}), out = { now: now, fast: !!c['L:' + cls], deck: d ? { t: d.t, n: d.n } : null };
+  if (p.v !== v) {
+    out.p = p;
+    if (p.v > (s.gv || 0)) { s.gv = p.v; s.lat = now - p.v; }   // 선생님이 바꾼 뒤 이 학생에게 닿기까지 걸린 시간
+  }
+  info = info || {};
+  s.t = now; s.dev = String(dev).slice(-4);
+  s.act = info.act == null ? null : str_(info.act, 30);
+  s.scr = info.scr == null ? null : Number(info.scr);
+  s.sig = ['g', 'y', 'r'].indexOf(info.sig) >= 0 ? info.sig : null;
+  s.prog = Number(info.prog) || 0;
+  s.help = Number(info.help) || 0;
+  s.nick = str_(info.nick, 12); s.ani = str_(info.ani, 4);
+  ST.cput(sk, JSON.stringify(s));
+  return out;
+}
+
+/* 즉석 질문 답 — 질문이 열려 있을 때만, 닫힐 때까지 고칠 수 있다 */
+function answer(cls, no, dev, qid, val) {
+  cls = String(cls); no = Number(no);
+  if (cls !== DEMO && rd_('B:' + cls, {})[no] !== dev) return { ok: false, msg: '다시 들어와 주세요' };
+  var p = rd_('P:' + cls, paceBlank_());
+  if (!p.q || p.q.id !== qid) return { ok: false, msg: '질문이 닫혔어요' };
+  ST.cput('A:' + cls + ':' + qid + ':' + no, JSON.stringify({ v: str_(val, 200), t: ST.now() }));
+  return { ok: true };
+}
+
+/* t 가 있으면 그 자료(예전에 올린 것도 — 활동 사이에 끼운 쪽), 없으면 마지막 자료 */
+function getSlide(i, t) {
+  var d = t ? rd_('DECK:' + t, null) : null;
+  if (!d) { d = rd_('DECK', null); if (d && t && d.t !== t) d = null; }   // 이 기능 전에 올린 자료는 DECK 에만 있다
+  if (!d || i < 0 || i >= d.n) return { ok: false };
+  return { ok: true, i: i, t: d.t, img: ST.fileData(d.ids[i]) };
+}
+
+/* ---------------- 선생님 ---------------- */
+function tLogin(code) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  return { ok: true, classes: rd_('CLASSES', []).concat([DEMO]), url: ST.url(), deck: rd_('DECK', null) };
+}
+
+function approve(code, cls, no, dev, yes) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  cls = String(cls); no = Number(no);
+  return ST.lock(function () {
+    var q = j_(ST.pget('Q:' + cls), []).filter(function (x) { return !(x.no === no && x.dev === dev); });
+    wr_('Q:' + cls, q);
+    if (yes) { var b = j_(ST.pget('B:' + cls), {}); b[no] = dev; wr_('B:' + cls, b); }
+    else ST.cput('RJ:' + cls + ':' + no + ':' + dev, '1', 600);
+    return { ok: true };
+  });
+}
+
+/* no 가 없으면 반 전체 묶음 풀기 */
+function unbind(code, cls, no) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  cls = String(cls);
+  return ST.lock(function () {
+    var b = j_(ST.pget('B:' + cls), {});
+    if (no == null) b = {}; else delete b[Number(no)];
+    wr_('B:' + cls, b);
+    wr_('Q:' + cls, no == null ? [] : j_(ST.pget('Q:' + cls), []).filter(function (x) { return x.no !== Number(no); }));
+    return { ok: true };
+  });
+}
+
+/* patch 의 키만 바꾼다. v = 바꾼 시각(학생 쪽 도착 시간 계산에 쓴다) */
+function setPace(code, cls, patch) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  cls = String(cls);
+  var p = rd_('P:' + cls, paceBlank_());
+  if (patch && 'act' in patch) {   // 활동을 바꾸면 화면 제한부터 풀고(같이 온 sync 는 아래에서 다시 건다) 그 활동의 구성을 싣는다
+    p.sync = p.from = p.to = null;
+    p.seq = patch.act ? rd_('SEQ:' + str_(patch.act, 30), null) : null;
+  }
+  PACE_KEYS.forEach(function (k) {
+    if (!patch || !(k in patch)) return;
+    var x = patch[k];
+    if (k === 'timer') p.timer = x && Number(x.min) > 0 ? { end: ST.now() + Number(x.min) * 60000, min: Number(x.min), label: str_(x.label, 30) } : null;
+    else if (k === 'q') p.q = x ? { id: ST.now().toString(36), type: ['ox', 'choice', 'num', 'text'].indexOf(x.type) >= 0 ? x.type : 'text', n: Math.max(2, Math.min(5, Number(x.n) || 5)), text: str_(x.text, 120) } : null;
+    else if (k === 'act' || k === 'msg' || k === 'show') p[k] = x == null ? (k === 'msg' ? '' : null) : str_(x, 120);
+    else if (k === 'pause') p.pause = !!x;
+    else p[k] = x == null ? null : Math.max(0, Number(x) || 0);
+  });
+  p.v = ST.now();
+  wr_('P:' + cls, p);
+  return { ok: true, pace: p };
+}
+
+/* 진도판이 2~3초마다 부른다. 진도판이 열려 있는 동안 학생은 2초 간격으로 묻는다(L:반) */
+function board(code, cls) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  cls = String(cls);
+  ST.cput('L:' + cls, '1', 30);
+  var ns = nos_(cls), p = rd_('P:' + cls, paceBlank_());
+  var ks = ns.map(function (n) { return 'S:' + cls + ':' + n; });
+  if (p.q) ns.forEach(function (n) { ks.push('A:' + cls + ':' + p.q.id + ':' + n); });
+  var c = ks.length ? ST.cgetAll(ks) : {}, pres = {}, ans = {};
+  ns.forEach(function (n) {
+    var s = c['S:' + cls + ':' + n]; if (s) pres[n] = j_(s, null);
+    if (p.q) { var a = c['A:' + cls + ':' + p.q.id + ':' + n]; if (a) ans[n] = j_(a, null); }
+  });
+  /* roster = [[번호, 닉네임, 캐릭터]] — 진도판이 예전 명렬표 자리에 그대로 쓴다 */
+  var ro = ns.map(function (n) { var s = pres[n] || {}; return [n, s.nick || '', s.ani || '']; });
+  var b = rd_('B:' + cls, {}), bound = {};
+  Object.keys(b).forEach(function (k) { bound[k] = String(b[k]).slice(-4); });
+  return { ok: true, now: ST.now(), classes: rd_('CLASSES', []).concat([DEMO]), pace: p, roster: ro, bound: bound, reqs: rd_('Q:' + cls, []), pres: pres, ans: ans };
+}
+
+/* 발표 자료: 진도판이 쪽마다 JPG 로 올린다. 모든 반이 같은 자료를 쓴다 */
+function deckBegin(code, name) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  return { ok: true, key: ST.deckFolder(str_(name, 60)) };
+}
+function deckPage(code, key, i, img) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  return { ok: true, i: i, id: ST.fileSave(key, 'p' + ('0' + (i + 1)).slice(-2) + '.jpg', img) };
+}
+function deckEnd(code, key, ids, name) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  var d = { key: key, ids: ids, n: ids.length, name: str_(name, 80), t: ST.now() };
+  wr_('DECK:' + d.t, d);
+  return { ok: true, deck: wr_('DECK', d) };
+}
+
+/* 활동 화면 순서(구성) — 활동마다 하나, 모든 반이 같이 쓴다.
+ * seq = [ {s: 활동 화면 번호} | {d: 자료 t, p: 쪽 번호} , … ]. 지금 이 활동을 연 반이면 바로 반영(화면 제한은 푼다) */
+function saveSeq(code, cls, act, seq) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  act = str_(act, 30);
+  var clean = (seq || []).map(function (x) {
+    return x && x.d ? { d: Number(x.d), p: Math.max(0, Number(x.p) || 0) } : { s: Math.max(0, Number(x && x.s) || 0) };
+  }).slice(0, 80);
+  wr_('SEQ:' + act, clean);
+  var p = rd_('P:' + String(cls), paceBlank_());
+  if (p.act === act) { p.seq = clean; p.sync = p.from = p.to = null; p.v = ST.now(); wr_('P:' + String(cls), p); }
+  return { ok: true, pace: p };
+}
+
+
+/* server.js 위에 덮어쓰기 — 학생 쓰기는 DB 함수로, 진도판 코드는 DB 가 확인, 그림은 files 표에서 */
+login = function (cls, no, dev) {
+  return sb.rpc('s_login', { cls: String(cls), no: Number(no), dev: String(dev) }).then(function (r) {
+    if (r.error) throw r.error.message;
+    if (r.data.ok) { var b = j_(MIR['B:' + cls], {}); b[no] = dev; MIR['B:' + cls] = JSON.stringify(b); }   // 알림보다 먼저 들어가도 밀려나지 않게
+    return r.data;
+  });
+};
+answer = function (cls, no, dev, qid, val) {
+  return sb.rpc('s_answer', { cls: String(cls), no: Number(no), dev: String(dev), qid: String(qid), val: str_(val, 200) })
+    .then(function (r) { if (r.error) throw r.error.message; return r.data; });
+};
+var tLogin0 = tLogin;
+tLogin = function (code) {
+  return sb.rpc('t_check', { c: String(code) }).then(function (r) {
+    if (r.error) throw r.error.message;
+    if (!r.data) return { ok: false, msg: '접속코드가 맞지 않아요' };
+    CODE = String(code); return tLogin0(code);
+  });
+};
+var getSlide0 = getSlide;
+getSlide = function (i, t) {
+  var r = getSlide0(i, t); if (!r.ok) return r;
+  return r.img.then(function (img) { r.img = img; return r; });
+};
+deckPage = function (code, key, i, img) {
+  if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
+  var id = key + '/p' + ('0' + (i + 1)).slice(-2);
+  return sb.rpc('t_file', { c: CODE, k: id, v: img }).then(function (r) { return r.error || r.data === false ? { ok: false, msg: r.error ? r.error.message : '진도판 코드가 맞지 않아요' } : { ok: true, i: i, id: id }; });
+};
+
+return { login: login, pull: pull, answer: answer, getSlide: getSlide, tLogin: tLogin, approve: approve, unbind: unbind, setPace: setPace, board: board, deckBegin: deckBegin, deckPage: deckPage, deckEnd: deckEnd, saveSeq: saveSeq, ready: HUB_READY, online: true };
+})();
+/* 서버 부르기 — server.js 가 브라우저 안(HUB)에서 돈다. 배포본은 Supabase 거울(supa.js), 로컬은 localStorage(fake.js).
+ * 서버 함수는 값이나 Promise 를 돌려준다. 로컬은 120~400ms 늦게 답해 실제 통신처럼 */
+var ONLINE = typeof HUB !== 'undefined' && HUB.online;
+var TICK = ONLINE ? 400 : 0;   // 배포본은 거울만 읽으니 0.4초마다 봐도 통신이 없다. 0 이면 예전처럼 2~5초
+function srv(fn, args, ok, fail) {
+  ok = ok || function () {}; fail = fail || function (e) { console.warn(fn, e); };
+  if (typeof HUB === 'undefined' || !HUB[fn]) { setTimeout(function () { fail('없는 기능: ' + fn); }, 0); return; }
+  HUB.ready.then(function () {
+    return new Promise(function (res) { setTimeout(res, ONLINE ? 0 : 120 + Math.random() * 280); });
+  }).then(function () { return HUB[fn].apply(null, args || []); })
+    .then(function (r) { ok(JSON.parse(JSON.stringify(r))); }, function (e) { fail(e && e.message || String(e)); });
+}
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var QS = new URLSearchParams(location.search), TAG = QS.get('dev') || '';   // ?dev=a 는 로컬 확인용(한 PC 에서 태블릿 여러 대 흉내)
+  function ls(k, v) { try { if (v === undefined) return localStorage.getItem(k + TAG); if (v === null) localStorage.removeItem(k + TAG); else localStorage.setItem(k + TAG, v); } catch (e) { return null; } }
+  var DEV = ls('HUB_DEV') || (function () { var d = 'D' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); ls('HUB_DEV', d); return d; })();
+  var ME = JSON.parse(ls('HUB_ME') || 'null');
+  var P = null, V = -1, FAST = false, SKEW = 0, SIG = null, PROG = Date.now(), CUR = {}, busy = false, tm = 0;
+
+  function show(id) { ['pick', 'nickS', 'wait', 'main'].forEach(function (s) { $(s).classList.toggle('on', s === id); }); }
+  function toast(t) { var d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(function () { d.remove(); }, 2600); }
+
+  /* ---------- 접속: 학년·반·번호 → (묶기 | 허락 대기) → 오늘의 닉네임 ---------- */
+  var ANIS = Array.from('🐶🐱🐰🦊🐻🐼🐨🐯🦁🐮🐷🐸🐵🐔🐧🐤🦄🐙🐳🦖');
+  var SEL = {}, TODAY = new Date().toDateString();
+  function grid(id, list, k) { $(id).innerHTML = list.map(function (v) { return '<button class="cls" data-' + k + '="' + v + '">' + v + '</button>'; }).join(''); }
+  grid('pG', [1, 2, 3], 'g'); grid('pC', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 'c');
+  grid('pN', Array.apply(null, Array(40)).map(function (_, i) { return i + 1; }), 'n');
+  function paintPick() {
+    [].forEach.call(document.querySelectorAll('#pick .cls'), function (b) {
+      b.classList.toggle('on', ['g', 'c', 'n'].some(function (k) { return b.hasAttribute('data-' + k) && String(SEL[k]) === b.getAttribute('data-' + k); }));
+    });
+    $('pGo').disabled = !(SEL.g && SEL.c && SEL.n);
+  }
+  $('pick').onclick = function (e) {
+    var b = e.target.closest('.cls'); if (!b) return;
+    ['g', 'c', 'n'].forEach(function (k) { if (b.hasAttribute('data-' + k)) SEL[k] = Number(b.getAttribute('data-' + k)); });
+    paintPick();
+  };
+  function pickClass(msg) {
+    ME = null; ls('HUB_ME', null); SEL = {}; paintPick(); show('pick'); $('pickMsg').textContent = msg || '';
+  }
+  $('pGo').onclick = function () {
+    if (!confirm(SEL.g + '학년 ' + SEL.c + '반 ' + SEL.n + '번 맞나요?')) return;
+    tryLogin({ cls: SEL.g + '-' + SEL.c, no: SEL.n });
+  };
+  $('pDemo').onclick = function () {
+    var n = prompt('체험 번호(1~5)'); n = Number(n); if (!(n >= 1 && n <= 5)) return;
+    tryLogin({ cls: '체험', no: n });
+  };
+  var waitT = 0;
+  function tryLogin(me) {
+    clearTimeout(waitT);
+    srv('login', [me.cls, me.no, DEV], function (r) {
+      if (r.ok) { ME = { cls: me.cls, no: me.no, nick: me.nick, ani: me.ani, day: me.day }; ls('HUB_ME', JSON.stringify(ME)); ME.day === TODAY && ME.nick ? enter() : askNick(); return; }
+      if (r.pending) { show('wait'); $('waitT').textContent = me.cls + ' ' + me.no + '번'; waitT = setTimeout(function () { tryLogin(me); }, 2000); return; }
+      if (r.rejected) { pickClass('선생님이 거절했어요. 학년·반·번호를 다시 확인해 주세요.'); return; }
+      pickClass(r.msg);
+    }, function () { waitT = setTimeout(function () { tryLogin(me); }, 5000); });
+  }
+  $('waitBack').onclick = function () { clearTimeout(waitT); pickClass(); };
+  /* 닉네임은 수업(날)마다 새로 — 기록은 학년·반·번호로 이어진다 */
+  $('anis').innerHTML = ANIS.map(function (a) { return '<button data-a="' + a + '">' + a + '</button>'; }).join('');
+  function paintNick() {
+    [].forEach.call(document.querySelectorAll('#anis button'), function (b) { b.classList.toggle('on', b.getAttribute('data-a') === SEL.ani); });
+    $('nickGo').disabled = !($('nickIn').value.trim() && SEL.ani);
+  }
+  function askNick() {
+    show('nickS'); $('nickWho').textContent = ME.cls + ' ' + ME.no + '번 — 오늘 쓸 닉네임과 캐릭터를 고르세요. 친구들과 TV 에는 닉네임만 보입니다.';
+    $('nickIn').value = ''; SEL.ani = null; paintNick();
+  }
+  $('nickIn').oninput = paintNick;
+  $('anis').onclick = function (e) { var b = e.target.closest('button'); if (b) { SEL.ani = b.getAttribute('data-a'); paintNick(); } };
+  $('nickGo').onclick = function () {
+    ME.nick = $('nickIn').value.trim().slice(0, 10); ME.ani = SEL.ani; ME.day = TODAY; ls('HUB_ME', JSON.stringify(ME)); enter();
+  };
+  $('nickBack').onclick = function () { pickClass(); };
+
+  /* ---------- 서버에 묻기: 진도판이 열려 있으면 2초, 아니면 5초. 학생마다 조금씩 어긋나게 ---------- */
+  var inflight = false;
+  function schedule(ms) { clearTimeout(tm); tm = setTimeout(pull, ms); }
+  function pull() {
+    if (!ME) return;
+    if (inflight) return;
+    if (document.hidden) { schedule(3000); return; }
+    inflight = true;
+    srv('pull', [ME.cls, ME.no, DEV, V, { act: P && P.act, scr: P && P.act ? (CUR[P.act] || 0) : null, sig: SIG, prog: PROG, help: 0, nick: ME.nick, ani: ME.ani }], function (r) {
+      inflight = false;
+      if (r.kick) { pickClass('다른 태블릿에서 이 번호로 들어왔어요. 선생님께 말씀드려 주세요.'); return; }
+      SKEW = r.now - Date.now(); FAST = r.fast;
+      if (r.deck) deckMeta(r.deck);
+      if (r.p) { P = r.p; V = P.v; apply(); }
+      schedule(TICK || (FAST ? 2000 : 5000) * (0.85 + Math.random() * 0.3));
+    }, function () { inflight = false; schedule(5000); });
+  }
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) { clearTimeout(tm); pull(); } });
+
+  function enter() {
+    show('main'); $('who').textContent = ME.cls + ' ' + ME.no + '번 ' + (ME.ani || '') + ' ' + (ME.nick || '');
+    SIG = ls('HUB_SIG'); paintSig(); V = -1; P = null; render();
+    schedule(Math.random() * 800);
+  }
+
+  /* ---------- 수업 상태 반영 ---------- */
+  function allowed(i) { if (!P) return true; if (P.sync != null) return i === P.sync; if (P.from != null) return i >= P.from && i <= P.to; return true; }
+  /* 화면 목록 = 선생님이 짠 구성(활동 화면 + 끼운 발표 쪽). 구성이 없으면 활동 화면 그대로 */
+  function items() {
+    var a = P && P.act && ACTS[P.act]; if (!a) return [];
+    return (P.seq && P.seq.length ? P.seq : a.screens.map(function (_, i) { return { s: i }; }))
+      .filter(function (x) { return x.d || a.screens[x.s]; });
+  }
+  function apply() {
+    var a = P.act && ACTS[P.act];
+    if (a && !busy) {
+      var n = items().length, cur = Math.min(CUR[P.act] || 0, n - 1);
+      if (P.sync != null) cur = Math.min(P.sync, n - 1);
+      else if (!allowed(cur)) cur = Math.max(Math.min(cur, Math.min(P.to, n - 1)), P.from);
+      if (cur !== CUR[P.act]) { CUR[P.act] = cur; PROG = Date.now(); }
+    }
+    render(); overlays();
+  }
+  function render() {
+    var a = P && P.act && ACTS[P.act];
+    $('actT').textContent = a ? a.title : '';
+    if (!a) {
+      $('body').innerHTML = '<div id="idle">' + (P && P.act ? '이 활동은 아직 이 앱에 없어요. 새로고침해 보세요.' : '선생님이 활동을 열 때까지 기다려요 🙂') + '</div>';
+      $('nav').style.display = 'none'; return;
+    }
+    var L = items(), i = Math.min(CUR[P.act] || 0, L.length - 1), it = L[i], key = 'HUB_W:' + ME.cls + ':' + ME.no + ':' + P.act;
+    var dk = P.act + ':' + i + ':' + (it.d ? it.d + '/' + it.p : 's' + it.s);
+    if ($('body').getAttribute('data-k') !== dk) {
+      $('body').setAttribute('data-k', dk);
+      if (it.d) $('body').innerHTML = '<div class="pgSlide"><img id="pgImg" alt=""><div id="pgLd">발표 쪽 불러오는 중…</div></div>';
+      else {
+        $('body').innerHTML = a.screens[it.s].html;
+        var w = JSON.parse(ls(key) || '{}');
+        [].forEach.call($('body').querySelectorAll('[data-k]'), function (el) {
+          var k = el.getAttribute('data-k'); if (w[k] != null) el.value = w[k];
+          el.oninput = function () { w[k] = el.value; ls(key, JSON.stringify(w)); PROG = Date.now(); };
+        });
+      }
+    }
+    if (it.d) pgSlide(it);
+    $('nav').style.display = 'flex';
+    $('pg').textContent = (i + 1) + ' / ' + L.length + ' · ' + (it.d ? '📽 발표 ' + (it.p + 1) + '쪽' : a.screens[it.s].t);
+    $('prev').disabled = !(i > 0 && allowed(i - 1));
+    $('next').disabled = !(i < L.length - 1 && allowed(i + 1));
+    $('lockT').textContent = P.sync != null ? '🔗 선생님과 함께 보는 중' : (P.from != null ? '🔒 ' + (P.from + 1) + '~' + (P.to + 1) + '번 화면까지' : '');
+  }
+  function go(d) { var i = (CUR[P.act] || 0) + d; if (!allowed(i)) return; CUR[P.act] = i; PROG = Date.now(); render(); clearTimeout(tm); pull(); }
+  $('prev').onclick = function () { go(-1); };
+  $('next').onclick = function () { go(1); };
+
+  /* 이해도 신호등 — 누르면 바로 서버에(다음 묻기를 당긴다) */
+  function paintSig() { [].forEach.call(document.querySelectorAll('#sig button'), function (b) { b.classList.toggle('on', b.getAttribute('data-s') === SIG); }); }
+  $('sig').onclick = function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    var s = b.getAttribute('data-s'); SIG = SIG === s ? null : s; ls('HUB_SIG', SIG == null ? null : SIG); paintSig();
+    clearTimeout(tm); pull();
+  };
+
+  /* ---------- 덮개: 일시 정지 · 질문 · 발표 · 타이머 ---------- */
+  function overlays() {
+    $('pauseOv').classList.toggle('on', !!P.pause); $('pauseMsg').textContent = P.msg || '';
+    question();
+    var sl = P.show === 'deck';
+    $('slideOv').classList.toggle('on', sl);
+    if (sl) slide();
+    timerTick();
+  }
+  setInterval(function () { if (P) timerTick(); }, 1000);
+  function timerTick() {
+    var t = P.timer, el = $('timer');
+    if (!t || !$('main').classList.contains('on')) { el.style.display = 'none'; return; }
+    var left = Math.round((t.end - (Date.now() + SKEW)) / 1000);
+    el.style.display = 'block';
+    el.className = left <= 0 ? 'end' : left <= 60 ? 'warn' : '';
+    el.textContent = '⏲ ' + (t.label ? t.label + ' · ' : '') + (left <= 0 ? '시간 끝!' : Math.floor(left / 60) + ':' + ('0' + left % 60).slice(-2));
+  }
+
+  /* 즉석 질문 — 닫힐 때까지 답을 바꿀 수 있다 */
+  var QID = null, QV = null;
+  function question() {
+    var q = P.q;
+    $('qOv').classList.toggle('on', !!q);
+    if (!q || q.id === QID) return;
+    QID = q.id; QV = ls('HUB_Q:' + q.id); $('qState').textContent = QV != null ? '보냈어요 ✓ (바꿀 수 있어요)' : '';
+    $('qText').textContent = q.text || ({ ox: 'O 또는 X 를 고르세요', choice: '번호를 고르세요', num: '수를 써 주세요', text: '한 줄로 써 주세요' })[q.type];
+    var h = '';
+    if (q.type === 'ox') h = '<div class="qb"><button data-v="O">⭕</button><button data-v="X">❌</button></div>';
+    else if (q.type === 'choice') { h = '<div class="qb">'; for (var i = 1; i <= q.n; i++) h += '<button data-v="' + i + '">' + '①②③④⑤'[i - 1] + '</button>'; h += '</div>'; }
+    else h = '<input id="qInp" ' + (q.type === 'num' ? 'inputmode="decimal" placeholder="예: 1.41  또는  3/4"' : 'placeholder="한 줄로"') + '>';
+    $('qIn').innerHTML = h;
+    $('qSend').style.display = /ox|choice/.test(q.type) ? 'none' : '';
+    if (QV != null) { var inp = $('qInp'); if (inp) inp.value = QV; mark(); }
+  }
+  function mark() { [].forEach.call(document.querySelectorAll('#qIn .qb button'), function (b) { b.classList.toggle('on', b.getAttribute('data-v') === QV); }); }
+  function sendAns(v) {
+    v = String(v).trim(); if (!v) return;
+    $('qState').textContent = '보내는 중…';
+    srv('answer', [ME.cls, ME.no, DEV, QID, v], function (r) {
+      if (!r.ok) { $('qState').textContent = r.msg; return; }
+      QV = v; ls('HUB_Q:' + QID, v); mark(); $('qState').textContent = '보냈어요 ✓ (바꿀 수 있어요)';
+    }, function () { $('qState').textContent = '못 보냈어요. 다시 눌러 주세요.'; });
+  }
+  $('qIn').onclick = function (e) { var b = e.target.closest('button'); if (b) sendAns(b.getAttribute('data-v')); };
+  $('qSend').onclick = function () { var i = $('qInp'); if (i) sendAns(i.value); };
+  $('qIn').onkeydown = function (e) { if (e.key === 'Enter') $('qSend').onclick(); };
+
+  /* 발표 — 자료가 올라오면 미리 한 쪽씩 받아 둔다(학생마다 0~15초 어긋나게), 지금 보여 줄 쪽이 먼저 */
+  /* 쪽 그림은 IMG['자료t:쪽'] 하나에 모은다. 받을 차례: 지금 보이는 쪽 → 활동에 끼운 쪽(가까운 것부터) → 마지막 자료 전체(학생마다 0~15초 어긋나게) */
+  var DK = { t: 0, n: 0, start: 0 }, IMG = {}, IBUSY = false, IFAIL = {};
+  function deckMeta(d) { if (d.t !== DK.t) DK = { t: d.t, n: d.n, start: Date.now() + Math.random() * 15000 }; }
+  function need() {
+    var q = [];
+    if (P && P.show === 'deck' && DK.n) q.push([DK.t, P.page]);
+    var L = items(), c = (P && CUR[P.act]) || 0;
+    L.map(function (x, i) { return [x, Math.abs(i - c)]; }).filter(function (z) { return z[0].d; })
+      .sort(function (a, b) { return a[1] - b[1]; }).forEach(function (z) { q.push([z[0].d, z[0].p]); });
+    if (DK.n && Date.now() >= DK.start) for (var i = 0; i < DK.n; i++) q.push([DK.t, i]);
+    for (var k = 0; k < q.length; k++) { var key = q[k][0] + ':' + q[k][1]; if (!IMG[key] && !(IFAIL[key] > 2)) return q[k]; }
+    return null;
+  }
+  setInterval(function () {
+    if (!ME || IBUSY) return;
+    var x = need(); if (!x) return;
+    IBUSY = true; var key = x[0] + ':' + x[1];
+    srv('getSlide', [x[1], x[0]], function (r) {
+      IBUSY = false;
+      if (!r.ok) { IFAIL[key] = (IFAIL[key] || 0) + 1; return; }
+      IMG[key] = r.img;
+      if (P && P.show === 'deck') slide();
+      var L = items(), it = L[Math.min((P && CUR[P.act]) || 0, L.length - 1)];
+      if (it && it.d) pgSlide(it);
+    }, function () { IBUSY = false; IFAIL[key] = (IFAIL[key] || 0) + 1; });
+  }, 300);
+  function slide() {
+    var u = IMG[DK.t + ':' + P.page];
+    $('slideImg').style.display = u ? '' : 'none'; $('slideLd').style.display = u ? 'none' : '';
+    if (u && $('slideImg').getAttribute('src') !== u) $('slideImg').src = u;
+  }
+  function pgSlide(it) {
+    var im = $('pgImg'); if (!im) return;
+    var u = IMG[it.d + ':' + it.p];
+    im.style.display = u ? '' : 'none'; $('pgLd').style.display = u ? 'none' : '';
+    if (u && im.getAttribute('src') !== u) im.src = u;
+  }
+
+  /* 확인용(수업엔 안 쓰임) */
+  window.__HUB = { st: function () { return { ME: ME, V: V, P: P, FAST: FAST, CUR: CUR, deck: { t: DK.t, n: DK.n, got: Object.keys(IMG).filter(function (k) { return k.indexOf(DK.t + ':') === 0; }).length }, imgs: Object.keys(IMG) }; } };
+
+  if (ME) { show('main'); tryLogin(ME); } else pickClass();
+})();
+</script>
+</body></html>
