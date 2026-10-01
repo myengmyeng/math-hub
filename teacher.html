@@ -62,13 +62,14 @@ body.tvm header,body.tvm main{display:none}body.tvm #pres .bar2,body.tvm #presSt
 body.tvm.in #tvIdle{display:flex}#tvIdle .big{font-size:52px;font-weight:800;margin:10px 0}#tvIdle .m{font-size:34px;opacity:.9}
 #tvIdle img{background:#fff;padding:12px;border-radius:12px;width:min(42vh,360px);image-rendering:pixelated}#tvIdle select{font-size:18px;margin-top:18px}
 #rmBar{display:none}body.rm #rmBar{display:flex;gap:10px;position:sticky;top:0;z-index:30;background:#fff;padding:10px;border-bottom:2px solid var(--line)}
-#rmBar button{flex:1;font-size:26px;padding:18px 0}body.rm table,body.rm #seqEd{display:none}body.rm button{font-size:17px;padding:10px 14px}
+#rmBar button{flex:1;font-size:26px;padding:18px 0}body.rm table,body.rm #seqEd,body.rm #xGal{display:none}body.rm.tvm #rmBar{display:flex;position:fixed;bottom:0;left:0;right:0;top:auto;z-index:100;opacity:.92}body.rm button{font-size:17px;padding:10px 14px}
 .upl{border:1px solid var(--line);border-radius:8px;padding:6px 11px;background:#fff;cursor:pointer}
 /* 🎮 게임 판 — 진도판 작은 판(.gbox)과 TV 큰 판(.gbox.big)이 같은 그림 */
 .gbox{background:#1d2b4f;color:#fff;border-radius:12px;padding:12px 16px;margin-top:8px;font-size:15px}
 .gh{display:flex;gap:12px;align-items:center;opacity:.9}.gh b{flex:1}.gh .rb{background:var(--or);border-radius:20px;padding:2px 10px;font-weight:700}
 .gc{text-align:center;padding:10px}.gbig{font-size:28px;font-weight:800;margin:6px 0;text-align:center}.gsub{opacity:.85;margin-bottom:8px}
-.gpl{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.gpl span{background:rgba(255,255,255,.14);border-radius:20px;padding:4px 12px}
+.gtm{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0}.gtm div{border-radius:12px;padding:8px 14px;color:#fff;font-weight:800;min-width:110px;text-align:center}.gtm small{display:block;font-weight:400;opacity:.9}.big .gtm div{font-size:30px;padding:14px 24px;min-width:200px}
+.gpl{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.gpl span{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.14);border-radius:20px;padding:4px 12px}
 .gp{font-size:22px;font-weight:700;margin:10px 0;line-height:1.5}.gi{text-align:center}.gi img{max-width:100%;max-height:30vh;background:#fff;border-radius:8px}
 .gcho{font-size:40px;letter-spacing:12px;text-align:center;font-weight:800;color:#ffd27a}
 .gch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.gch div{border-radius:10px;padding:12px;font-size:18px;display:flex;gap:10px;align-items:center}
@@ -86,6 +87,22 @@ body.tvm.in #tvIdle{display:flex}#tvIdle .big{font-size:52px;font-weight:800;mar
 .big .gcnt{font-size:34px}.big .gans{font-size:40px}.big .gcho{font-size:90px}.big .gord span,.big .gvals span{font-size:30px}.big .grank div{font-size:32px;padding:14px 22px}.big .pn{font-size:34px}.big .p1 .pb{height:220px}.big .p2 .pb{height:160px}.big .p3 .pb{height:110px}
 .big .gi img{max-height:40vh}.big #gQr img{background:#fff;padding:10px;border-radius:10px;margin:10px}.big .gpl span{font-size:26px;padding:6px 16px}.big .roul span{font-size:48px;padding:22px 30px}
 #gSnd{display:none;position:fixed;right:12px;bottom:12px;gap:8px;z-index:3}#gSnd button{background:rgba(255,255,255,.15);color:#fff;border:0}
+/* 🔍 답 보기·앨범·TV·판서 */
+.xgal,.stg{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin:6px 0}.xc{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;color:#1c2333}
+.xh{display:flex;gap:6px;align-items:center;font-weight:700;margin-bottom:4px}.xh button{padding:2px 6px}.xv{position:relative;margin-top:4px;font-size:16px}.xv svg,.stc svg{width:100%;height:auto;display:block;border-radius:6px}.xv .wph{max-width:100%;max-height:180px}
+.xv i{position:absolute;right:2px;top:-2px;font-style:normal;font-weight:900;font-size:20px}.xv i.ok{color:var(--g)}.xv i.no{color:var(--r)}
+.xalb{display:flex;flex-wrap:wrap;gap:6px}.xa{background:#eef1f7;border-radius:8px;padding:4px 8px;cursor:pointer;display:inline-flex;align-items:center;gap:4px}.xa.on{background:var(--or);color:#fff}.xa b{cursor:pointer;opacity:.6;padding:0 2px}
+.stkm{position:absolute;z-index:120;background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px;display:flex;flex-direction:column;gap:4px;box-shadow:0 6px 20px rgba(0,0,0,.15)}
+#snapTv{background:#1d2b4f;color:#fff;z-index:63;flex-direction:column;align-items:stretch;justify-content:flex-start;overflow:auto}#snapX{position:absolute;right:16px;top:12px}body.tvm #snapX{display:none}
+#snapIn{padding:24px 40px;display:flex;flex-wrap:wrap;gap:14px;align-content:flex-start}#snapIn .sth{flex:1 0 100%}#snapIn .stg{flex:1 0 100%}#snapIn .stc{flex:1 1 380px;margin:0}#snapIn .stc svg{max-height:74vh;width:auto;max-width:100%;margin:0 auto}.sth{font-size:30px;font-weight:800;margin-bottom:14px;display:flex;gap:10px;align-items:center}.stc{background:#fff;color:#1c2333;border-radius:14px;padding:16px;margin-bottom:12px;font-size:34px;max-width:1200px}
+.stc .wph{max-width:100%;max-height:70vh}#snapIn .stg .xc{font-size:20px}
+#inkL{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:97;display:none}#inkPad{position:fixed;inset:0;z-index:98;display:none;touch-action:none;cursor:crosshair}
+#inkBar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:99;display:none;gap:8px;background:#fff;padding:8px;border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.25)}#inkBar button{min-width:44px;height:44px}#inkBar button.on{outline:3px solid var(--navy)}
+/* 🖨 활동 화면 인쇄 — 인쇄할 때는 이것만 보인다 */
+#printArea{display:none}
+@media print{body>*:not(#printArea){display:none!important}#printArea{display:block}body{background:#fff}
+ .pp{page-break-after:always;padding:8mm 6mm;font-size:13pt;color:#000}.pp:last-child{page-break-after:auto}.pp h2{margin:0 0 6px;font-size:17pt}.pp .ph{font-size:10pt;color:#555;border-bottom:1px solid #999;margin-bottom:8px;padding-bottom:4px}
+ .pp svg{max-width:100%;max-height:120mm;border:1px solid #aaa}.pp .pbl{display:inline-block;min-width:60mm;border-bottom:1px solid #000;height:1.4em}.pp .pbx{border:1px solid #888;border-radius:4px;min-height:22mm;margin:4px 0}.pp .pph{border:1px dashed #888;height:60mm;display:flex;align-items:center;justify-content:center;color:#777}}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1c2333;color:#fff;padding:10px 18px;border-radius:10px;z-index:99}
 </style>
 </head><body>
@@ -93,17 +110,17 @@ body.tvm.in #tvIdle{display:flex}#tvIdle .big{font-size:52px;font-weight:800;mar
 <div id="login"><h2>수업 허브 — 진도판</h2><div>접속코드</div><input id="code" type="password" inputmode="numeric"><br><button class="pri" id="go">들어가기</button><p id="loginMsg" class="mut"></p></div>
 
 <div id="app">
-<div id="rmBar"><button id="rmPrev">◀</button><button id="rmPause">⏸</button><button id="rmNext">▶</button></div>
+<div id="rmBar"><button id="rmPrev">◀</button><button id="rmPause">⏸</button><button id="rmNext">▶</button><button id="rmInk">✏</button><button id="rmTv">📺</button></div>
 <header>
   <h1>수업 허브</h1>
   <select id="cls"></select>
   <span class="sp"></span>
-  <button id="bRoster">📋 반 관리</button><button id="bQr">📱 학생 접속 QR</button><button id="bPick">🎲 이름 뽑기</button>
+  <button id="bRoster">📋 반 관리</button><button id="bQr">📱 학생 접속 QR</button><button id="bPick">🎲 이름 뽑기</button><button id="bInk">✏ 판서</button>
 </header>
 <main>
   <div class="card">
     <div class="row"><span class="lab">활동</span><select id="actSel"></select><button class="pri" id="actOpen">열기</button><button id="actClose">닫기</button><span id="actNow" class="mut"></span></div>
-    <div class="row" id="scrRow" style="display:none"><span class="lab">화면</span><button class="tool" data-t="sync">🔗 동기화</button><button class="tool" data-t="range">⏱ 구간</button><button id="free">제한 풀기</button><button id="seqB">✏ 구성</button><span id="chips" class="row" style="margin:0"></span><span id="toolHint" class="mut"></span></div>
+    <div class="row" id="scrRow" style="display:none"><span class="lab">화면</span><button class="tool" data-t="sync">🔗 동기화</button><button class="tool" data-t="range">⏱ 구간</button><button id="free">제한 풀기</button><button id="seqB">✏ 구성</button><button id="bPrint" title="활동 화면을 종이 학습지로">🖨 인쇄</button><span id="chips" class="row" style="margin:0"></span><span id="toolHint" class="mut"></span></div>
     <div id="seqEd" class="card" style="display:none;background:#fff8f0;border-color:#f6c089">
       <div class="row"><b>✏ 구성 편집</b><span class="mut">① 위에서 넣을 자리(그 화면 뒤)를 누르고 ② 아래 발표 쪽을 누르면 끼워집니다. 끼운 쪽은 눌러서 ◀ ▶ 로 옮기거나 ✕ 로 뺍니다. 활동마다 저장되어 모든 반이 같이 씁니다.</span></div>
       <div class="row"><button id="seqL">◀ 앞으로</button><button id="seqR">뒤로 ▶</button><button id="seqX">✕ 빼기</button><span class="sp" style="flex:1"></span><button id="seqReset">처음 상태로</button><button id="seqCancel">취소</button><button class="hot" id="seqSave">저장</button></div>
@@ -117,12 +134,20 @@ body.tvm.in #tvIdle{display:flex}#tvIdle .big{font-size:52px;font-weight:800;mar
   </div>
 
   <div class="card" id="gCard">
-    <div class="row"><span class="lab">🎮 게임</span><select id="gSel"></select><label><input type="checkbox" id="gSpeed"> 빠르기 점수</label><button class="pri" id="gStart">▶ 게임 시작</button>
+    <div class="row"><span class="lab">🎮 게임</span><select id="gSel"></select><label><input type="checkbox" id="gSpeed"> 빠르기 점수</label><label><input type="checkbox" id="gTeam"> 모둠전</label><select id="gTeamN"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select><button class="pri" id="gStart">▶ 게임 시작</button>
       <label class="upl">📂 세트 올리기<input type="file" id="gFile" accept=".json" hidden></label><span id="gInfo" class="mut"></span></div>
     <div id="gRun" style="display:none">
       <div class="row"><b id="gNow"></b><span style="flex:1"></span><button class="hot" id="gNext">다음 ▶ (Space)</button><button id="gReveal">정답 공개</button><button id="gResume">이어서 진행</button><button id="gTvB">📺 크게</button><button id="gXls">📥 엑셀</button><button id="gEnd">■ 게임 닫기</button></div>
       <div id="gView" class="gbox"></div>
     </div>
+  </div>
+  <div class="card" id="xCard" style="display:none">
+    <div class="row"><span class="lab">🔍 답 보기</span><select id="xScr"></select><label><input type="checkbox" id="xNames" checked> 이름</label>
+      <button id="xTvG">🔍 모아 보기 → TV</button><button id="xOvl">🗂 겹쳐 보기 → TV</button><button id="xPeek">👁 TV 미리보기</button><span id="xSum" class="mut"></span></div>
+    <div id="xGal" class="xgal"></div>
+    <div class="row"><span class="lab">📸 앨범</span><span id="xAlb" class="xalb"></span></div>
+    <div class="row"><span class="lab"></span><button class="hot" id="xShow">▶ TV 에 띄우기</button><button id="xPrev">◀ 이전</button><button id="xNext">다음 ▶</button><button id="xHide">■ 내리기</button>
+      <label><input type="checkbox" id="xStu"> 학생 화면에도</label><label><input type="checkbox" id="xAnon"> 이름 가리기</label><button id="xClr">앨범 비우기</button></div>
   </div>
   <div class="card" id="qPanel">
     <div class="row"><span class="lab">❓ 질문</span><b id="qTitle"></b><span id="qCount" class="mut"></span><span class="sp" style="flex:1"></span>
@@ -135,7 +160,7 @@ body.tvm.in #tvIdle{display:flex}#tvIdle .big{font-size:52px;font-weight:800;mar
     <div id="reqs"></div>
     <div class="row" id="sigSum"></div>
   </div>
-  <table><thead><tr><th>번호</th><th>닉네임</th><th>접속</th><th>화면</th><th>이해도</th><th>받음</th><th>진행</th><th>도움</th><th>태블릿</th></tr></thead><tbody id="tb"></tbody></table>
+  <table><thead><tr><th>번호</th><th>닉네임</th><th>★</th><th>접속</th><th>화면</th><th>이해도</th><th>받음</th><th>진행</th><th>도움</th><th>태블릿</th></tr></thead><tbody id="tb"></tbody></table>
 </main>
 </div>
 
@@ -150,6 +175,10 @@ body.tvm.in #tvIdle{display:flex}#tvIdle .big{font-size:52px;font-weight:800;mar
 <div class="ov" id="pres"><div class="bar2"><b id="presPg"></b><span id="presSt"></span><span class="sp"></span><button id="presPrev">◀ 이전</button><button id="presNext">다음 ▶</button><button id="presPause">⏸ 일시 정지</button><button id="presHide">진도판 보기</button><button class="hot" id="presEnd">■ 발표 끝내기</button></div><img id="presImg" alt=""><div id="presStrip"></div></div>
 
 <div id="tvIdle"><div class="m" id="tvCls"></div><div class="big" id="tvBig">수업 허브</div><div class="m" id="tvMsg"></div><div id="tvQr"></div><select id="tvSel"></select></div>
+<div class="ov" id="snapTv"><button id="snapX">닫기</button><div id="snapIn"></div></div>
+<svg id="inkL" preserveAspectRatio="none"></svg><div id="inkPad"></div>
+<div id="inkBar"><button data-c="#e04646" class="on" style="background:#e04646"></button><button data-c="#3b6fe0" style="background:#3b6fe0"></button><button data-c="#1c2333" style="background:#1c2333"></button><button data-c="#ffe14d" style="background:#ffe14d" title="형광펜"></button><button id="inkU">↶</button><button id="inkX">지우기</button><button id="inkE">✕ 끝</button></div>
+<div id="printArea"></div>
 <div class="ov" id="gTv"><button id="gTvX">닫기</button><div id="gTvIn" class="gbox big"></div><div id="gSnd"><button id="gMus"></button><button id="gSfx"></button></div></div>
 <div class="ov" id="tv"><button id="tvX">닫기</button><h1 id="tvT"></h1><div id="tvRes"></div></div>
 
@@ -188,6 +217,31 @@ var ACTS = {
         '<h2>정리</h2>' +
         '<p class="ask">계속 범위를 좁히면 끝이 날까요? 한 줄로 써 보세요.</p>' +
         '<textarea data-k="g3" rows="3"></textarea>' }
+    ]
+  },
+  /* ③ 탐구 부품 예시 — 좌표평면 점 찍기·수식 답(정답 있음)·S펜 그림·사진·서술. 부품 규칙은 wview.js 맨 위 */
+  slope: {
+    title: '예시 — 직선의 기울기 탐구',
+    screens: [
+      { t: '두 점 찍기', html:
+        '<h2>원점을 지나지 않는 직선 만들기</h2>' +
+        '<p>좌표평면에 점 두 개를 찍어 직선을 만드세요. 찍은 점은 끌어서 옮길 수 있습니다.</p>' +
+        '<div data-k="p" data-kind="graph" data-range="-5,5,-5,5" data-pts="2" data-line="1"></div>' +
+        '<p class="ask">내 직선의 기울기는? (분수는 키패드의 분수 칸으로)</p>' +
+        '<math-field data-k="m"></math-field>' },
+      { t: '기울기가 1/2', html:
+        '<h2>기울기가 $\\frac{1}{2}$ 인 직선</h2>' +
+        '<p>점 $(0,1)$ 을 지나고 기울기가 $\\frac{1}{2}$ 인 직선 위의 점 $(4,\\square)$ 의 $y$ 좌표는?</p>' +
+        '<math-field data-k="y" data-ans="3"></math-field>' },
+      { t: '그려서 설명', html:
+        '<h2>기울기가 클수록?</h2>' +
+        '<p>기울기가 1, 2, 3 인 직선을 대강 그려 보고, 기울기가 클수록 어떻게 되는지 화살표로 표시해 보세요.</p>' +
+        '<div data-k="sk" data-kind="sketch" data-bg="grid" data-h="0.55"></div>' },
+      { t: '종이 풀이', html:
+        '<h2>학습지 풀이 올리기</h2>' +
+        '<p>학습지 2번 풀이를 사진으로 찍어 올리세요.</p>' +
+        '<div data-k="ph" data-kind="photo"></div>' +
+        '<p class="ask">한 줄 정리</p><textarea data-k="t" rows="2"></textarea>' }
     ]
   }
 };
@@ -291,7 +345,7 @@ function sub_(filter, keys) {
 var WATCH = null;
 function watch_(cls) {
   if (TEACHER || WATCH === cls) return; WATCH = cls;
-  var keys = ['P:' + cls, 'B:' + cls, 'GQ:' + cls, 'DECK', 'CLASSES'];
+  var keys = ['P:' + cls, 'B:' + cls, 'GQ:' + cls, 'SNAP:' + cls, 'STK:' + cls, 'NICK:' + cls, 'STAR:' + cls, 'DECK', 'CLASSES'];
   sub_('k=in.(' + keys.map(function (k) { return '"' + k + '"'; }).join(',') + ')', keys);
 }
 var HUB_READY = (function () {
@@ -330,6 +384,9 @@ function paceBlank_() { return { v: 0, act: null, sync: null, from: null, to: nu
 /* 반 이름은 '학년-반'(1~3학년, 1~15반) 또는 체험. 번호는 1~45(체험은 1~5) */
 function okWho_(cls, no) { return cls === DEMO ? no >= 1 && no <= 5 : /^[1-3]-([1-9]|1[0-5])$/.test(cls) && no >= 1 && no <= 45; }
 /* 진도판에 보일 번호 = 태블릿이 묶인 번호 + 지금 접속한 번호 */
+/* 선생님이 바꾼 닉네임(NICK:반 {번호:{n, d}}) — 그날만 */
+function day_() { var d = new Date(ST.now()); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+function nick_(cls) { var a = rd_('NICK:' + cls, {}) || {}, o = {}, d = day_(); Object.keys(a).forEach(function (n) { if (a[n] && a[n].d === d && a[n].n) o[n] = a[n].n; }); return o; }
 function nos_(cls) {
   var s = {};
   if (cls === DEMO) [1, 2, 3, 4, 5].forEach(function (n) { s[n] = 1; });
@@ -366,7 +423,8 @@ function login(cls, no, dev) {
 
 /* 학생이 자주 부른다(로컬 2~5초, supa 는 거울만 읽어서 0.4초). 바뀐 게 없으면 상태를 보내지 않는다.
  * info = { act, scr, sig, prog, help, nick, ani } — 진도판 현황표용 */
-function pull(cls, no, dev, v, info, gt) {
+function pull(cls, no, dev, v, info, seen) {
+  seen = typeof seen === 'object' && seen ? seen : { g: seen };
   cls = String(cls); no = Number(no);
   var now = ST.now(), sk = 'S:' + cls + ':' + no;
   var c = ST.cgetAll(['P:' + cls, 'B:' + cls, 'DECK', 'L:' + cls, sk]);
@@ -379,7 +437,12 @@ function pull(cls, no, dev, v, info, gt) {
   var d = c.DECK != null ? j_(c.DECK, null) : rd_('DECK', null);
   var s = j_(c[sk], {}), out = { now: now, fast: !!c['L:' + cls], deck: d ? { t: d.t, n: d.n } : null };
   var g = rd_('GQ:' + cls, null);
-  if ((g ? g.t : 0) !== (gt || 0)) out.g = g || { t: 0 };
+  if ((g ? g.t : 0) !== (seen.g || 0)) out.g = g || { t: 0 };
+  var sn = rd_('SNAP:' + cls, null), stk = (rd_('STK:' + cls, {}) || {})[no];   // 스냅샷(학생 화면에도), 나에게 온 스티커
+  if (sn && sn.t !== (seen.sn || 0)) out.sn = sn;
+  if (stk && stk.t !== (seen.sk || 0)) out.sk = stk;
+  var my = (rd_('STAR:' + cls, {}) || {})[no]; if (my && my.t !== (seen.st || 0)) out.st = my;   // 내 누적 별
+  var nk = nick_(cls)[no]; if (nk && nk !== (info && info.nick)) out.nk = nk;   // 선생님이 바꾼 닉네임
   if (p.v !== v) {
     out.p = p;
     if (p.v > (s.gv || 0)) { s.gv = p.v; s.lat = now - p.v; }   // 선생님이 바꾼 뒤 이 학생에게 닿기까지 걸린 시간
@@ -485,16 +548,16 @@ function board(code, cls) {
     if (p.q) { var a = c['A:' + cls + ':' + p.q.id + ':' + n]; if (a) ans[n] = j_(a, null); }
   });
   /* roster = [[번호, 닉네임, 캐릭터]] — 진도판이 예전 명렬표 자리에 그대로 쓴다 */
-  var ro = ns.map(function (n) { var s = pres[n] || {}; return [n, s.nick || '', s.ani || '']; });
+  var NK = nick_(cls), ro = ns.map(function (n) { var s = pres[n] || {}; return [n, NK[n] || s.nick || '', s.ani || '', !!NK[n]]; });
   var b = rd_('B:' + cls, {}), bound = {};
   Object.keys(b).forEach(function (k) { bound[k] = String(b[k]).slice(-4); });
   /* 게임: 공개 상태 + 지금 문항(또는 베팅)에 답한 수 + 리모컨 신호 + 세트 목록 */
   var g = rd_('GQ:' + cls, null), gcnt = 0;
-  if (g && (g.phase === 'q' || g.phase === 'bet')) {
-    var pre = 'GA:' + cls + ':' + g.gid + ':' + (g.phase === 'bet' ? 'b' : '') + g.qi + ':';
+  if (g && (g.phase === 'q' || g.phase === 'bet' || g.phase === 'lobby' && g.teams)) {
+    var pre = 'GA:' + cls + ':' + g.gid + ':' + (g.phase === 'lobby' ? 't' : (g.phase === 'bet' ? 'b' : '') + g.qi) + ':';
     gcnt = Object.keys(ST.cgetAll(ns.map(function (n) { return pre + n; }))).length;
   }
-  return { ok: true, now: ST.now(), classes: rd_('CLASSES', []).concat([DEMO]), game: g, gcnt: gcnt, gc: rd_('GC:' + cls, null), gsets: rd_('GSETS', []), pace: p, roster: ro, bound: bound, reqs: rd_('Q:' + cls, []), pres: pres, ans: ans };
+  return { ok: true, now: ST.now(), classes: rd_('CLASSES', []).concat([DEMO]), game: g, gcnt: gcnt, gc: rd_('GC:' + cls, null), gsets: rd_('GSETS', []), snap: rd_('SNAP:' + cls, null), ink: rd_('INK:' + cls, null), stk: rd_('STK:' + cls, {}), nick: rd_('NICK:' + cls, {}), star: rd_('STAR:' + cls, {}), pace: p, roster: ro, bound: bound, reqs: rd_('Q:' + cls, []), pres: pres, ans: ans };
 }
 
 /* 발표 자료: 진도판이 쪽마다 JPG 로 올린다. 모든 반이 같은 자료를 쓴다 */
@@ -532,7 +595,7 @@ function saveSeq(code, cls, act, seq) {
 function bad_() { return { ok: false, msg: '접속코드가 맞지 않아요' }; }
 function gput(code, k, v) {
   if (!okCode_(code)) return bad_();
-  k = String(k); if (!/^(GQ|GC):|^GSETS$/.test(k)) return { ok: false, msg: '쓸 수 없는 키' };
+  k = String(k); if (!/^(GQ|GC|SNAP|INK|STK|NICK|STAR):|^GSETS$/.test(k)) return { ok: false, msg: '쓸 수 없는 키' };
   if (v == null) ST.pset(k, ''); else wr_(k, v);
   return { ok: true };
 }
@@ -541,7 +604,7 @@ function gans(cls, no, dev, gid, qi, val, ms) {
   cls = String(cls); no = Number(no); qi = String(qi);
   if (cls !== DEMO && rd_('B:' + cls, {})[no] !== dev) return { ok: false, msg: '다시 들어와 주세요' };
   var g = rd_('GQ:' + cls, null), bet = qi.charAt(0) === 'b';
-  if (!g || g.gid !== gid || (bet ? g.phase !== 'bet' || 'b' + g.qi !== qi : g.phase !== 'q' || String(g.qi) !== qi)) return { ok: false, msg: '시간이 끝났어요' };
+  if (!g || g.gid !== gid || (qi === 't' ? g.phase !== 'lobby' || !g.teams : bet ? g.phase !== 'bet' || 'b' + g.qi !== qi : g.phase !== 'q' || String(g.qi) !== qi)) return { ok: false, msg: '시간이 끝났어요' };   // 't' = 대기실에서 모둠 고르기
   ST.cput('GA:' + cls + ':' + gid + ':' + qi + ':' + no, JSON.stringify({ v: str_(val, 300), ms: Math.max(0, Number(ms) || 0) }));
   return { ok: true };
 }
@@ -560,6 +623,22 @@ function setSave(code, k, v) { if (!okCode_(code)) return bad_(); ST.sset(str_(k
 function setLoad(code, k) { if (!okCode_(code)) return bad_(); return { ok: true, v: ST.sget(str_(k, 80)) }; }
 function filePut(code, id, data) { if (!okCode_(code)) return bad_(); ST.filePut(str_(id, 80), data); return { ok: true }; }
 function fileGet(id) { var v = ST.fileData(str_(id, 80)); return v && v.then ? v.then(function (x) { return { ok: true, v: x }; }) : { ok: !!v, v: v }; }
+
+/* ---------------- 탐구 화면 답(③) ----------------
+ * 학생이 활동 화면에 쓴 답 전체(키별)를 활동마다 한 덩어리로. supabase.sql 의 s_work·t_works 가 같은 규칙 */
+function work(cls, no, dev, act, data) {
+  cls = String(cls); no = Number(no);
+  if (cls !== DEMO && rd_('B:' + cls, {})[no] !== dev) return { ok: false, msg: '다시 들어와 주세요' };
+  data = String(data || ''); if (data.length > 600000) return { ok: false, msg: '답이 너무 커요(사진을 줄여 주세요)' };
+  ST.cput('W:' + cls + ':' + str_(act, 30) + ':' + no, JSON.stringify({ v: data, t: ST.now() }));
+  return { ok: true };
+}
+function works(code, cls, act) {
+  if (!okCode_(code)) return bad_();
+  cls = String(cls); var ns = nos_(cls), pre = 'W:' + cls + ':' + str_(act, 30) + ':', c = ST.cgetAll(ns.map(function (n) { return pre + n; })), out = {};
+  ns.forEach(function (n) { var x = j_(c[pre + n], null); if (x) out[n] = { w: j_(x.v, {}), t: x.t }; });
+  return { ok: true, works: out };
+}
 
 
 /* server.js 위에 덮어쓰기 — 학생 쓰기는 DB 함수로, 진도판 코드는 DB 가 확인, 그림은 files 표에서 */
@@ -602,13 +681,24 @@ filePut = function (code, id, data) {
   return sb.rpc('t_file', { c: String(code), k: str_(id, 80), v: data })
     .then(function (r) { return r.error || r.data === false ? { ok: false, msg: r.error ? r.error.message : '진도판 코드가 맞지 않아요' } : { ok: true }; });
 };
+work = function (cls, no, dev, act, data) {
+  return sb.rpc('s_work', { cls: String(cls), no: Number(no), dev: String(dev), act: str_(act, 30), v: String(data || '') })
+    .then(function (r) { if (r.error) throw r.error.message; return r.data; });
+};
+works = function (code, cls, act) {
+  return sb.rpc('t_works', { c: String(code), cls: String(cls), act: str_(act, 30) }).then(function (r) {
+    if (r.error) return { ok: false, msg: r.error.message };
+    var out = {}; Object.keys(r.data || {}).forEach(function (no) { out[no] = { w: j_(r.data[no].v, {}), t: r.data[no].t }; });
+    return { ok: true, works: out };
+  });
+};
 deckPage = function (code, key, i, img) {
   if (!okCode_(code)) return { ok: false, msg: '접속코드가 맞지 않아요' };
   var id = key + '/p' + ('0' + (i + 1)).slice(-2);
   return sb.rpc('t_file', { c: CODE, k: id, v: img }).then(function (r) { return r.error || r.data === false ? { ok: false, msg: r.error ? r.error.message : '진도판 코드가 맞지 않아요' } : { ok: true, i: i, id: id }; });
 };
 
-return { login: login, pull: pull, answer: answer, getSlide: getSlide, tLogin: tLogin, approve: approve, unbind: unbind, setPace: setPace, board: board, deckBegin: deckBegin, deckPage: deckPage, deckEnd: deckEnd, saveSeq: saveSeq, gput: gput, gans: gans, gboard: gboard, gclear: gclear, setSave: setSave, setLoad: setLoad, filePut: filePut, fileGet: fileGet, ready: HUB_READY, online: true };
+return { login: login, pull: pull, answer: answer, getSlide: getSlide, tLogin: tLogin, approve: approve, unbind: unbind, setPace: setPace, board: board, deckBegin: deckBegin, deckPage: deckPage, deckEnd: deckEnd, saveSeq: saveSeq, gput: gput, gans: gans, gboard: gboard, gclear: gclear, setSave: setSave, setLoad: setLoad, filePut: filePut, fileGet: fileGet, work: work, works: works, ready: HUB_READY, online: true };
 })();
 /* 서버 부르기 — server.js 가 브라우저 안(HUB)에서 돈다. 배포본은 Supabase 거울(supa.js), 로컬은 localStorage(fake.js).
  * 서버 함수는 값이나 Promise 를 돌려준다. 로컬은 120~400ms 늦게 답해 실제 통신처럼 */
@@ -684,6 +774,146 @@ function cho(s) {
   return String(s).replace(/[가-힣]/g, function (c) { return 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ'[Math.floor((c.charCodeAt(0) - 0xAC00) / 588)]; });
 }
 
+/* 캐릭터 20종 — 몸 모양·색·눈·입·꾸미개를 섞어 그린 SVG(그림 파일 없음). 학생·진도판·TV 공용.
+ *  av(코드, 크기px) → <svg> 글. 코드는 'a0'~'a19'. 예전 이모지 값이 오면 그 글자를 그대로 쓴다. */
+var AV = [
+  { n: '불꽃이', b: 'flame', c: '#ff6b4a', e: 'angry', m: 'grin', a: '' },
+  { n: '물방울', b: 'drop', c: '#4aa8ff', e: 'sparkle', m: 'smile', a: '' },
+  { n: '새싹이', b: 'bean', c: '#7bd88f', e: 'dot', m: 'smile', a: 'sprout' },
+  { n: '별똥이', b: 'star', c: '#ffd23f', e: 'happy', m: 'open', a: '' },
+  { n: '구름이', b: 'cloud', c: '#cfd8ff', e: 'sleepy', m: 'o', a: '' },
+  { n: '번개', b: 'round', c: '#9b6bff', e: 'sparkle', m: 'grin', a: 'bolt' },
+  { n: '외눈이', b: 'bean', c: '#ffa53a', e: 'one', m: 'smile', a: '' },
+  { n: '유령', b: 'ghost', c: '#eef3ff', e: 'dot', m: 'o', a: '' },
+  { n: '로봇', b: 'square', c: '#b8c2d1', e: 'rect', m: 'flat', a: 'antenna' },
+  { n: '공주', b: 'round', c: '#ff9ccf', e: 'sparkle', m: 'smile', a: 'crown' },
+  { n: '해적', b: 'round', c: '#3fc1b0', e: 'patch', m: 'grin', a: '' },
+  { n: '박사', b: 'square', c: '#c9a27c', e: 'glasses', m: 'smile', a: '' },
+  { n: 'DJ', b: 'round', c: '#7fe3d0', e: 'happy', m: 'open', a: 'phones' },
+  { n: '마법사', b: 'bean', c: '#5b7bd6', e: 'dot', m: 'smile', a: 'wizard' },
+  { n: '공룡', b: 'bean', c: '#5fc96b', e: 'dot', m: 'grin', a: 'spikes' },
+  { n: '냥이', b: 'round', c: '#4b4f5c', e: 'cat', m: 'cat', a: 'catears' },
+  { n: '토순이', b: 'bean', c: '#ffffff', e: 'dot', m: 'cat', a: 'bunny' },
+  { n: '천사', b: 'round', c: '#fff1a8', e: 'happy', m: 'smile', a: 'halo' },
+  { n: '꼬마악마', b: 'round', c: '#e8505b', e: 'angry', m: 'grin', a: 'horns' },
+  { n: '외계인', b: 'bean', c: '#b6f05a', e: 'three', m: 'o', a: 'antennas' }
+];
+function av(code, px) {
+  var k = /^a(\d+)$/.exec(String(code || '')), d = k && AV[Number(k[1])];
+  px = px || 28;
+  if (!d) return code ? '<span style="font-size:' + px * 0.8 + 'px">' + String(code).replace(/[<>&]/g, '') + '</span>' : '';
+  var S = '#2a2f3d', back = '', front = '', body = '', eyes = '', mouth = '';
+  var B = {
+    round: '<circle cx="32" cy="36" r="22"/>',
+    square: '<rect x="10" y="14" width="44" height="44" rx="12"/>',
+    drop: '<path d="M32 8C44 24 54 31 54 42a22 22 0 0 1-44 0C10 31 20 24 32 8z"/>',
+    star: '<path d="M32 9l7 15 16 2-12 11 3 16-14-8-14 8 3-16-12-11 16-2z"/>',
+    cloud: '<path d="M16 54a10 10 0 0 1-2-20 12 12 0 0 1 18-12 12 12 0 0 1 20 6 10 10 0 0 1-2 26z"/>',
+    ghost: '<path d="M10 58V34a22 22 0 0 1 44 0v24l-7-5-7 5-8-5-8 5-7-5z"/>',
+    flame: '<path d="M32 5c6 12 20 18 20 35a20 20 0 0 1-40 0c0-10 7-14 9-23 4 7 8 5 11-12z"/>',
+    bean: '<ellipse cx="32" cy="37" rx="20" ry="23"/>'
+  };
+  body = '<g fill="' + d.c + '" stroke="' + S + '" stroke-width="2.5" stroke-linejoin="round">' + B[d.b] + '</g>';
+  var ey = d.b === 'star' ? 34 : 35;
+  var E = {
+    dot: '<circle cx="25" cy="' + ey + '" r="3.2"/><circle cx="39" cy="' + ey + '" r="3.2"/>',
+    sparkle: '<circle cx="25" cy="' + ey + '" r="4.6"/><circle cx="39" cy="' + ey + '" r="4.6"/><circle cx="26.6" cy="' + (ey - 1.6) + '" r="1.6" fill="#fff"/><circle cx="40.6" cy="' + (ey - 1.6) + '" r="1.6" fill="#fff"/>',
+    happy: '<path d="M21 ' + (ey + 1) + 'q4-6 8 0M35 ' + (ey + 1) + 'q4-6 8 0" fill="none" stroke="' + S + '" stroke-width="2.6" stroke-linecap="round"/>',
+    sleepy: '<path d="M21 ' + ey + 'q4 3 8 0M35 ' + ey + 'q4 3 8 0" fill="none" stroke="' + S + '" stroke-width="2.6" stroke-linecap="round"/>',
+    angry: '<circle cx="25" cy="' + (ey + 1) + '" r="3.2"/><circle cx="39" cy="' + (ey + 1) + '" r="3.2"/><path d="M20 ' + (ey - 5) + 'l9 3M44 ' + (ey - 5) + 'l-9 3" stroke="' + S + '" stroke-width="2.6" stroke-linecap="round"/>',
+    one: '<circle cx="32" cy="' + (ey - 1) + '" r="8.5" fill="#fff" stroke="' + S + '" stroke-width="2.5"/><circle cx="33" cy="' + ey + '" r="4.2"/>',
+    three: '<circle cx="23" cy="' + ey + '" r="3"/><circle cx="32" cy="' + (ey - 4) + '" r="3"/><circle cx="41" cy="' + ey + '" r="3"/>',
+    rect: '<rect x="20" y="' + (ey - 4) + '" width="9" height="7" rx="1.5" fill="#5ff2ff" stroke="' + S + '" stroke-width="2"/><rect x="35" y="' + (ey - 4) + '" width="9" height="7" rx="1.5" fill="#5ff2ff" stroke="' + S + '" stroke-width="2"/>',
+    glasses: '<circle cx="25" cy="' + ey + '" r="2.6"/><circle cx="39" cy="' + ey + '" r="2.6"/><g fill="none" stroke="' + S + '" stroke-width="2.2"><circle cx="25" cy="' + ey + '" r="6"/><circle cx="39" cy="' + ey + '" r="6"/><path d="M31 ' + ey + 'h2"/></g>',
+    patch: '<circle cx="25" cy="' + ey + '" r="3.2"/><path d="M12 24L52 40" stroke="' + S + '" stroke-width="2"/><ellipse cx="39" cy="' + ey + '" rx="6" ry="5"/>',
+    cat: '<path d="M22 ' + ey + 'a3 4 0 0 0 6 0M36 ' + ey + 'a3 4 0 0 0 6 0" fill="#ffd23f" stroke="' + S + '" stroke-width="2"/>'
+  };
+  eyes = '<g fill="' + S + '">' + E[d.e] + '</g>';
+  var my = d.b === 'star' ? 43 : 45;
+  var M = {
+    smile: '<path d="M26 ' + my + 'q6 6 12 0" fill="none" stroke="' + S + '" stroke-width="2.6" stroke-linecap="round"/>',
+    open: '<path d="M26 ' + (my - 1) + 'q6 9 12 0z" fill="#c8384a" stroke="' + S + '" stroke-width="2" stroke-linejoin="round"/>',
+    o: '<ellipse cx="32" cy="' + (my + 1) + '" rx="3" ry="3.6" fill="' + S + '"/>',
+    grin: '<path d="M24 ' + (my - 2) + 'h16q-8 10-16 0z" fill="#fff" stroke="' + S + '" stroke-width="2.2" stroke-linejoin="round"/>',
+    flat: '<path d="M26 ' + (my + 1) + 'h12" stroke="' + S + '" stroke-width="2.6" stroke-linecap="round"/>',
+    cat: '<path d="M26 ' + my + 'q3 4 6 0q3 4 6 0" fill="none" stroke="' + S + '" stroke-width="2.4" stroke-linecap="round"/>'
+  };
+  mouth = M[d.m] + (d.e !== 'patch' && d.e !== 'rect' ? '<g fill="#ff7aa8" opacity=".45"><circle cx="18" cy="' + (my - 2) + '" r="3.5"/><circle cx="46" cy="' + (my - 2) + '" r="3.5"/></g>' : '');
+  var A = {
+    sprout: ['', '<path d="M32 14V6" stroke="#2f8f3f" stroke-width="2.5"/><path d="M32 8c-8-5-12 0-10 2 4 2 8 0 10-2zM32 8c8-5 12 0 10 2-4 2-8 0-10-2z" fill="#4cc35f" stroke="' + S + '" stroke-width="1.6"/>'],
+    crown: ['', '<path d="M20 16l3-10 5 6 4-8 4 8 5-6 3 10z" fill="#ffc83a" stroke="' + S + '" stroke-width="2" stroke-linejoin="round"/>'],
+    halo: ['', '<ellipse cx="32" cy="8" rx="13" ry="3.5" fill="none" stroke="#ffc83a" stroke-width="3"/>'],
+    horns: ['<path d="M15 22l-3-16 12 9zM49 22l3-16-12 9z" fill="#7a1f2a" stroke="' + S + '" stroke-width="2" stroke-linejoin="round"/>', ''],
+    antenna: ['', '<path d="M32 14V5" stroke="' + S + '" stroke-width="2.5"/><circle cx="32" cy="5" r="3.5" fill="#ff5a5a" stroke="' + S + '" stroke-width="2"/>'],
+    antennas: ['', '<path d="M25 15l-5-10M39 15l5-10" stroke="' + S + '" stroke-width="2.5"/><circle cx="20" cy="5" r="3" fill="#ff5ad1"/><circle cx="44" cy="5" r="3" fill="#ff5ad1"/>'],
+    catears: ['<path d="M13 26l2-17 12 9zM51 26l-2-17-12 9z" fill="' + d.c + '" stroke="' + S + '" stroke-width="2.5" stroke-linejoin="round"/>', '<path d="M12 40h8M12 45h8M44 40h8M44 45h8" stroke="#ddd" stroke-width="1.6"/>'],
+    bunny: ['<g fill="#fff" stroke="' + S + '" stroke-width="2.5"><ellipse cx="23" cy="10" rx="5" ry="12"/><ellipse cx="41" cy="10" rx="5" ry="12"/></g><g fill="#ffb3c8"><ellipse cx="23" cy="10" rx="2.2" ry="8"/><ellipse cx="41" cy="10" rx="2.2" ry="8"/></g>', ''],
+    phones: ['', '<path d="M11 36a21 21 0 0 1 42 0" fill="none" stroke="' + S + '" stroke-width="3"/><rect x="6" y="32" width="9" height="14" rx="4" fill="#ff5a7a" stroke="' + S + '" stroke-width="2"/><rect x="49" y="32" width="9" height="14" rx="4" fill="#ff5a7a" stroke="' + S + '" stroke-width="2"/>'],
+    wizard: ['', '<path d="M14 20L36 0l-2 20z" fill="#2b3a8c" stroke="' + S + '" stroke-width="2" stroke-linejoin="round"/><path d="M10 20h34" stroke="' + S + '" stroke-width="3" stroke-linecap="round"/><path d="M27 10l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.2-2.4 1.2.5-2.6-1.9-1.8 2.6-.4z" fill="#ffd23f"/>'],
+    spikes: ['<path d="M18 18l4-9 4 7 6-10 6 10 4-7 4 9z" fill="#2f9a3e" stroke="' + S + '" stroke-width="2" stroke-linejoin="round"/>', ''],
+    bolt: ['', '<path d="M34 1l-9 12h7l-4 9 11-13h-7l4-8z" fill="#ffd23f" stroke="' + S + '" stroke-width="1.8" stroke-linejoin="round"/>']
+  };
+  if (d.a) { back = A[d.a][0]; front = A[d.a][1]; }
+  return '<svg class="av" width="' + px + '" height="' + px + '" viewBox="0 0 64 64" style="vertical-align:middle;flex:none" role="img" aria-label="' + d.n + '">' + back + body + eyes + mouth + front + '</svg>';
+}
+
+/* 학기 누적 별 → 레벨(별 5개마다 한 단계). 기준은 기획서 7절 — 바꾸려면 여기만 */
+var LV = ['새싹', '떡잎', '줄기', '꽃봉오리', '꽃', '열매', '나무', '숲', '산', '별'];
+function lvl(stars) { var n = Math.min(LV.length, Math.floor((stars || 0) / 5) + 1); return { n: n, name: LV[n - 1], next: n < LV.length ? n * 5 - (stars || 0) : 0 }; }
+
+/* 탐구 화면의 학생 답 — 부품 읽기와 그리기(학생·진도판·TV 공용).
+ * 활동 화면 html(acts.js) 안의 부품:
+ *   <input data-k="이름" data-ans="정답(선택)">, <textarea data-k>, <math-field data-k data-ans>  → 글·수식
+ *   <div data-k data-kind="sketch" data-bg="grid|blank|그림주소" data-h="0.6">                  → S펜 그림(높이 = 너비×h)
+ *   <div data-k data-kind="graph" data-range="-5,5,-5,5" data-pts="2" data-line="1">            → 좌표평면 점 찍기(점 n개, 두 점이면 직선)
+ *   <div data-k data-kind="photo">                                                              → 사진 올리기
+ * 값: 글·수식 = 글자, sketch = {"s":[[색,굵기,"x,y x,y …"]…]} (가로 1000 기준), graph = {"p":[[x,y]…]}, photo = data:image/jpeg… */
+function wcomps(html) {
+  var box = document.createElement('div'); box.innerHTML = html || '';
+  return [].map.call(box.querySelectorAll('[data-k]'), function (el) {
+    var kind = el.getAttribute('data-kind') || (el.tagName === 'MATH-FIELD' ? 'math' : 'text');
+    return { k: el.getAttribute('data-k'), kind: kind, ans: el.getAttribute('data-ans'), bg: el.getAttribute('data-bg') || 'grid',
+      h: Number(el.getAttribute('data-h')) || 0.6, range: (el.getAttribute('data-range') || '-5,5,-5,5').split(',').map(Number),
+      pts: Number(el.getAttribute('data-pts')) || 2, line: el.getAttribute('data-line') === '1' };
+  });
+}
+var WCOL = ['#e04646', '#3b6fe0', '#2fa84f', '#f2852b', '#8e5bd8', '#00a3a3', '#d6336c', '#795548'];
+function wjson(v) { try { return typeof v === 'string' ? JSON.parse(v) : v; } catch (e) { return null; } }
+function wok(c, v) { return c.ans == null || v == null || v === '' ? null : eqAns(v, c.ans); }   // 정답이 정해진 칸만 ✓✗
+/* 그래프 바탕(격자·축) — 좌표 → 화면 W×H */
+function gaxes(r, W, H) {
+  var X = function (x) { return (x - r[0]) / (r[1] - r[0]) * W; }, Y = function (y) { return H - (y - r[2]) / (r[3] - r[2]) * H; }, s = '';
+  for (var x = Math.ceil(r[0]); x <= r[1]; x++) s += '<path d="M' + X(x) + ' 0V' + H + '" stroke="' + (x ? '#e3e7ef' : '#7d8699') + '" stroke-width="' + (x ? 1 : 2) + '"/>';
+  for (var y = Math.ceil(r[2]); y <= r[3]; y++) s += '<path d="M0 ' + Y(y) + 'H' + W + '" stroke="' + (y ? '#e3e7ef' : '#7d8699') + '" stroke-width="' + (y ? 1 : 2) + '"/>';
+  return { s: s, X: X, Y: Y };
+}
+/* 한 학생 값(또는 여러 학생 값 = 겹쳐 보기) 그리기. vals = [[값, 색]] */
+function wdraw(c, vals) {
+  if (c.kind === 'sketch') {
+    var H = Math.round(1000 * c.h), bg = c.bg === 'grid' ? gridBg(H) : c.bg !== 'blank' ? '<image href="' + c.bg + '" x="0" y="0" width="1000" height="' + H + '" preserveAspectRatio="xMidYMid meet"/>' : '';
+    return '<svg viewBox="0 0 1000 ' + H + '" class="wsv"><rect width="1000" height="' + H + '" fill="#fff"/>' + bg + vals.map(function (x) {
+      var d = wjson(x[0]) || {}; return (d.s || []).map(function (st) { return '<polyline points="' + st[2] + '" fill="none" stroke="' + (x[1] || st[0]) + '" stroke-width="' + st[1] + '" stroke-linecap="round" stroke-linejoin="round"' + (x[1] ? ' opacity=".7"' : '') + '/>'; }).join('');
+    }).join('') + '</svg>';
+  }
+  if (c.kind === 'graph') {
+    var W = 600, Hh = Math.round(600 * (c.range[3] - c.range[2]) / (c.range[1] - c.range[0])), a = gaxes(c.range, W, Hh);
+    return '<svg viewBox="0 0 ' + W + ' ' + Hh + '" class="wsv"><rect width="' + W + '" height="' + Hh + '" fill="#fff"/>' + a.s + vals.map(function (x) {
+      var p = (wjson(x[0]) || {}).p || [], col = x[1] || '#e04646', h = '';
+      if (c.line && p.length === 2 && (p[0][0] !== p[1][0] || p[0][1] !== p[1][1])) h += lineThru(p, c.range, a, col);
+      return h + p.map(function (q) { return '<circle cx="' + a.X(q[0]) + '" cy="' + a.Y(q[1]) + '" r="9" fill="' + col + '" stroke="#fff" stroke-width="2"/>'; }).join('');
+    }).join('') + '</svg>';
+  }
+  if (c.kind === 'photo') return vals[0] && vals[0][0] ? '<img class="wph" src="' + String(vals[0][0]).replace(/"/g, '') + '" alt="">' : '';
+  var v = vals[0] ? vals[0][0] : '';
+  return c.kind === 'math' ? (v ? '<span class="wm">$' + String(v).replace(/</g, '&lt;') + '$</span>' : '') : '<span class="wt">' + String(v == null ? '' : v).replace(/[&<>]/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]; }) + '</span>';
+}
+function gridBg(H) { var s = ''; for (var x = 50; x < 1000; x += 50) s += '<path d="M' + x + ' 0V' + H + '" stroke="#eef1f6"/>'; for (var y = 50; y < H; y += 50) s += '<path d="M0 ' + y + 'H1000" stroke="#eef1f6"/>'; return s; }
+function lineThru(p, r, a, col) {
+  var dx = p[1][0] - p[0][0], dy = p[1][1] - p[0][1], t0 = -1e3, t1 = 1e3;
+  var A = [p[0][0] + dx * t0, p[0][1] + dy * t0], B = [p[0][0] + dx * t1, p[0][1] + dy * t1];
+  return '<path d="M' + a.X(A[0]) + ' ' + a.Y(A[1]) + 'L' + a.X(B[0]) + ' ' + a.Y(B[1]) + '" stroke="' + col + '" stroke-width="3" opacity=".75"/>';
+}
+
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   function ss(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v); } catch (e) { return null; } }
@@ -751,14 +981,14 @@ function cho(s) {
   }
 
   function online(s) { return s && D && D.now - s.t < 12000; }
-  function renderAll() { if (D) gTick(); renderPace(); renderStatus(); renderTable(); renderQ(); if ($('pres').classList.contains('on')) presShow(); if (TVM) tvRender(); }
+  function renderAll() { if (D) { gTick(); xRender(); } renderPace(); renderStatus(); renderTable(); renderQ(); if ($('pres').classList.contains('on')) presShow(); if (TVM) tvRender(); }
 
   /* ---------- 📺 TV 화면: 발표 중이면 쪽, 질문 중이면 결과, 멈춤이면 메시지, 아니면 접속 QR ---------- */
   var MODE = new URLSearchParams(location.search), TVM = MODE.has('tv'), RMM = MODE.has('remote');
   if (TVM) document.body.classList.add('tvm');
   if (RMM) document.body.classList.add('rm');
   function tvRender() {
-    if (!PACE || gq()) return;
+    if (!PACE || gq() || (snap() && snap().show)) return;
     var deck = PACE.show === 'deck' && DECK;
     if (deck && !$('pres').classList.contains('on')) openPres();
     if (!deck) $('pres').classList.remove('on');
@@ -776,12 +1006,14 @@ function cho(s) {
   /* ---------- 🕹 리모컨: 발표 중이면 쪽, 🔗 동기화 중이면 화면을 넘긴다 ---------- */
   function rmStep(d) {
     if (!PACE) return;
+    if (snap() && snap().show && snap().view === 'album' && !gq()) { snapStep(d); return; }
     if (PACE.show === 'deck' && DECK) { presGo((PACE.page || 0) + d); renderAll(); return; }
     if (PACE.sync != null) { setPace({ sync: Math.max(0, Math.min(items().length - 1, PACE.sync + d)) }); return; }
     toast('📽 발표 중이거나 🔗 동기화 중일 때 넘길 수 있어요');
   }
   $('rmPrev').onclick = function () { rmStep(-1); };
   $('rmNext').onclick = function () { rmStep(1); };
+  $('rmTv').onclick = function () { TVM = !TVM; document.body.classList.toggle('tvm', TVM); renderAll(); };   // 리모컨에서 TV 와 같은 화면 보기(그 위에 ✏ 판서)
   $('rmPause').onclick = function () { setPace({ pause: !PACE.pause, msg: $('pauseMsg').value }); };
   window.addEventListener('hubfail', function (e) { toast('⚠ 저장하지 못했어요: ' + e.detail); });
 
@@ -930,10 +1162,10 @@ function cho(s) {
       if (s && s.act && s.act === a) scr = (s.scr + 1) + '번 화면'; else if (s && s.act) scr = '<span class="mut">다른 활동</span>';
       if (on && a && s.prog && D.now - s.prog > 120000) stop = '<span class="stop">' + Math.floor((D.now - s.prog) / 60000) + '분 멈춤</span>';
       var ago = s ? Math.round((D.now - s.t) / 1000) : null;
-      return '<tr><td>' + r[0] + '</td><td>' + esc(r[2] + ' ' + r[1]) + '</td>' +
+      return '<tr><td>' + r[0] + '</td><td>' + av(r[2], 22) + ' ' + esc(r[1]) + (r[1] ? ' <button data-nick="' + r[0] + '" title="닉네임 바꾸기·가리기">✎</button>' : '') + '</td><td title="학기 누적 별">' + (function () { var a = D.star && D.star[r[0]]; return a ? a.s + ' <small class="mut">Lv' + lvl(a.s).n + '</small>' : ''; })() + '</td>' +
         '<td><i class="dot' + (on ? ' on' : '') + '"></i>' + (on ? '접속' : s ? '<span class="mut">끊김 ' + (ago < 120 ? ago + '초' : Math.round(ago / 60) + '분') + '</span>' : '<span class="mut">-</span>') + '</td>' +
         '<td>' + scr + '</td><td>' + (on && s.sig ? '<i class="sg ' + s.sig + '"></i>' : '') + '</td>' +
-        '<td>' + (on && PACE.v ? (s.gv >= PACE.v ? '✓' : '<span class="mut">…</span>') : '') + '</td><td>' + stop + '</td><td>' + (s && s.help ? '🧭 ' + s.help : '') + '</td>' +
+        '<td>' + (on && PACE.v ? (s.gv >= PACE.v ? '✓' : '<span class="mut">…</span>') : '') + '</td><td>' + stop + (stop ? ' <button data-hint="' + r[0] + '" title="힌트 스티커 보내기">💡 보내기</button>' : '') + '</td><td>' + (s && s.help ? '🧭 ' + s.help : '') + ' <button data-stk="' + r[0] + '" title="스티커">🏷</button></td>' +
         '<td>' + (D.bound[r[0]] ? '…' + esc(D.bound[r[0]]) + ' <button data-ub="' + r[0] + '">풀기</button>' : '<span class="mut">아직</span>') + '</td></tr>';
     }).join('');
   }
@@ -1140,6 +1372,7 @@ function cho(s) {
   var GROUND = { '': '', double: '2배 라운드', lightning: '번개 라운드', catchup: '역전 라운드', final: '파이널 베팅', roulette: '스페셜 룰렛' };
   var ROUL = [['×2', 2], ['×3', 3], ['+500', 0], ['×0.5', 0.5], ['×1', 1]];
   var SHAPE = ['▲', '◆', '●', '■', '★'], SCOL = ['#3b6fe0', '#f2852b', '#2fa84f', '#8e5bd8', '#e04646'];
+  var TCOL = ['#e04646', '#3b6fe0', '#2fa84f', '#f2852b', '#8e5bd8', '#00a3a3', '#d6336c', '#795548'];   // 모둠 색
   var ENG = 'E' + Math.random().toString(36).slice(2, 8), G = null, GC = 0, GSETS = [];
   function gq() { return D && D.game && D.game.gid ? D.game : null; }
   function gsrv(fn, args) { return new Promise(function (res, rej) { srv(fn, args, function (r) { r && r.ok === false ? rej(r.msg) : res(r); }, rej); }); }
@@ -1161,7 +1394,14 @@ function cho(s) {
       var gid = 'g' + Date.now().toString(36), imgs = [];
       qs.forEach(function (q, i) { if (q.image) { imgs.push([i, q.image]); q.image = true; } });
       $('gInfo').textContent = '올리는 중… 그림 ' + imgs.length + '장';
-      Promise.all(imgs.map(function (x) { return gsrv('filePut', [CODE, 'GI:' + gid + ':' + x[0], x[1]]); }))
+      /* 그림은 data: 글 또는 인터넷 주소(퀴즈온 그림 등) — 주소면 받아서 글로 바꿔 넣는다 */
+      function asData(u) {
+        if (!/^https?:/.test(u)) return Promise.resolve(u);
+        return fetch(u).then(function (r) { if (!r.ok) throw '그림을 받지 못했어요: ' + u; return r.blob(); }).then(function (b) {
+          return new Promise(function (res) { var fr = new FileReader(); fr.onload = function () { res(fr.result); }; fr.readAsDataURL(b); });
+        });
+      }
+      Promise.all(imgs.map(function (x) { return asData(x[1]).then(function (d) { return gsrv('filePut', [CODE, 'GI:' + gid + ':' + x[0], d]); }); }))
         .then(function () { return gsrv('setSave', [CODE, 'SET:' + gid, JSON.stringify(set)]); })
         .then(function () {
           GSETS = GSETS.concat([{ id: gid, title: String(set.title || f.name).slice(0, 60), n: qs.length, speed: !!set.speed }]);
@@ -1183,7 +1423,7 @@ function cho(s) {
       if (!r.v) throw '세트를 찾지 못했어요';
       var set = JSON.parse(r.v);
       // gid = 이번 판(같은 세트를 다시 해도 답이 섞이지 않게), sid = 세트(그림)
-      G = resume || { sid: sid, gid: sid + '-' + Date.now().toString(36), busy: false, cls: CLS, qi: -1, phase: 'lobby', speed: $('gSpeed').checked, scores: {}, log: {}, bets: {}, names: {}, perm: {} };
+      G = resume || { sid: sid, gid: sid + '-' + Date.now().toString(36), busy: false, cls: CLS, qi: -1, phase: 'lobby', speed: $('gSpeed').checked, teams: $('gTeam').checked ? Number($('gTeamN').value) : 0, team: {}, scores: {}, log: {}, bets: {}, names: {}, perm: {} };
       G.set = set; G.busy = false; G.title = String(set.title || '게임'); G.cls = CLS;
       if (!resume) set.questions.forEach(function (q, i) { if (q.type === 'order') G.perm[i] = shuffle((q.items || []).length); });
       GC = (D && D.gc && D.gc.n) || 0;
@@ -1197,7 +1437,15 @@ function cho(s) {
   function nm(no) {
     var a = G ? G.names : {}, n = a[no] || {}, nick = n.nick || (no + '번');
     var same = Object.keys(a).filter(function (k) { return (a[k].nick || '') === n.nick && n.nick; }).map(Number).sort(function (x, y) { return x - y; });
-    return (n.ani ? n.ani + ' ' : '') + nick + (same.length > 1 ? same.indexOf(Number(no)) + 1 : '');   // 같은 닉네임은 뒤에 숫자
+    return nick + (same.length > 1 ? same.indexOf(Number(no)) + 1 : '');   // 같은 닉네임은 뒤에 숫자
+  }
+  function ani(no) { return (G.names[no] || {}).ani || ''; }
+  /* 모둠 순위: 모둠원 총점의 평균(인원이 달라도 공평하게) → [[모둠, 평균, 인원]] */
+  function teamRank() {
+    if (!G.teams) return [];
+    var t = []; for (var k = 1; k <= G.teams; k++) t.push({ k: k, sum: 0, n: 0 });
+    Object.keys(G.team).forEach(function (no) { var x = t[G.team[no] - 1]; if (x) { x.n++; x.sum += G.scores[no] || 0; } });
+    return t.filter(function (x) { return x.n; }).map(function (x) { return [x.k, Math.round(x.sum / x.n), x.n]; }).sort(function (a, b) { return b[1] - a[1]; });
   }
   function ranking() {
     return Object.keys(G.names).map(Number).map(function (no) { return { no: no, total: G.scores[no] || 0 }; })
@@ -1214,13 +1462,14 @@ function cho(s) {
   }
   /* 공개 상태 쓰기 — 정답(ans)·결과(res)는 reveal 뒤에만 들어간다 */
   function push() {
-    var g = { gid: G.gid, sid: G.sid, title: G.title, n: G.set.questions.length, qi: G.qi, phase: G.phase, t: Date.now(), eng: ENG, speed: G.speed };
+    var g = { gid: G.gid, sid: G.sid, title: G.title, n: G.set.questions.length, qi: G.qi, phase: G.phase, t: Date.now(), eng: ENG, speed: G.speed, teams: G.teams || 0 };
+    if (G.teams) { g.team = G.team; if (/rank|end/.test(G.phase)) g.ttop = teamRank(); }
     if (G.qi >= 0 && G.phase !== 'end') g.q = pubQ(G.qi);
     if (G.phase === 'spin') g.roul = G.roul;
     if (/reveal|rank|end|bet/.test(G.phase) && G.res) g.res = G.res;
     if (G.phase === 'reveal') { g.okIdx = okIdx(G.set.questions[G.qi]); g.ans = G.ansText; g.dist = G.dist; g.explain = String(G.set.questions[G.qi].explain || ''); g.okN = G.okN; g.roul = G.roul; }
-    if (/rank|end/.test(G.phase)) g.top = ranking().slice(0, G.phase === 'end' ? 10 : 5).map(function (x) { return [x.no, nm(x.no), x.total, x.rank]; });
-    if (G.phase === 'lobby') g.players = Object.keys(G.names).map(function (no) { return nm(no); });
+    if (/rank|end/.test(G.phase)) g.top = ranking().slice(0, G.phase === 'end' ? 10 : 5).map(function (x) { return [x.no, nm(x.no), x.total, x.rank, ani(x.no)]; });
+    if (G.phase === 'lobby') g.players = Object.keys(G.names).map(function (no) { return [ani(no), nm(no)]; });
     gsrv('gput', [CODE, 'GQ:' + G.cls, g]).catch(function (e) { toast('⚠ ' + e); });
     if (D) D.game = g;
     if (G.phase !== 'end') gsrv('setSave', [CODE, 'RUN:' + G.cls, JSON.stringify(Object.assign({}, G, { set: null }))]).catch(function () {});
@@ -1236,7 +1485,11 @@ function cho(s) {
   function gNext() {
     if (!G) return;
     var q = G.qi >= 0 ? G.set.questions[G.qi] : null, last = G.qi >= G.set.questions.length - 1;
-    if (G.phase === 'lobby') return toQ(0);
+    if (G.phase === 'lobby') {
+      if (!G.teams) return toQ(0);
+      if (G.busy) return; G.busy = true;   // 학생이 고른 모둠을 모으고 시작
+      return gsrv('gboard', [CODE, G.cls, G.gid, 't']).then(function (r) { G.busy = false; Object.keys(r.ans).forEach(function (no) { var k = Number(r.ans[no].v); if (k >= 1 && k <= G.teams) G.team[no] = k; }); toQ(0); }, function () { G.busy = false; });
+    }
     if (G.phase === 'bet') {   // 베팅 모으고 문제로
       if (G.busy) return; G.busy = true;
       return gsrv('gboard', [CODE, G.cls, G.gid, 'b' + G.qi]).then(function (r) { G.busy = false; Object.keys(r.ans).forEach(function (no) { G.bets[no] = Math.max(0, Math.min(100, Number(r.ans[no].v) || 0)); }); startQ(); }, function () { G.busy = false; });
@@ -1311,6 +1564,14 @@ function cho(s) {
   }
   function end() {
     G.phase = 'end'; push();
+    var aw = [], tr = teamRank(), win = tr.length ? tr[0][0] : 0;
+    ranking().forEach(function (x) {
+      var played = Object.keys(G.log).some(function (i) { return G.log[i][x.no] && G.log[i][x.no].v !== ''; });
+      if (!played) return;
+      var n = 1 + (x.rank <= 3 ? 1 : 0) + (win && G.team[x.no] === win ? 1 : 0);
+      aw.push([x.no, n, '게임 ' + G.title.slice(0, 12) + (x.rank <= 3 ? ' ' + x.rank + '등' : '') + (win && G.team[x.no] === win ? ' 모둠 우승' : '')]);
+    });
+    starAdd(aw);
     gsrv('setSave', [CODE, 'LOG:' + G.cls + ':' + G.gid + ':' + Date.now(), JSON.stringify({ title: G.title, cls: G.cls, names: G.names, scores: G.scores, log: G.log, qs: G.set.questions.map(function (q) { return { type: q.type, prompt: q.prompt }; }) })]).catch(function () {});
     gsrv('setSave', [CODE, 'RUN:' + G.cls, null]).catch(function () {});
     gsrv('gclear', [CODE, 'GA:' + G.cls + ':' + G.gid + ':']).catch(function () {});
@@ -1357,7 +1618,8 @@ function cho(s) {
       (q && q.round ? '<span class="rb">' + GROUND[q.round] + '</span>' : '') + '</div>';
     if (g.phase === 'lobby') {
       h = '<div class="gc"><div class="gbig">🎮 곧 시작해요</div><div class="gsub">태블릿으로 들어와 닉네임을 정하세요 · ' + (g.players || []).length + '명</div>' +
-        (big ? '<div id="gQr"></div>' : '') + '<div class="gpl">' + (g.players || []).map(function (p) { return '<span>' + esc(p) + '</span>'; }).join('') + '</div></div>';
+        (g.teams ? '<div class="gsub">👥 모둠전 — 태블릿에서 내 모둠을 고르세요 · 모둠 고른 학생 ' + cnt + '명</div>' : '') +
+        (big ? '<div id="gQr"></div>' : '') + '<div class="gpl">' + (g.players || []).map(function (p) { return '<span>' + av(p[0], big ? 44 : 24) + esc(p[1]) + '</span>'; }).join('') + '</div></div>';
     } else if (g.phase === 'bet') {
       h = '<div class="gc"><div class="gbig">💰 파이널 베팅!</div><div class="gsub">태블릿에서 지금 점수의 몇 %를 걸지 고르세요 · 맞히면 더하고 틀리면 뺍니다</div><div class="gcnt">베팅 ' + cnt + ' / ' + on + '</div></div>';
     } else if (g.phase === 'spin') {
@@ -1382,10 +1644,11 @@ function cho(s) {
       }
     } else if (g.phase === 'rank' || g.phase === 'end') {
       var top = g.top || [];
-      if (g.phase === 'end') h = '<div class="gbig">🏆 최종 결과</div><div class="pod">' + [1, 0, 2].map(function (k) {
-        var x = top[k]; return x ? '<div class="p' + (k + 1) + '"><div class="pn">' + esc(x[1]) + '</div><div class="ps">' + x[2] + '점</div><div class="pb">' + x[3] + '</div></div>' : '<div></div>';
+      if (g.ttop && g.ttop.length) h += '<div class="gtm">' + g.ttop.map(function (x, i) { return '<div style="background:' + TCOL[(x[0] - 1) % TCOL.length] + '">' + (g.phase === 'end' && !i ? '👑 ' : (i + 1) + '등 ') + x[0] + '모둠<small>평균 ' + x[1] + '점 · ' + x[2] + '명</small></div>'; }).join('') + '</div>';
+      if (g.phase === 'end') h = '<div class="gbig">🏆 최종 결과</div>' + h + '<div class="pod">' + [1, 0, 2].map(function (k) {
+        var x = top[k]; return x ? '<div class="p' + (k + 1) + '"><div class="pa">' + av(x[4], big ? 110 : 56) + '</div><div class="pn">' + esc(x[1]) + '</div><div class="ps">' + x[2] + '점</div><div class="pb">' + x[3] + '</div></div>' : '<div></div>';
       }).join('') + '</div>';
-      h += '<div class="grank">' + top.slice(g.phase === 'end' ? 3 : 0).map(function (x) { return '<div><b>' + x[3] + '</b><span>' + esc(x[1]) + '</span><i>' + x[2] + '점</i></div>'; }).join('') + '</div>';
+      h += '<div class="grank">' + top.slice(g.phase === 'end' ? 3 : 0).map(function (x) { return '<div><b>' + x[3] + '</b>' + av(x[4], big ? 48 : 26) + '<span>' + esc(x[1]) + '</span><i>' + x[2] + '점</i></div>'; }).join('') + '</div>';
     }
     return head + h;
   }
@@ -1436,8 +1699,8 @@ function cho(s) {
   $('gXls').onclick = function () {
     function go() {
       var qs = G.set.questions, nos = ranking();
-      var s1 = [['순위', '번호', '닉네임', '총점', '맞힌 수']].concat(nos.map(function (x) {
-        return [x.rank, x.no, nm(x.no), x.total, Object.keys(G.log).filter(function (i) { return G.log[i][x.no] && G.log[i][x.no].ok; }).length];
+      var s1 = [['순위', '번호', '닉네임', '모둠', '총점', '맞힌 수']].concat(nos.map(function (x) {
+        return [x.rank, x.no, nm(x.no), G.team[x.no] || '', x.total, Object.keys(G.log).filter(function (i) { return G.log[i][x.no] && G.log[i][x.no].ok; }).length];
       }));
       var s2 = [['문항', '유형', '라운드', '발문', '답한 수', '정답률(%)']].concat(qs.map(function (q, i) {
         var l = G.log[i] || {}, a = Object.keys(l).filter(function (no) { return l[no].v !== ''; }), ok = a.filter(function (no) { return l[no].ok; });
@@ -1447,6 +1710,7 @@ function cho(s) {
         return [x.no, nm(x.no)].concat(qs.map(function (q, i) { var c = (G.log[i] || {})[x.no]; return c ? shown(q, i, c.v) + (/survey|slide/.test(q.type) ? '' : c.ok ? ' ✓' : ' ✗') : ''; }));
       }));
       var wb = XLSX.utils.book_new();
+      if (G.teams) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['순위', '모둠', '평균 점수', '인원']].concat(teamRank().map(function (x, i) { return [i + 1, x[0] + '모둠', x[1], x[2]]; }))), '모둠');
       [['학생', s1], ['문항', s2], ['응답', s3]].forEach(function (s) { XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(s[1]), s[0]); });
       XLSX.writeFile(wb, G.cls + ' ' + G.title + ' 결과.xlsx');
     }
@@ -1487,6 +1751,232 @@ function cho(s) {
   document.addEventListener('keydown', function (e) {
     if (e.key !== ' ' || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || $('pres').classList.contains('on') || !gq()) return;
     e.preventDefault(); gNextAny();
+  });
+
+  /* 🖨 활동 화면 인쇄(Amplify '화면 PDF 출력') — 지금 활동의 화면을 쪽마다 한 장씩. 빈칸·그림판·좌표평면은 빈 모양으로.
+   * 브라우저 인쇄 창에서 'PDF로 저장'을 고르면 PDF 가 된다. */
+  $('bPrint').onclick = function () {
+    var a = PACE && PACE.act && ACTS[PACE.act]; if (!a) { toast('활동을 먼저 여세요'); return; }
+    var box = $('printArea');
+    box.innerHTML = a.screens.map(function (sc, i) {
+      var d = document.createElement('div'); d.innerHTML = sc.html;
+      [].forEach.call(d.querySelectorAll('[data-k]'), function (el) {
+        var c = wcomps(el.outerHTML)[0], r = document.createElement('div');
+        if (c.kind === 'sketch' || c.kind === 'graph') r.innerHTML = wdraw(c, []);
+        else if (c.kind === 'photo') r.innerHTML = '<div class="pph">사진·풀이 붙이는 칸</div>';
+        else if (el.tagName === 'TEXTAREA') r.innerHTML = '<div class="pbx"></div>';
+        else { r = document.createElement('span'); r.className = 'pbl'; }
+        el.replaceWith(r);
+      });
+      return '<div class="pp"><div class="ph">' + esc(a.title) + ' · ' + (i + 1) + ' / ' + a.screens.length + ' · ' + esc(sc.t) + '　　　반 ___ 번호 ___ 이름 ________</div>' + d.innerHTML + '</div>';
+    }).join('');
+    mrender(box);
+    setTimeout(function () { window.print(); }, 400);   // 수식이 그려질 틈
+  };
+
+  /* ================= 🔍 탐구·토의(③) — 진도판 안(teacher.html 의 IIFE 안에 끼워짐) =================
+   * 답 모아 보기(화면별 갤러리·✓✗·정답률) · 📸 스냅샷 앨범(TV·학생 화면에 차례로) · 🗂 겹쳐 보기 · 🏷 스티커 · ✏ 판서(TV 위에)
+   * 공개 상태: SNAP:반 {t, items, cur, show, stu, anon, view:'album'|'ovl'|'gal', s} · INK:반 {t, s:[[색,굵기,'x,y …']]} · STK:반 {번호:{s,m,t}} */
+  var XW = {}, XWT = 0, XS = null, STK = [['👍', '잘했어요'], ['⭐', '멋진 생각!'], ['💡', '다시 생각해 봐요'], ['👀', '선생님이 볼게요']];
+  function xact() { return PACE && PACE.act && ACTS[PACE.act] ? PACE.act : null; }
+  function xscreens() {   // 부품이 있는 활동 화면만
+    var a = xact(); if (!a) return [];
+    return items().map(function (x, i) { return { i: i, s: x.s, comps: x.d ? [] : wcomps(ACTS[a].screens[x.s].html) }; }).filter(function (x) { return x.comps.length; });
+  }
+  function xcomps(s) { var a = xact(); return a && ACTS[a].screens[s] ? wcomps(ACTS[a].screens[s].html) : []; }
+  /* 방금 바꾼 것(내 기기)이 서버에서 늦게 온 옛것보다 앞서게 — t 가 큰 쪽 */
+  var XSN = null, XINK = null, XSTK = null;
+  function newer(mine, srv_) { return mine && (!srv_ || (srv_.t || 0) < mine.t) ? mine : srv_; }
+  function snap() { return newer(XSN, D && D.snap) || null; }
+  function snapPut(o) {
+    var cur = Object.assign({ items: [], cur: 0, show: false, stu: false, anon: false, view: 'album' }, snap() || {}, o, { t: Date.now() });
+    XSN = cur;
+    srv('gput', [CODE, 'SNAP:' + CLS, cur], function (r) { if (r && r.ok === false) toast(r.msg); });
+    renderX();
+  }
+  function xname(no) { var r = (D ? D.roster : []).filter(function (x) { return x[0] === Number(no); })[0]; return r ? [r[2], r[1] || no + '번'] : ['', no + '번']; }
+
+  /* 학생 답 가져오기(2.5초마다, 활동이 열려 있을 때만) */
+  function xTick() {
+    var a = xact(); $('xCard').style.display = a ? 'block' : 'none';
+    if (!a || Date.now() - XWT < 2500) return;
+    XWT = Date.now(); var c = CLS;
+    srv('works', [CODE, c, a], function (r) { if (r.ok && c === CLS) { XW = r.works || {}; renderX(); } });
+  }
+  function renderX() {
+    var a = xact(); if (!a) return;
+    var sc = xscreens();
+    if (XS == null || !sc.some(function (x) { return x.s === XS; })) XS = sc.length ? (PACE.sync != null && sc.filter(function (x) { return x.i === PACE.sync; })[0] || sc[0]).s : null;
+    var opts = sc.map(function (x) { return '<option value="' + x.s + '"' + (x.s === XS ? ' selected' : '') + '>' + (x.i + 1) + '. ' + esc(ACTS[a].screens[x.s].t) + '</option>'; }).join('');
+    if ($('xScr').innerHTML !== opts) $('xScr').innerHTML = opts;
+    var comps = XS == null ? [] : xcomps(XS), nos = Object.keys(XW), names = $('xNames').checked, sum = [];
+    comps.forEach(function (c) {
+      if (c.ans == null) return;
+      var got = nos.filter(function (no) { var v = XW[no].w[c.k]; return v != null && v !== ''; }), ok = got.filter(function (no) { return wok(c, XW[no].w[c.k]); });
+      sum.push(c.k + ' 정답 ' + ok.length + '/' + got.length);
+    });
+    $('xSum').textContent = (nos.length ? nos.length + '명 답함' : '아직 답이 없어요') + (sum.length ? ' · ' + sum.join(' · ') : '');
+    var key = XS + ':' + names + ':' + nos.map(function (no) { return no + XW[no].t; }).join(',') + ':' + (snap() ? snap().items.length : 0);
+    if ($('xGal').getAttribute('data-k') !== key) {
+      $('xGal').setAttribute('data-k', key);
+      $('xGal').innerHTML = nos.filter(function (no) { return comps.some(function (c) { var v = XW[no].w[c.k]; return v != null && v !== ''; }); }).map(function (no) {
+        var n = xname(no), w = XW[no].w;
+        return '<div class="xc"><div class="xh">' + (names ? av(n[0], 22) + ' ' + esc(n[1]) : no + '번') + '<span style="flex:1"></span>' +
+          '<button data-snap="' + no + '" title="앨범에 넣기">📸</button><button data-stk="' + no + '" title="스티커">🏷</button></div>' +
+          comps.map(function (c) { var ok = wok(c, w[c.k]); return '<div class="xv">' + (ok == null ? '' : ok ? '<i class="ok">✓</i>' : '<i class="no">✗</i>') + wdraw(c, [[w[c.k]]]) + '</div>'; }).join('') + '</div>';
+      }).join('');
+      mrender($('xGal'));
+    }
+    var sn = snap(), it = sn ? sn.items : [];
+    var ak = it.length + ':' + (sn ? sn.cur + ':' + sn.show : '');
+    if ($('xAlb').getAttribute('data-k') !== ak) {
+      $('xAlb').setAttribute('data-k', ak);
+      $('xAlb').innerHTML = it.map(function (x, i) {
+        return '<span class="xa' + (sn.show && sn.view === 'album' && sn.cur === i ? ' on' : '') + '" data-i="' + i + '">' + (i + 1) + '. ' + av(x.ani, 18) + esc(x.nick || x.no + '번') +
+          ' <b data-mv="-1">◀</b><b data-mv="1">▶</b><b data-del="1">✕</b></span>';
+      }).join('') || '<span class="mut">갤러리에서 📸 을 눌러 모으세요 — 순서를 정해 TV 에 차례로 보여 줍니다</span>';
+    }
+    $('xStu').checked = !!(sn && sn.stu); $('xAnon').checked = !!(sn && sn.anon);
+    $('xHide').disabled = !(sn && sn.show);
+  }
+  $('xScr').onchange = function () { XS = Number(this.value); renderX(); };
+  $('xNames').onchange = renderX;
+  $('xGal').onclick = function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.hasAttribute('data-snap')) {
+      var no = b.getAttribute('data-snap'), n = xname(no), comps = xcomps(XS), w = {};
+      comps.forEach(function (c) { w[c.k] = XW[no].w[c.k]; });
+      snapPut({ items: (snap() ? snap().items : []).concat([{ no: Number(no), nick: n[1], ani: n[0], s: XS, comps: comps, w: w }]) });
+      toast('📸 앨범에 넣었어요'); return;
+    }
+    if (b.hasAttribute('data-stk')) stkMenu(b, Number(b.getAttribute('data-stk')));
+  };
+  $('xAlb').onclick = function (e) {
+    var s = e.target.closest('.xa'); if (!s) return;
+    var i = Number(s.getAttribute('data-i')), sn = snap(), it = sn.items.slice();
+    if (e.target.hasAttribute('data-del')) { it.splice(i, 1); return snapPut({ items: it, cur: Math.min(sn.cur, Math.max(0, it.length - 1)), show: sn.show && it.length > 0 }); }
+    if (e.target.hasAttribute('data-mv')) { var j = i + Number(e.target.getAttribute('data-mv')); if (j < 0 || j >= it.length) return; var x = it.splice(i, 1)[0]; it.splice(j, 0, x); return snapPut({ items: it }); }
+    snapPut({ cur: i, show: true, view: 'album' });
+  };
+  $('xShow').onclick = function () { var sn = snap(); if (!sn || !sn.items.length) { toast('앨범이 비어 있어요'); return; } snapPut({ show: true, view: 'album', cur: sn.cur || 0 }); };
+  function snapStep(d) { var sn = snap(); if (!sn || !sn.items.length) return; snapPut({ cur: Math.max(0, Math.min(sn.items.length - 1, (sn.cur || 0) + d)), show: true, view: 'album' }); }
+  $('xPrev').onclick = function () { snapStep(-1); };
+  $('xNext').onclick = function () { snapStep(1); };
+  $('xHide').onclick = function () { snapPut({ show: false }); };
+  $('xClr').onclick = function () { if (confirm('앨범을 비울까요?')) snapPut({ items: [], cur: 0, show: false }); };
+  $('xStu').onchange = function () { snapPut({ stu: this.checked }); };
+  $('xAnon').onchange = function () { snapPut({ anon: this.checked }); };
+  $('xOvl').onclick = function () { if (XS == null) return; snapPut({ show: true, view: 'ovl', s: XS, stu: false }); };
+  $('xTvG').onclick = function () { if (XS == null) return; snapPut({ show: true, view: 'gal', s: XS, stu: false }); };
+
+  /* 🏷 스티커 — 정해 둔 것만. 2분 멈춘 학생은 현황표에 💡 바로 보내기 */
+  /* ⭐ 학기 누적 별: STAR:반 {번호: {s: 별, h: [[날짜, +n, 까닭]…최근 20], t}} — list = [[번호, n, 까닭]] */
+  var XSTAR = null;
+  function starAdd(list) {
+    if (!list.length) return;
+    var cur = newer(XSTAR, D && D.star ? Object.assign({ t: 0 }, D.star) : null) || {}, all = JSON.parse(JSON.stringify(cur)), now = Date.now(), d = new Date();
+    list.forEach(function (x) {
+      var a = all[x[0]] || { s: 0, h: [] };
+      a.s = Math.max(0, (a.s || 0) + x[1]); a.h = (a.h || []).concat([[(d.getMonth() + 1) + '/' + d.getDate(), x[1], x[2]]]).slice(-20); a.t = now;
+      all[x[0]] = a;
+    });
+    all.t = now; XSTAR = all;
+    srv('gput', [CODE, 'STAR:' + CLS, all]);
+  }
+  function stkSend(no, k) {
+    var cur = newer(XSTK, D && D.stk ? Object.assign({ t: 0 }, D.stk) : null) || {}, all = Object.assign({}, cur); all[no] = { s: STK[k][0], m: STK[k][1], t: Date.now() }; all.t = Date.now();
+    XSTK = all;
+    srv('gput', [CODE, 'STK:' + CLS, all], function () { toast(no + '번에게 ' + STK[k][0] + ' 보냈어요'); });
+    if (k <= 1) starAdd([[no, 1, STK[k][0] + ' 스티커']]);   // 👍·⭐ 은 별 하나
+  }
+  function stkMenu(btn, no) {
+    var m = document.createElement('div'); m.className = 'stkm';
+    m.innerHTML = STK.map(function (x, k) { return '<button data-k="' + k + '">' + x[0] + ' ' + x[1] + '</button>'; }).join('');
+    var r = btn.getBoundingClientRect(); m.style.left = Math.min(r.left, innerWidth - 200) + 'px'; m.style.top = (r.bottom + 4 + scrollY) + 'px';
+    document.body.appendChild(m);
+    setTimeout(function () { document.addEventListener('click', function off(e) { document.removeEventListener('click', off); var b = e.target.closest('.stkm button'); if (b && m.contains(b)) stkSend(no, Number(b.getAttribute('data-k'))); m.remove(); }); }, 0);
+  }
+  $('tb').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-stk]'); if (b) stkMenu(b, Number(b.getAttribute('data-stk')));
+    var h = e.target.closest('[data-hint]'); if (h) stkSend(Number(h.getAttribute('data-hint')), 2);
+    var nb = e.target.closest('[data-nick]'); if (!nb) return;
+    var no = Number(nb.getAttribute('data-nick')), v = prompt(no + '번 닉네임을 바꿉니다(오늘만). 비우고 확인하면 "학생' + no + '"(으)로 가립니다.', '');
+    if (v == null) return;
+    var d = new Date(), all = Object.assign({}, D && D.nick || {});
+    all[no] = { n: (v.trim() || '학생' + no).replace(/[<>]/g, '').slice(0, 10), d: d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() };
+    if (D) D.nick = all;
+    srv('gput', [CODE, 'NICK:' + CLS, all], function () { toast(no + '번 닉네임을 바꿨어요'); });
+  });
+
+  /* 📺 TV(·진도판 미리보기)에 스냅샷·겹쳐 보기·모아 보기 */
+  var SNK = '';
+  function snapTv() {
+    var sn = snap(), on = !!(sn && sn.show && !gq() && (TVM || $('snapTv').classList.contains('peek')));
+    $('snapTv').classList.toggle('on', on);
+    if (!on) return;
+    var k = sn.t + ':' + (sn.view !== 'album' ? Object.keys(XW).map(function (no) { return no + XW[no].t; }).join(',') : '');
+    if (k === SNK) return; SNK = k;
+    var h = '';
+    if (sn.view === 'album') {
+      var it = sn.items[sn.cur]; if (!it) return;
+      h = '<div class="sth">📸 ' + (sn.cur + 1) + ' / ' + sn.items.length + (sn.anon ? '' : ' · ' + av(it.ani, 44) + ' ' + esc(it.nick)) + '</div>' +
+        it.comps.map(function (c) { return '<div class="stc">' + wdraw(c, [[it.w[c.k]]]) + '</div>'; }).join('');
+    } else {
+      var comps = xcomps(sn.s), nos = Object.keys(XW), a = xact();
+      h = '<div class="sth">' + (sn.view === 'ovl' ? '🗂 겹쳐 보기' : '🔍 모아 보기') + ' · ' + esc(a ? ACTS[a].screens[sn.s].t : '') + ' · ' + nos.length + '명</div>';
+      if (sn.view === 'ovl') h += comps.filter(function (c) { return c.kind === 'sketch' || c.kind === 'graph'; }).map(function (c) {
+        return '<div class="stc">' + wdraw(c, nos.map(function (no, i) { return [XW[no].w[c.k], WCOL[i % WCOL.length]]; })) + '</div>';
+      }).join('') || '<p>겹쳐 볼 그림·좌표평면 칸이 없는 화면이에요</p>';
+      else h += '<div class="stg">' + nos.map(function (no) {
+        var n = xname(no); return '<div class="xc"><div class="xh">' + (sn.anon ? '' : av(n[0], 26) + ' ' + esc(n[1])) + '</div>' + comps.map(function (c) { return '<div class="xv">' + wdraw(c, [[XW[no].w[c.k]]]) + '</div>'; }).join('') + '</div>';
+      }).join('') + '</div>';
+    }
+    $('snapIn').innerHTML = h; mrender($('snapIn'));
+  }
+  $('xPeek').onclick = function () { $('snapTv').classList.toggle('peek'); SNK = ''; snapTv(); };
+  $('snapTv').addEventListener('click', function (e) { if (!TVM && e.target.id === 'snapX') $('snapTv').classList.remove('peek', 'on'); });
+
+  /* ✏ 판서(Sketch Everywhere) — 이 기기 화면 위에 그리면 TV 에 같은 자리로(화면 비율 기준, 가로 태블릿 권장) */
+  var INKON = false, INKC = '#e04646', IK = '';
+  function inkData() { var d = newer(XINK, D && D.ink); return d && d.s ? d : { s: [] }; }
+  function inkPaint() {
+    var d = inkData(), k = (d.t || 0) + ':' + innerWidth + 'x' + innerHeight + ':' + TVM + INKON;
+    if (k === IK && !INKON) return; IK = k;
+    $('inkL').setAttribute('viewBox', '0 0 1000 1000');
+    $('inkL').innerHTML = d.s.map(function (s) { return '<polyline points="' + s[2] + '" fill="none" stroke="' + s[0] + '" stroke-width="' + s[1] + '" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>'; }).join('');
+    $('inkL').style.display = (TVM || INKON) && (d.s.length || INKON) ? 'block' : 'none';   // 판서는 TV 화면(또는 그리는 중)에만 — 진도판 버튼을 가리지 않게
+  }
+  function inkPut(s) { var d = { t: Date.now(), s: s }; XINK = d; inkPaint(); srv('gput', [CODE, 'INK:' + CLS, d]); }
+  function inkToggle() { INKON = !INKON; $('inkPad').style.display = INKON ? 'block' : 'none'; $('inkBar').style.display = INKON ? 'flex' : 'none'; inkPaint(); }
+  $('bInk').onclick = inkToggle; $('rmInk').onclick = inkToggle;
+  $('inkBar').onclick = function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.hasAttribute('data-c')) { INKC = b.getAttribute('data-c'); [].forEach.call($('inkBar').querySelectorAll('[data-c]'), function (x) { x.classList.toggle('on', x === b); }); return; }
+    if (b.id === 'inkU') return inkPut(inkData().s.slice(0, -1));
+    if (b.id === 'inkX') return inkPut([]);
+    if (b.id === 'inkE') return inkToggle();
+  };
+  (function () {
+    var cur = null, pad = $('inkPad');
+    function pt(e) { return Math.round(e.clientX / innerWidth * 1000) + ',' + Math.round(e.clientY / innerHeight * 1000); }
+    pad.addEventListener('pointerdown', function (e) {
+      cur = [INKC, INKC === '#ffe14d' ? 18 : 5, pt(e)]; pad.setPointerCapture(e.pointerId);
+      cur.el = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+      var at = { fill: 'none', stroke: cur[0], 'stroke-width': cur[1], 'stroke-linecap': 'round', 'vector-effect': 'non-scaling-stroke', points: cur[2] };
+      for (var a in at) cur.el.setAttribute(a, at[a]);
+      $('inkL').style.display = 'block'; $('inkL').appendChild(cur.el);
+    });
+    pad.addEventListener('pointermove', function (e) { if (!cur) return; cur[2] += ' ' + pt(e); cur.el.setAttribute('points', cur[2]); });
+    function up() { if (!cur) return; var s = inkData().s.concat([[cur[0], cur[1], cur[2]]]); cur = null; inkPut(s); }
+    pad.addEventListener('pointerup', up); pad.addEventListener('pointercancel', up);
+  })();
+
+  function xRender() { xTick(); snapTv(); inkPaint(); }
+  document.addEventListener('keydown', function (e) {
+    var sn = snap();
+    if (!sn || !sn.show || sn.view !== 'album' || gq() || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || $('pres').classList.contains('on')) return;
+    if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); snapStep(1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); snapStep(-1); }
   });
 
   window.__HUBT = { st: function () { return { CLS: CLS, PACE: PACE, D: D, SAVE: SAVE }; } };
