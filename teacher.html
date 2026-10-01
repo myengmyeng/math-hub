@@ -136,6 +136,7 @@ body.tvm.in #tvIdle{display:flex}#tvIdle .big{font-size:52px;font-weight:800;mar
   <div class="card" id="gCard">
     <div class="row"><span class="lab">🎮 게임</span><select id="gSel"></select><label><input type="checkbox" id="gSpeed"> 빠르기 점수</label><label><input type="checkbox" id="gTeam"> 모둠전</label><select id="gTeamN"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select><button class="pri" id="gStart">▶ 게임 시작</button>
       <label class="upl">📂 세트 올리기<input type="file" id="gFile" accept=".json" hidden></label><span id="gInfo" class="mut"></span></div>
+    <div class="row"><span class="lab">📝 과제</span>고른 세트를 마감 <input type="date" id="hwDue"> 까지 <button id="hwGive">📝 과제로 내기</button><span id="hwList" class="xalb"></span></div>
     <div id="gRun" style="display:none">
       <div class="row"><b id="gNow"></b><span style="flex:1"></span><button class="hot" id="gNext">다음 ▶ (Space)</button><button id="gReveal">정답 공개</button><button id="gResume">이어서 진행</button><button id="gTvB">📺 크게</button><button id="gXls">📥 엑셀</button><button id="gEnd">■ 게임 닫기</button></div>
       <div id="gView" class="gbox"></div>
@@ -179,6 +180,7 @@ body.tvm.in #tvIdle{display:flex}#tvIdle .big{font-size:52px;font-weight:800;mar
 <svg id="inkL" preserveAspectRatio="none"></svg><div id="inkPad"></div>
 <div id="inkBar"><button data-c="#e04646" class="on" style="background:#e04646"></button><button data-c="#3b6fe0" style="background:#3b6fe0"></button><button data-c="#1c2333" style="background:#1c2333"></button><button data-c="#ffe14d" style="background:#ffe14d" title="형광펜"></button><button id="inkU">↶</button><button id="inkX">지우기</button><button id="inkE">✕ 끝</button></div>
 <div id="printArea"></div>
+<div class="ov" id="hwRes"><div class="box"><h2 id="hwResT"></h2><div id="hwResB"></div><div class="row"><button id="hwStar">⭐ 끝낸 학생에게 별 +1</button><button id="hwXls">📥 엑셀</button><button id="hwResX">닫기</button></div></div></div>
 <div class="ov" id="gTv"><button id="gTvX">닫기</button><div id="gTvIn" class="gbox big"></div><div id="gSnd"><button id="gMus"></button><button id="gSfx"></button></div></div>
 <div class="ov" id="tv"><button id="tvX">닫기</button><h1 id="tvT"></h1><div id="tvRes"></div></div>
 
@@ -345,7 +347,7 @@ function sub_(filter, keys) {
 var WATCH = null;
 function watch_(cls) {
   if (TEACHER || WATCH === cls) return; WATCH = cls;
-  var keys = ['P:' + cls, 'B:' + cls, 'GQ:' + cls, 'SNAP:' + cls, 'STK:' + cls, 'NICK:' + cls, 'STAR:' + cls, 'DECK', 'CLASSES'];
+  var keys = ['P:' + cls, 'B:' + cls, 'GQ:' + cls, 'SNAP:' + cls, 'STK:' + cls, 'NICK:' + cls, 'STAR:' + cls, 'HW:' + cls, 'DECK', 'CLASSES'];
   sub_('k=in.(' + keys.map(function (k) { return '"' + k + '"'; }).join(',') + ')', keys);
 }
 var HUB_READY = (function () {
@@ -441,6 +443,7 @@ function pull(cls, no, dev, v, info, seen) {
   var sn = rd_('SNAP:' + cls, null), stk = (rd_('STK:' + cls, {}) || {})[no];   // 스냅샷(학생 화면에도), 나에게 온 스티커
   if (sn && sn.t !== (seen.sn || 0)) out.sn = sn;
   if (stk && stk.t !== (seen.sk || 0)) out.sk = stk;
+  var hw = rd_('HW:' + cls, null); if (hw && hw.t !== (seen.hw || 0)) out.hw = hw;   // 과제 목록
   var my = (rd_('STAR:' + cls, {}) || {})[no]; if (my && my.t !== (seen.st || 0)) out.st = my;   // 내 누적 별
   var nk = nick_(cls)[no]; if (nk && nk !== (info && info.nick)) out.nk = nk;   // 선생님이 바꾼 닉네임
   if (p.v !== v) {
@@ -557,7 +560,7 @@ function board(code, cls) {
     var pre = 'GA:' + cls + ':' + g.gid + ':' + (g.phase === 'lobby' ? 't' : (g.phase === 'bet' ? 'b' : '') + g.qi) + ':';
     gcnt = Object.keys(ST.cgetAll(ns.map(function (n) { return pre + n; }))).length;
   }
-  return { ok: true, now: ST.now(), classes: rd_('CLASSES', []).concat([DEMO]), game: g, gcnt: gcnt, gc: rd_('GC:' + cls, null), gsets: rd_('GSETS', []), snap: rd_('SNAP:' + cls, null), ink: rd_('INK:' + cls, null), stk: rd_('STK:' + cls, {}), nick: rd_('NICK:' + cls, {}), star: rd_('STAR:' + cls, {}), pace: p, roster: ro, bound: bound, reqs: rd_('Q:' + cls, []), pres: pres, ans: ans };
+  return { ok: true, now: ST.now(), classes: rd_('CLASSES', []).concat([DEMO]), game: g, gcnt: gcnt, gc: rd_('GC:' + cls, null), gsets: rd_('GSETS', []), snap: rd_('SNAP:' + cls, null), ink: rd_('INK:' + cls, null), stk: rd_('STK:' + cls, {}), nick: rd_('NICK:' + cls, {}), star: rd_('STAR:' + cls, {}), hw: rd_('HW:' + cls, null), pace: p, roster: ro, bound: bound, reqs: rd_('Q:' + cls, []), pres: pres, ans: ans };
 }
 
 /* 발표 자료: 진도판이 쪽마다 JPG 로 올린다. 모든 반이 같은 자료를 쓴다 */
@@ -595,7 +598,7 @@ function saveSeq(code, cls, act, seq) {
 function bad_() { return { ok: false, msg: '접속코드가 맞지 않아요' }; }
 function gput(code, k, v) {
   if (!okCode_(code)) return bad_();
-  k = String(k); if (!/^(GQ|GC|SNAP|INK|STK|NICK|STAR):|^GSETS$/.test(k)) return { ok: false, msg: '쓸 수 없는 키' };
+  k = String(k); if (!/^(GQ|GC|SNAP|INK|STK|NICK|STAR|HW):|^GSETS$/.test(k)) return { ok: false, msg: '쓸 수 없는 키' };
   if (v == null) ST.pset(k, ''); else wr_(k, v);
   return { ok: true };
 }
@@ -772,6 +775,17 @@ function eqAns(a, b) {
 }
 function cho(s) {
   return String(s).replace(/[가-힣]/g, function (c) { return 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ'[Math.floor((c.charCodeAt(0) - 0xAC00) / 588)]; });
+}
+
+/* 문항 채점(게임 엔진·과제 공용). v = 학생이 보낸 값(선택·OX 는 누른 칸 번호 0부터, 순서는 '보인 칸 번호,…'), perm = 순서형에서 보여 준 차례 */
+function okIdx(q) { return q.type === 'ox' ? [String(q.answer).toUpperCase() === 'O' ? 0 : 1] : q.type === 'choice' ? [].concat(q.answer).map(function (k) { return Number(k) - 1; }) : []; }   // 세트 파일의 선택형 정답은 1부터
+function gradeQ(q, v, perm) {
+  v = String(v == null ? '' : v);
+  if (q.type === 'choice' || q.type === 'ox') return v !== '' && okIdx(q).indexOf(Number(v)) >= 0;
+  if (q.type === 'short') return [].concat(q.answer).some(function (a) { return eqAns(v, a); });
+  if (q.type === 'chosung') return anorm(v) === anorm(q.answer);
+  if (q.type === 'order') { var seq = v.split(',').map(Number); return !!perm && seq.length === perm.length && seq.every(function (d, k) { return perm[d] === k; }); }
+  return false;
 }
 
 /* 캐릭터 20종 — 몸 모양·색·눈·입·꾸미개를 섞어 그린 SVG(그림 파일 없음). 학생·진도판·TV 공용.
@@ -981,7 +995,7 @@ function lineThru(p, r, a, col) {
   }
 
   function online(s) { return s && D && D.now - s.t < 12000; }
-  function renderAll() { if (D) { gTick(); xRender(); } renderPace(); renderStatus(); renderTable(); renderQ(); if ($('pres').classList.contains('on')) presShow(); if (TVM) tvRender(); }
+  function renderAll() { if (D) { gTick(); xRender(); hwPaint(); } renderPace(); renderStatus(); renderTable(); renderQ(); if ($('pres').classList.contains('on')) presShow(); if (TVM) tvRender(); }
 
   /* ---------- 📺 TV 화면: 발표 중이면 쪽, 질문 중이면 결과, 멈춤이면 메시지, 아니면 접속 QR ---------- */
   var MODE = new URLSearchParams(location.search), TVM = MODE.has('tv'), RMM = MODE.has('remote');
@@ -1502,15 +1516,7 @@ function lineThru(p, r, a, col) {
   /* 채점 — 라운드 규칙(화면 '게임 규칙' 도움말과 같게):
    * 기본 = 배점(빠르기 켜면 늦을수록 최대 절반까지 깎임) · 2배 = ×2 · 번개 = 가장 빨리 맞힌 1·2·3등에 배점의 50·30·10% 더
    * 역전 = 문제 전 순위 아래 절반이 맞히면 ×2 · 룰렛 = 맞힌 학생 모두 ×2/×3/+500/×0.5/×1 · 파이널 = 건 점수(지금 총점의 0·25·50·100%)를 맞히면 더하고 틀리면 뺌 */
-  function okIdx(q) { return q.type === 'ox' ? [String(q.answer).toUpperCase() === 'O' ? 0 : 1] : q.type === 'choice' ? [].concat(q.answer).map(function (k) { return Number(k) - 1; }) : []; }   // 세트 파일의 선택형 정답은 1부터
-  function okOf(q, v, i) {
-    v = String(v == null ? '' : v);
-    if (q.type === 'choice' || q.type === 'ox') return v !== '' && okIdx(q).indexOf(Number(v)) >= 0;   // 학생은 누른 칸 번호(0부터, OX 는 0=⭕ 1=❌)를 보낸다
-    if (q.type === 'short') return [].concat(q.answer).some(function (a) { return eqAns(v, a); });
-    if (q.type === 'chosung') return anorm(v) === anorm(q.answer);
-    if (q.type === 'order') { var seq = v.split(',').map(Number); return seq.length === G.perm[i].length && seq.every(function (d, k) { return G.perm[i][d] === k; }); }
-    return false;
-  }
+  function okOf(q, v, i) { return gradeQ(q, v, G.perm[i]); }   // 채점 규칙은 mathx.js gradeQ
   function reveal() {
     if (G.busy) return; G.busy = true;
     var i = G.qi, q = G.set.questions[i];
@@ -1978,6 +1984,66 @@ function lineThru(p, r, a, col) {
     if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); snapStep(1); }
     if (e.key === 'ArrowLeft') { e.preventDefault(); snapStep(-1); }
   });
+
+  /* ================= 📝 과제 내기·결과 — 진도판(teacher.html 의 IIFE 안) =================
+   * 고른 게임 세트를 반에 과제로(HW:반 {t, list}). 학생 태블릿이 혼자 풀고 채점, 진행은 work(act='HW:과제번호'). */
+  function hwData() { return (D && D.hw && D.hw.list) || []; }
+  function hwPut(list) { var d = { t: Date.now(), list: list }; if (D) D.hw = d; srv('gput', [CODE, 'HW:' + CLS, d], function (r) { if (r && r.ok === false) toast(r.msg); }); hwPaint(); }
+  (function () { var d = new Date(Date.now() + 7 * 864e5); $('hwDue').value = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); })();
+  $('hwGive').onclick = function () {
+    var sid = $('gSel').value; if (!sid || !CLS) { toast('세트와 반을 먼저 고르세요'); return; }
+    srv('setLoad', [CODE, 'SET:' + sid], function (r) {
+      if (!r.ok || !r.v) { toast('세트를 찾지 못했어요'); return; }
+      var set = JSON.parse(r.v), title = String(set.title || '과제');
+      if (!confirm(CLS + ' 에 「' + title + '」(' + set.questions.length + '문제)을 과제로 낼까요? 마감 ' + ($('hwDue').value || '없음'))) return;
+      hwPut(hwData().concat([{ hid: 'h' + Date.now().toString(36), sid: sid, title: title, due: $('hwDue').value || '', set: set }]));
+      toast('📝 과제를 냈어요 — 학생 화면 위 "📝 과제" 버튼');
+    });
+  };
+  var HWP = '';
+  function hwPaint() {
+    var L = hwData(), k = CLS + JSON.stringify(L.map(function (h) { return [h.hid, h.due]; }));
+    if (k === HWP) return; HWP = k;
+    $('hwList').innerHTML = L.map(function (h) { return '<span class="xa">' + esc(h.title) + (h.due ? ' ~' + h.due.slice(5).replace('-', '/') : '') + ' <b data-hr="' + h.hid + '">결과</b><b data-hd="' + h.hid + '">✕</b></span>'; }).join('') || '<span class="mut">낸 과제 없음</span>';
+  }
+  $('hwList').onclick = function (e) {
+    var r = e.target.getAttribute('data-hr'), d = e.target.getAttribute('data-hd');
+    if (d && confirm('이 과제를 내릴까요? (학생 목록에서 사라짐, 결과는 남음)')) hwPut(hwData().filter(function (h) { return h.hid !== d; }));
+    if (r) hwRes(r);
+  };
+  var HWR = null;
+  function hwRes(hid) {
+    var h = hwData().filter(function (x) { return x.hid === hid; })[0]; if (!h) return;
+    $('hwRes').classList.add('on'); $('hwResT').textContent = '📝 ' + h.title + ' — 결과 (' + CLS + ')'; $('hwResB').innerHTML = '불러오는 중…';
+    srv('works', [CODE, CLS, 'HW:' + hid], function (r) {
+      if (!r.ok) { $('hwResB').textContent = r.msg; return; }
+      var W = r.works || {}, nos = Object.keys(W).map(Number).sort(function (a, b) { return a - b; });
+      HWR = { h: h, W: W, nos: nos };
+      $('hwResB').innerHTML = nos.length ? '<table><thead><tr><th>번호</th><th>닉네임</th><th>진행</th><th>맞힌 수</th><th>점수</th><th>끝</th></tr></thead><tbody>' + nos.map(function (no) {
+        var w = W[no].w; return '<tr><td>' + no + '</td><td>' + av(w.ani, 22) + ' ' + esc(w.nick || '') + '</td><td>' + Math.min(w.i, w.n) + ' / ' + w.n + '</td><td>' + w.ok + ' / ' + w.of + '</td><td>' + w.score + '</td><td>' + (w.done ? '✅' : '') + '</td></tr>';
+      }).join('') + '</tbody></table>' : '<p class="mut">아직 푼 학생이 없어요</p>';
+    });
+  }
+  $('hwResX').onclick = function () { $('hwRes').classList.remove('on'); };
+  $('hwStar').onclick = function () {
+    if (!HWR) return;
+    var done = HWR.nos.filter(function (no) { return HWR.W[no].w.done; }), given = HWR.h.starred || [], add = done.filter(function (no) { return given.indexOf(no) < 0; });
+    if (!add.length) { toast('새로 별을 줄 학생이 없어요'); return; }
+    starAdd(add.map(function (no) { return [no, 1, '과제 ' + HWR.h.title.slice(0, 12)]; }));
+    hwPut(hwData().map(function (x) { return x.hid === HWR.h.hid ? Object.assign({}, x, { starred: given.concat(add) }) : x; }));
+    toast('⭐ ' + add.length + '명에게 별을 줬어요');
+  };
+  $('hwXls').onclick = function () {
+    if (!HWR) return;
+    function go() {
+      var qs = HWR.h.set.questions, rows = [['번호', '닉네임', '점수', '맞힌 수', '끝'].concat(qs.map(function (_, i) { return (i + 1) + '번'; }))];
+      HWR.nos.forEach(function (no) { var w = HWR.W[no].w; rows.push([no, w.nick || '', w.score, w.ok, w.done ? 'O' : ''].concat(qs.map(function (q, i) { var a = (w.ans || [])[i]; return a ? (a[0] || '') + (/slide|survey/.test(q.type) ? '' : a[1] ? ' ✓' : ' ✗') : ''; }))); });
+      var wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), '과제');
+      XLSX.writeFile(wb, CLS + ' ' + HWR.h.title + ' 과제 결과.xlsx');
+    }
+    if (window.XLSX) return go();
+    var sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; sc.onload = go; document.head.appendChild(sc);
+  };
 
   window.__HUBT = { st: function () { return { CLS: CLS, PACE: PACE, D: D, SAVE: SAVE }; } };
   if (CODE) enter(CODE);
