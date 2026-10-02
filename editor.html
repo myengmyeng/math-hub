@@ -41,8 +41,15 @@ header{display:flex;gap:8px;align-items:center;padding:10px 16px;background:#fff
   <input id="title" placeholder="세트 제목"><label><input type="checkbox" id="speed"> 빠르기 점수(기본값)</label>
   <span style="flex:1"></span><span id="saveSt"></span>
   <label class="soft" style="border-radius:10px;padding:7px 12px;background:var(--tint);color:var(--blue);font-weight:600;cursor:pointer">JSON 가져오기<input type="file" id="fImp" accept=".json" hidden></label>
-  <button id="bExp">JSON 내려받기</button><button id="bDel">목록에서 빼기</button><button class="pri" id="bSave">저장 (Ctrl+S)</button>
+  <button id="bQz">퀴즈온에서 가져오기</button><button id="bExp">JSON 내려받기</button><button id="bDel">목록에서 빼기</button><button class="pri" id="bSave">저장 (Ctrl+S)</button>
 </header>
+<div id="qzHelp" style="display:none;background:var(--tint);border-bottom:1px solid var(--line);padding:14px 18px;line-height:1.7">
+  <b>퀴즈온 세트를 허브로 옮기기</b> (한 번만 준비하면 다음부터는 두 번 클릭)<br>
+  ① 아래 파란 단추를 <b>크롬 북마크바로 끌어다 놓기</b> (북마크바가 안 보이면 Ctrl+Shift+B)
+  <a id="qzLink" href="#" style="display:inline-block;background:var(--blue);color:#fff;padding:6px 14px;border-radius:10px;text-decoration:none;font-weight:700;margin:0 6px">퀴즈온→허브</a><br>
+  ② 퀴즈온에서 옮길 퀴즈의 <b>편집 화면</b>을 열고 북마크바의 [퀴즈온→허브]를 누르기 → 허브용 파일(.json)이 내려받아짐<br>
+  ③ 여기서 [JSON 가져오기]로 그 파일을 고르고 [저장] — 그림도 저장할 때 함께 옮겨집니다. <button id="qzX" style="margin-left:8px">닫기</button>
+</div>
 <div class="cols">
   <div id="list"><div id="qs"></div><div id="addBar"></div></div>
   <div id="form"></div>
@@ -879,6 +886,10 @@ function imgKey(q, sid, i) { return !q.image ? '' : typeof q.image === 'string' 
     a.download = (S.set.title || '세트') + '.json'; a.click();
   };
 
+  $('qzLink').href = 'javascript:' + encodeURIComponent("(async () => { try { const h = await (await fetch(location.href)).text(); const s = [...h.matchAll(/self\\.__next_f\\.push\\(\\[1,\"((?:[^\"\\\\]|\\\\.)*)\"\\]\\)/g)].map(m => { try { return JSON.parse('\"' + m[1] + '\"'); } catch (e) { return ''; } }).join(''); const i = s.indexOf('\"questions\":['); if (i < 0) throw '퀴즈온의 퀴즈 편집 화면에서 눌러 주세요'; let d = 0, j = i + 12; for (; j < s.length; j++) { if (s[j] === '[') d++; else if (s[j] === ']') { d--; if (!d) break; } } const Q = JSON.parse(s.slice(i + 12, j + 1)); const title = (/\"title\":\"([^\"]*)\"/.exec(s) || [])[1] || document.title; const R = { double: 'double', lightning: 'lightning', catchup: 'catchup', final: 'final', special: 'roulette', roulette: 'roulette' }; const clean = x => String(x || '').replace(/\\*\\*(.+?)\\*\\*/g, '$1').replace(/\\\\n/g, '\\n'); const txt = x => typeof x === 'string' ? x : (x && (x.text || x.label || x.content)) || ''; let warn = 0; const qs = Q.map(q => { const o = { type: q.type, prompt: clean(q.prompt) }; o.time = q.type === 'slide' ? 30 : (q.time_limit || 60); if (!['slide', 'survey'].includes(q.type)) o.points = q.points || 1000; const r = (q.settings || {}).round; if (R[r]) o.round = R[r]; if (q.media && q.media.image) o.image = q.media.image; if (q.explanation) o.explain = clean(q.explanation); const A = q.answer || {}, ch = q.choices || []; if (q.type === 'short') o.answer = A.accepted || []; if (q.type === 'ox') o.answer = String(A.correct).toUpperCase() === 'X' ? 'X' : 'O'; if (q.type === 'chosung') o.answer = A.correct || (A.accepted || [])[0] || ''; if (q.type === 'choice' || q.type === 'survey') o.choices = ch.map(txt); if (q.type === 'choice') { let k = ch.map((c, n) => c && (c.correct || c.isCorrect || c.is_correct) ? n + 1 : 0).filter(Boolean); if (!k.length) k = [].concat(A.correct != null ? A.correct : A.answers != null ? A.answers : []).map(v => typeof v === 'number' ? v + 1 : ch.findIndex(c => c && (c.id === v || txt(c) === v)) + 1).filter(v => v > 0); if (!k.length) { warn++; k = [1]; } o.answer = k.length === 1 ? k[0] : k; } if (q.type === 'order') o.items = ch.map(txt); return o; }); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify({ title, speed: false, questions: qs }, null, 2)], { type: 'application/json' })); a.download = title + '.json'; a.click(); alert('수업 허브용 파일을 내려받았어요: ' + title + '.json (' + qs.length + '문항)\\n문항 편집기의 [JSON 가져오기]로 넣고 [저장]하세요.' + (warn ? '\\n⚠ 선택형 ' + warn + '문항은 정답을 못 읽어 1번으로 두었어요 — 편집기에서 확인하세요.' : '')); } catch (e) { alert('⚠ ' + e); } })();");
+  $('qzLink').onclick = function (e) { e.preventDefault(); toast('누르지 말고 북마크바로 끌어다 놓으세요'); };
+  $('bQz').onclick = function () { $('qzHelp').style.display = 'block'; };
+  $('qzX').onclick = function () { $('qzHelp').style.display = 'none'; };
   window.__ED = { st: function () { return { S: S, CUR: CUR, DIRTY: DIRTY, GS: GS }; } };
   if (CODE) enter(CODE);
 })();
