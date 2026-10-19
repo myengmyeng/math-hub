@@ -2,96 +2,253 @@
   "title": "중3 · 원의 중심과 현의 길이",
   "speed": false,
   "questions": [
-    { "type": "slide", "time": 30,
-      "prompt": "🔁 전시학습 — 지난 시간: 원의 중심에서 현에 내린 수선은 그 현을 이등분한다. 4문제로 확인해 보자!" },
-    { "type": "ox", "time": 20, "points": 1000, "round": "lightning",
-      "prompt": "원 O의 중심에서 현 AB에 내린 수선의 발을 M이라 하면 $\\overline{AM}=\\overline{BM}$ 이다.",
-      "answer": "O",
-      "explain": "원의 중심에서 현에 내린 수선은 그 현을 이등분한다 → AM=BM" },
-    { "type": "choice", "time": 30, "points": 1000,
-      "prompt": "두 직각삼각형에서 빗변의 길이와 다른 한 변의 길이가 각각 같을 때의 합동 조건은?",
-      "choices": ["RHA 합동", "RHS 합동", "SAS 합동", "ASA 합동"],
+    {
+      "type": "slide",
+      "time": 30,
+      "prompt": "🔁 전시학습 — 지난 시간: 원의 중심에서 현에 내린 수선은 그 현을 이등분한다. 반지름·수선·현의 절반이 만드는 직각삼각형을 떠올리며 4문제!"
+    },
+    {
+      "type": "choice",
+      "time": 30,
+      "points": 500,
+      "prompt": "원 O의 중심 O에서 현 AB에 내린 수선의 발을 M이라 하자. AB = 12 cm일 때, AM의 길이는?",
+      "choices": [
+        "3 cm",
+        "6 cm",
+        "12 cm",
+        "24 cm"
+      ],
       "answer": 2,
-      "explain": "R(직각)·H(빗변)·S(한 변) → RHS 합동. 오늘 증명의 핵심 도구!" },
-    { "type": "short", "time": 60, "points": 1000,
-      "prompt": "반지름이 5인 원 O의 중심에서 현 AB까지의 거리가 3일 때, $\\overline{AB}$ 의 길이는?",
-      "answer": ["8", "8cm"],
-      "explain": "$\\overline{AM}=\\sqrt{5^2-3^2}=4$ 이고 M은 AB의 중점 → $\\overline{AB}=2\\times4=8$" },
-    { "type": "short", "time": 60, "points": 1000,
-      "prompt": "반지름이 13인 원 O에서 길이가 24인 현 AB까지 중심 O로부터의 거리는?",
-      "answer": ["5", "5cm"],
-      "explain": "$\\overline{AM}=12$ → $\\overline{OM}=\\sqrt{13^2-12^2}=5$ (반지름이 빗변!)" },
-
-    { "type": "slide", "time": 30,
-      "prompt": "🔍 오늘의 질문 — 한 원에서 중심까지의 거리가 같은 두 현은 길이도 같을까? 거꾸로, 길이가 같은 두 현은 중심에서의 거리도 같을까?" },
-    { "type": "slide", "time": 30,
-      "prompt": "성질 ① — 원 O에서 $\\overline{OM}\\perp\\overline{AB}$, $\\overline{ON}\\perp\\overline{CD}$ 일 때, $\\overline{OM}=\\overline{ON}$ 이면 $\\overline{AB}=\\overline{CD}$ 이다." },
-    { "type": "choice", "time": 30, "points": 1000,
+      "explain": "수선은 현을 이등분 → AM = 12 ÷ 2 = 6 cm",
+      "src": "지난 퀴즈 11번"
+    },
+    {
+      "type": "short",
+      "time": 30,
+      "points": 1000,
+      "prompt": "원 O의 중심 O에서 현 AB에 내린 수선의 발을 M이라 하자. AM = 7 cm일 때, 현 AB의 전체 길이는? (※단위 없이 숫자만 입력할 것)",
+      "answer": [
+        "14"
+      ],
+      "explain": "AB = 2 × AM = 14 cm",
+      "src": "지난 퀴즈 13번"
+    },
+    {
+      "type": "short",
+      "time": 60,
+      "points": 1000,
+      "round": "catchup",
+      "prompt": "x의 값을 구하시오. (hint: 직각삼각형) (※단위 없이 숫자만 입력할 것)",
+      "answer": [
+        "13"
+      ],
+      "explain": "AM = 12, OM = 5 → x = √(12² + 5²) = 13 (반지름이 빗변)",
+      "src": "지난 퀴즈 18번"
+    },
+    {
+      "type": "short",
+      "time": 60,
+      "points": 1000,
+      "prompt": "다음 그림에서 x의 값을 구하시오. (※단위 없이 숫자만 입력할 것)",
+      "answer": [
+        "16"
+      ],
+      "explain": "현의 절반 = √(10² − 6²) = 8 → x = 16",
+      "src": "지난 퀴즈 21번"
+    },
+    {
+      "type": "slide",
+      "time": 30,
+      "prompt": "🔍 오늘의 질문 — 한 원에서 중심까지의 거리가 같은 두 현은 길이도 같을까? 거꾸로, 길이가 같은 두 현은 중심에서의 거리도 같을까?"
+    },
+    {
+      "type": "slide",
+      "time": 30,
+      "prompt": "성질 ① — 원 O에서 $\\overline{OM}\\perp\\overline{AB}$, $\\overline{ON}\\perp\\overline{CD}$ 일 때, $\\overline{OM}=\\overline{ON}$ 이면 $\\overline{AB}=\\overline{CD}$ 이다."
+    },
+    {
+      "type": "choice",
+      "time": 30,
+      "points": 1000,
       "prompt": "성질 ①에서 가정은?",
-      "choices": ["$\\overline{AB}=\\overline{CD}$", "$\\overline{OM}=\\overline{ON}$", "$\\overline{OA}=\\overline{OC}$", "$\\overline{AM}=\\overline{CN}$"],
+      "choices": [
+        "$\\overline{AB}=\\overline{CD}$",
+        "$\\overline{OM}=\\overline{ON}$",
+        "$\\overline{OA}=\\overline{OC}$",
+        "$\\overline{AM}=\\overline{CN}$"
+      ],
       "answer": 2,
-      "explain": "가정: OM=ON (중심에서의 거리가 같다) · 결론: AB=CD" },
-    { "type": "slide", "time": 30,
-      "prompt": "증명 ① — 반지름 $\\overline{OA}$, $\\overline{OC}$ 를 그으면 두 직각삼각형 △OAM, △OCN 이 생긴다." },
-    { "type": "choice", "time": 30, "points": 1000,
+      "explain": "가정: OM=ON (중심에서의 거리가 같다) · 결론: AB=CD"
+    },
+    {
+      "type": "slide",
+      "time": 30,
+      "prompt": "증명 ① — 반지름 $\\overline{OA}$, $\\overline{OC}$ 를 그으면 두 직각삼각형 △OAM, △OCN 이 생긴다. (직각삼각형의 합동 조건: RHA, RHS 기억나니?)"
+    },
+    {
+      "type": "choice",
+      "time": 30,
+      "points": 1000,
       "prompt": "△OAM과 △OCN에서 $\\overline{OA}=\\overline{OC}$ 인 이유는?",
-      "choices": ["가정", "원의 반지름", "공통인 변", "맞꼭지각"],
+      "choices": [
+        "가정",
+        "원의 반지름",
+        "공통인 변",
+        "맞꼭지각"
+      ],
       "answer": 2,
-      "explain": "OA, OC는 모두 원 O의 반지름 → 빗변(H)이 같다" },
-    { "type": "slide", "time": 30,
-      "prompt": "증명 ② — △OAM과 △OCN에서 $\\angle OMA=\\angle ONC=90^\\circ$ · $\\overline{OA}=\\overline{OC}$ (반지름) · $\\overline{OM}=\\overline{ON}$ (가정)" },
-    { "type": "short", "time": 30, "points": 1000, "round": "double",
+      "explain": "OA, OC는 모두 원 O의 반지름 → 빗변(H)이 같다"
+    },
+    {
+      "type": "slide",
+      "time": 30,
+      "prompt": "증명 ② — △OAM과 △OCN에서 $\\angle OMA=\\angle ONC=90^\\circ$ · $\\overline{OA}=\\overline{OC}$ (반지름) · $\\overline{OM}=\\overline{ON}$ (가정)"
+    },
+    {
+      "type": "short",
+      "time": 30,
+      "points": 1000,
+      "round": "double",
       "prompt": "△OAM≡△OCN 이다. 어떤 합동 조건일까? (영문 3글자)",
-      "answer": ["RHS", "RHS합동"],
-      "explain": "직각(R) · 빗변 OA=OC(H) · 한 변 OM=ON(S) → RHS 합동" },
-    { "type": "slide", "time": 30,
-      "prompt": "증명 ③ — 합동이므로 $\\overline{AM}=\\overline{CN}$. 그런데 $\\overline{AB}=2\\overline{AM}$, $\\overline{CD}=2\\overline{CN}$ 이다." },
-    { "type": "choice", "time": 30, "points": 1000,
+      "answer": [
+        "RHS",
+        "RHS합동"
+      ],
+      "explain": "직각(R) · 빗변 OA=OC(H) · 한 변 OM=ON(S) → RHS 합동"
+    },
+    {
+      "type": "slide",
+      "time": 30,
+      "prompt": "증명 ③ — 합동이므로 $\\overline{AM}=\\overline{CN}$. 그런데 $\\overline{AB}=2\\overline{AM}$, $\\overline{CD}=2\\overline{CN}$ 이다."
+    },
+    {
+      "type": "choice",
+      "time": 30,
+      "points": 1000,
       "prompt": "$\\overline{AB}=2\\overline{AM}$ 이라고 할 수 있는 근거는?",
-      "choices": ["RHS 합동", "원의 중심에서 현에 내린 수선은 그 현을 이등분한다", "반지름의 길이는 모두 같다", "가정"],
+      "choices": [
+        "RHS 합동",
+        "원의 중심에서 현에 내린 수선은 그 현을 이등분한다",
+        "반지름의 길이는 모두 같다",
+        "가정"
+      ],
       "answer": 2,
-      "explain": "전시학습 성질! M은 AB의 중점 → AB=2AM=2CN=CD" },
-    { "type": "slide", "time": 30,
-      "prompt": "📦 성질 ① — 원의 중심에서 같은 거리에 있는 두 현의 길이는 같다. (RHS 합동 → AM=CN → 2배)" },
-
-    { "type": "slide", "time": 30,
-      "prompt": "성질 ② (①의 역) — $\\overline{AB}=\\overline{CD}$ 이면 $\\overline{OM}=\\overline{ON}$ 이다. 이번엔 여러분이 증명을 완성해 보자!" },
-    { "type": "ox", "time": 20, "points": 1000,
+      "explain": "전시학습 성질! M은 AB의 중점 → AB=2AM=2CN=CD"
+    },
+    {
+      "type": "slide",
+      "time": 30,
+      "prompt": "📦 성질 ① — 원의 중심에서 같은 거리에 있는 두 현의 길이는 같다. (RHS 합동 → AM=CN → 2배)"
+    },
+    {
+      "type": "slide",
+      "time": 30,
+      "prompt": "성질 ② (①의 역) — $\\overline{AB}=\\overline{CD}$ 이면 $\\overline{OM}=\\overline{ON}$ 이다. 이번엔 여러분이 증명을 완성해 보자!"
+    },
+    {
+      "type": "ox",
+      "time": 20,
+      "points": 1000,
       "prompt": "성질 ②의 증명에서 $\\overline{AM}=\\frac{1}{2}\\overline{AB}=\\frac{1}{2}\\overline{CD}=\\overline{CN}$ 이 성립한다.",
       "answer": "O",
-      "explain": "수선이 현을 이등분 + 가정 AB=CD → AM=CN (이번엔 이것이 S)" },
-    { "type": "order", "time": 60, "points": 1000, "round": "catchup",
+      "explain": "수선이 현을 이등분 + 가정 AB=CD → AM=CN (이번엔 이것이 S)"
+    },
+    {
+      "type": "order",
+      "time": 60,
+      "points": 1000,
+      "round": "catchup",
       "prompt": "성질 ②의 증명을 순서대로 놓아 보자",
-      "items": ["$\\overline{AM}=\\frac12\\overline{AB}=\\frac12\\overline{CD}=\\overline{CN}$", "$\\angle OMA=\\angle ONC=90^\\circ$, $\\overline{OA}=\\overline{OC}$ (반지름)", "△OAM≡△OCN (RHS 합동)", "대응변이므로 $\\overline{OM}=\\overline{ON}$"],
-      "explain": "현의 절반이 같다 → 직각·빗변 → RHS 합동 → OM=ON" },
-    { "type": "slide", "time": 30,
-      "prompt": "📦 정리 — 한 원에서 ① 중심에서 같은 거리에 있는 두 현의 길이는 같다. ② 길이가 같은 두 현은 중심에서 같은 거리에 있다." },
-    { "type": "survey", "time": 20,
+      "items": [
+        "$\\overline{AM}=\\frac12\\overline{AB}=\\frac12\\overline{CD}=\\overline{CN}$",
+        "$\\angle OMA=\\angle ONC=90^\\circ$, $\\overline{OA}=\\overline{OC}$ (반지름)",
+        "△OAM≡△OCN (RHS 합동)",
+        "대응변이므로 $\\overline{OM}=\\overline{ON}$"
+      ],
+      "explain": "현의 절반이 같다 → 직각·빗변 → RHS 합동 → OM=ON"
+    },
+    {
+      "type": "slide",
+      "time": 30,
+      "prompt": "📦 정리 — 한 원에서 ① 중심에서 같은 거리에 있는 두 현의 길이는 같다. ② 길이가 같은 두 현은 중심에서 같은 거리에 있다."
+    },
+    {
+      "type": "survey",
+      "time": 20,
       "prompt": "짝에게 두 성질의 증명을 설명할 수 있나요?",
-      "choices": ["자신 있다", "대략 할 수 있다", "합동 부분이 헷갈린다", "아직 어렵다"] },
-
-    { "type": "slide", "time": 30,
-      "prompt": "✏ 활용 — 성질을 문제에 써 보자. 풀이는 공책에, 답은 태블릿에!" },
-    { "type": "short", "time": 60, "points": 1000,
+      "choices": [
+        "자신 있다",
+        "대략 할 수 있다",
+        "합동 부분이 헷갈린다",
+        "아직 어렵다"
+      ]
+    },
+    {
+      "type": "slide",
+      "time": 30,
+      "prompt": "✏ 활용 — 성질을 문제에 써 보자. 풀이는 공책에, 답은 태블릿에!"
+    },
+    {
+      "type": "short",
+      "time": 60,
+      "points": 1000,
       "prompt": "[교과서 기본 1] 원 O에서 $\\overline{OM}\\perp\\overline{AB}$, $\\overline{ON}\\perp\\overline{CD}$, $\\overline{OM}=\\overline{ON}=4$, $\\overline{AB}=10$ 일 때, $\\overline{CD}$ 의 길이는?",
-      "answer": ["10", "10cm"],
-      "explain": "중심에서의 거리가 같다 → 성질 ① → CD=AB=10" },
-    { "type": "short", "time": 90, "points": 1000,
-      "prompt": "[교과서 기본 2] 반지름이 10인 원 O에서 $\\overline{AB}=\\overline{CD}=16$ 이고 $\\overline{ON}\\perp\\overline{CD}$ 일 때, $\\overline{ON}$ 의 길이는?",
-      "answer": ["6", "6cm"],
-      "explain": "CN=8 → ON=√(10²−8²)=6. (성질 ②로 AB까지의 거리도 6)" },
-    { "type": "short", "time": 180, "points": 2000,
+      "answer": [
+        "10",
+        "10cm"
+      ],
+      "explain": "중심에서의 거리가 같다 → 성질 ① → CD=AB=10"
+    },
+    {
+      "type": "short",
+      "time": 90,
+      "points": 1000,
+      "prompt": "[교과서 기본 2] 반지름이 17인 원 O에서 $\\overline{AB}=\\overline{CD}=30$ 이고 $\\overline{ON}\\perp\\overline{CD}$ 일 때, $\\overline{ON}$ 의 길이는? (※단위 없이 숫자만 입력할 것)",
+      "answer": [
+        "8"
+      ],
+      "explain": "CN=15 → ON=√(17²−15²)=8. (성질 ②로 AB까지의 거리도 8)"
+    },
+    {
+      "type": "short",
+      "time": 180,
+      "points": 2000,
       "prompt": "[교과서 심화] △ABC가 원 O에 내접하고 $\\overline{OM}\\perp\\overline{AB}$, $\\overline{ON}\\perp\\overline{AC}$, $\\overline{OM}=\\overline{ON}$, $\\angle MON=110^\\circ$ 일 때, $\\angle ABC$ 의 크기는? (숫자만)",
-      "answer": ["55", "55°", "55^\\circ"],
-      "explain": "□AMON에서 ∠A=360°−90°−90°−110°=70° · OM=ON → AB=AC → ∠ABC=(180°−70°)÷2=55°" },
-    { "type": "choice", "time": 60, "points": 1000,
+      "answer": [
+        "55",
+        "55°",
+        "55^\\circ"
+      ],
+      "explain": "□AMON에서 ∠A=360°−90°−90°−110°=70° · OM=ON → AB=AC → ∠ABC=(180°−70°)÷2=55°"
+    },
+    {
+      "type": "choice",
+      "time": 60,
+      "points": 1000,
       "prompt": "[내신 기출 유형 · 1단계] 원 O에 내접하는 △ABC에서 중심 O에서 세 변까지의 거리가 모두 같다. △ABC는 어떤 삼각형일까?",
-      "choices": ["직각삼각형", "이등변삼각형(정삼각형 아님)", "정삼각형", "알 수 없다"],
+      "choices": [
+        "직각삼각형",
+        "이등변삼각형(정삼각형 아님)",
+        "정삼각형",
+        "알 수 없다"
+      ],
       "answer": 3,
-      "explain": "세 현까지의 거리가 같다 → 성질 ① → AB=BC=CA → 정삼각형" },
-    { "type": "short", "time": 180, "points": 1000, "round": "final",
+      "explain": "세 현까지의 거리가 같다 → 성질 ① → AB=BC=CA → 정삼각형"
+    },
+    {
+      "type": "choice",
+      "time": 180,
+      "points": 1000,
+      "round": "final",
       "prompt": "[내신 기출 유형 · 2단계] 반지름이 4인 원 O에서 중심 O에서 △ABC의 세 변까지의 거리가 모두 2일 때, △ABC의 넓이는?",
-      "answer": ["12√3", "12루트3", "12\\sqrt3", "12\\sqrt{3}", "12*\\sqrt{3}", "12*\\sqrt3"],
-      "explain": "변의 절반=√(4²−2²)=2√3 → 한 변 4√3 → 넓이 $\\frac{\\sqrt3}{4}\\times(4\\sqrt3)^2=12\\sqrt3$" }
+      "explain": "변의 절반=√(4²−2²)=2√3 → 한 변 4√3 → 넓이 $\\frac{\\sqrt3}{4}\\times(4\\sqrt3)^2=12\\sqrt3$",
+      "choices": [
+        "12√3",
+        "16√3",
+        "24",
+        "48"
+      ],
+      "answer": 1
+    }
   ]
 }
