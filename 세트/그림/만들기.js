@@ -36,7 +36,7 @@ const svgFig = (o, w, h) => `<svg xmlns="http://www.w3.org/2000/svg" width="${w}
 const pages = {
   '1-성질1-그림.png': `<div class="fig">${svgFig({ ticksOM: 1 }, 500, 500)}<div class="pad"></div></div>`,
   '2-성질1-증명.png': `<div class="fig">${svgFig({ ticksOM: 1, radii: 1, shade: 1 }, 500, 500)}<div class="pad"></div></div>`,
-  '3-성질2-증명.png': `<div class="fig">${svgFig({ ticksChord: 1, radii: 1, shade: 1 }, 500, 500)}<div class="pad"></div></div>`,
+  '3-성질2-증명.png': `<div class="fig">${svgFig({ radii: 1, shade: 1 }, 500, 500)}<div class="pad"></div></div>`,
   '4-결론박스-성질1.png': `<div class="box"><div class="tt">📦 성질 ①</div><div class="row"><div class="tx"><b>원의 중심에서 같은 거리에 있는<br>두 현의 길이는 같다.</b><div class="eq">OM = ON &nbsp;⟹&nbsp; AB = CD</div><div class="why">근거: RHS 합동 → AM = CN → AB = 2AM = 2CN = CD</div></div>${svgFig({ ticksOM: 1 }, 500, 500).replace('width="500" height="500"', 'width="250" height="250"')}</div></div>`,
   '5-결론박스-성질2.png': `<div class="box"><div class="tt">📦 성질 ②</div><div class="row"><div class="tx"><b>길이가 같은 두 현은<br>원의 중심에서 같은 거리에 있다.</b><div class="eq">AB = CD &nbsp;⟹&nbsp; OM = ON</div><div class="why">근거: AM = ½AB = ½CD = CN → RHS 합동 → OM = ON</div></div>${svgFig({ ticksChord: 1 }, 500, 500).replace('width="500" height="500"', 'width="250" height="250"')}</div></div>`,
   '6-결론박스-정리.png': `<div class="box"><div class="tt">📦 정리 — 한 원에서</div><div class="row"><div class="tx"><div class="it"><span>①</span> 중심에서 같은 거리에 있는 두 현의<br>길이는 같다.<div class="eq s">OM = ON &nbsp;⟹&nbsp; AB = CD</div></div><div class="it"><span>②</span> 길이가 같은 두 현은 중심에서<br>같은 거리에 있다.<div class="eq s">AB = CD &nbsp;⟹&nbsp; OM = ON</div></div></div>${svgFig({}, 500, 500).replace('width="500" height="500"', 'width="250" height="250"')}</div></div>`,
