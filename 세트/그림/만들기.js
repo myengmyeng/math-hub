@@ -39,6 +39,11 @@ const pages = {
   '3-성질2-증명.png': `<div class="fig">${svgFig({ radii: 1, shade: 1 }, 500, 500)}<div class="pad"></div></div>`,
   '4-결론박스-성질1.png': `<div class="box"><div class="tt">📦 성질 ①</div><div class="row"><div class="tx"><b>원의 중심에서 같은 거리에 있는<br>두 현의 길이는 같다.</b><div class="eq">OM = ON &nbsp;⟹&nbsp; AB = CD</div><div class="why">근거: RHS 합동 → AM = CN → AB = 2AM = 2CN = CD</div></div>${svgFig({ ticksOM: 1 }, 500, 500).replace('width="500" height="500"', 'width="250" height="250"')}</div></div>`,
   '5-결론박스-성질2.png': `<div class="box"><div class="tt">📦 성질 ②</div><div class="row"><div class="tx"><b>길이가 같은 두 현은<br>원의 중심에서 같은 거리에 있다.</b><div class="eq">AB = CD &nbsp;⟹&nbsp; OM = ON</div><div class="why">근거: AM = ½AB = ½CD = CN → RHS 합동 → OM = ON</div></div>${svgFig({ ticksChord: 1 }, 500, 500).replace('width="500" height="500"', 'width="250" height="250"')}</div></div>`,
+  '7-분석-성질1.png': `<div class="lad"><div class="tt">🔎 결론에서 거꾸로 (분석)</div><div class="steps">
+<div class="st goal">AB = CD<small>결론 — 보일 것</small></div><div class="ar">⇑<span>무엇이 참이면 될까? (수선은 현을 이등분)</span></div>
+<div class="st">AM = CN</div><div class="ar">⇑<span>무엇이 참이면 될까?</span></div>
+<div class="st">△OAM ≡ △OCN</div><div class="ar">⇑<span>합동이 되려면?</span></div>
+<div class="st q">?<small>두 삼각형을 만들 선부터!</small></div></div></div>`,
   '6-결론박스-정리.png': `<div class="box"><div class="tt">📦 정리 — 한 원에서</div><div class="row"><div class="tx"><div class="it"><span>①</span> 중심에서 같은 거리에 있는 두 현의<br>길이는 같다.<div class="eq s">OM = ON &nbsp;⟹&nbsp; AB = CD</div></div><div class="it"><span>②</span> 길이가 같은 두 현은 중심에서<br>같은 거리에 있다.<div class="eq s">AB = CD &nbsp;⟹&nbsp; OM = ON</div></div></div>${svgFig({}, 500, 500).replace('width="500" height="500"', 'width="250" height="250"')}</div></div>`,
 };
 const css = `<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500;700;900&display=block" rel="stylesheet"><style>
@@ -48,6 +53,10 @@ body{margin:0;background:#fff;font-family:"Noto Sans KR",sans-serif;color:${K}}
 .tt{display:inline-block;background:${BLUE};color:#fff;font-weight:900;font-size:28px;padding:4px 18px;border-radius:12px;margin-bottom:14px}
 .row{display:flex;align-items:center;gap:20px}.tx{flex:1;font-size:29px;line-height:1.5}
 .eq{margin-top:12px;font-size:34px;font-weight:900;color:${BLUE};font-family:"Liberation Serif","Noto Sans KR",serif;font-style:italic}.eq.s{font-size:28px;margin-top:4px}
+.lad{width:900px;box-sizing:border-box;padding:24px 34px;background:#fff}.steps{display:flex;flex-direction:column-reverse;align-items:flex-start;gap:4px;margin-top:6px}
+.st{border:3px solid ${BLUE};border-radius:14px;padding:8px 22px;font-size:32px;font-weight:900;font-family:"Liberation Serif","Noto Sans KR",serif;font-style:italic;color:${K};background:#fff;min-width:330px}.st small{font-family:"Noto Sans KR";font-style:normal;font-size:18px;font-weight:500;color:#6b7488;margin-left:14px}
+.st.goal{background:${BLUE};color:#fff}.st.goal small{color:#dfe6ff}.st.q{border-style:dashed;color:#e0453a;border-color:#e0453a}
+.ar{font-size:30px;color:${BLUE};font-weight:900;padding-left:40px;line-height:1.1}.ar span{font-size:18px;color:#4a5266;font-weight:500;margin-left:14px}
 .why{margin-top:12px;font-size:22px;color:#4a5266}.it{margin-bottom:14px;font-weight:700}.it span{color:${BLUE};margin-right:6px}
 </style>`;
 (async () => {

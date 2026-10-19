@@ -53,13 +53,11 @@
     },
     {
       "type": "slide",
-      "time": 30,
       "prompt": "🔍 오늘의 질문 — 한 원에서 중심까지의 거리가 같은 두 현은 길이도 같을까? 거꾸로, 길이가 같은 두 현은 중심에서의 거리도 같을까?"
     },
     {
       "type": "slide",
-      "time": 30,
-      "prompt": "성질 ① — 원 O에서 $\\overline{OM}\\perp\\overline{AB}$, $\\overline{ON}\\perp\\overline{CD}$ 일 때, $\\overline{OM}=\\overline{ON}$ 이면 $\\overline{AB}=\\overline{CD}$ 이다."
+      "prompt": "성질 ① — 원 O에서 OM ⊥ AB, ON ⊥ CD일 때, OM = ON이면 AB = CD이다."
     },
     {
       "type": "choice",
@@ -67,24 +65,59 @@
       "points": 1000,
       "prompt": "성질 ①에서 가정은?",
       "choices": [
-        "$\\overline{AB}=\\overline{CD}$",
-        "$\\overline{OM}=\\overline{ON}$",
-        "$\\overline{OA}=\\overline{OC}$",
-        "$\\overline{AM}=\\overline{CN}$"
+        "AB = CD",
+        "OM = ON",
+        "OA = OC",
+        "AM = CN"
       ],
       "answer": 2,
-      "explain": "가정: OM=ON (중심에서의 거리가 같다) · 결론: AB=CD"
+      "explain": "가정: OM = ON (주어진 것) · 결론: AB = CD (보일 것)"
     },
     {
       "type": "slide",
-      "time": 30,
-      "prompt": "증명 ① — 반지름 $\\overline{OA}$, $\\overline{OC}$ 를 그으면 두 직각삼각형 △OAM, △OCN 이 생긴다."
+      "prompt": "🔎 거꾸로 생각하기 — 결론 AB = CD에서 출발! AB = CD가 되려면 무엇이 먼저 참이어야 할까?"
     },
     {
       "type": "choice",
       "time": 30,
       "points": 1000,
-      "prompt": "△OAM과 △OCN에서 $\\overline{OA}=\\overline{OC}$ 인 이유는?",
+      "prompt": "AB = CD가 되려면 먼저 무엇이 같으면 될까? (M, N은 수선의 발)",
+      "choices": [
+        "AM = CN",
+        "OA = OC",
+        "AM = MB",
+        "∠OAM = ∠OCN"
+      ],
+      "answer": 1,
+      "explain": "수선은 현을 이등분(전시학습 성질!) → AB = 2AM, CD = 2CN. 그래서 AM = CN만 보이면 AB = CD"
+    },
+    {
+      "type": "choice",
+      "time": 30,
+      "points": 1000,
+      "prompt": "그럼 AM = CN이 되려면 무엇을 보이면 될까?",
+      "choices": [
+        "AB ⊥ CD",
+        "AM = MB",
+        "△OAM ≡ △OCN",
+        "OA = OB"
+      ],
+      "answer": 3,
+      "explain": "AM, CN을 한 변으로 갖는 두 삼각형이 합동이면 대응변으로 AM = CN"
+    },
+    {
+      "type": "slide",
+      "prompt": "🔎 거꾸로 올라온 길 — AB = CD ⇐ AM = CN ⇐ △OAM ≡ △OCN ⇐ ? 합동을 보이려면 먼저 두 삼각형이 있어야 해. 어떤 선을 그을까?"
+    },
+    {
+      "type": "slide",
+      "prompt": "증명 ① — 이제 앞으로 내려가며 써 보자. 반지름 OA, OC를 그으면 두 직각삼각형 △OAM, △OCN이 생긴다."
+    },
+    {
+      "type": "choice",
+      "time": 30,
+      "points": 1000,
+      "prompt": "△OAM과 △OCN에서 OA = OC인 이유는?",
       "choices": [
         "가정",
         "원의 반지름",
@@ -96,80 +129,74 @@
     },
     {
       "type": "slide",
-      "time": 30,
-      "prompt": "증명 ② — △OAM과 △OCN에서 $\\angle OMA=\\angle ONC=90^\\circ$ · $\\overline{OA}=\\overline{OC}$ (반지름) · $\\overline{OM}=\\overline{ON}$ (가정)"
+      "prompt": "증명 ② — △OAM과 △OCN에서 ∠OMA = ∠ONC = 90° · OA = OC (반지름) · OM = ON (가정)"
     },
     {
       "type": "short",
       "time": 30,
       "points": 1000,
       "round": "double",
-      "prompt": "△OAM≡△OCN 이다. 어떤 합동 조건일까? (영문 3글자)",
+      "prompt": "△OAM ≡ △OCN이다. 어떤 합동 조건일까? (영문 3글자)",
       "answer": [
         "RHS",
         "RHS합동"
       ],
-      "explain": "직각(R) · 빗변 OA=OC(H) · 한 변 OM=ON(S) → RHS 합동"
+      "explain": "직각(R) · 빗변 OA = OC(H) · 한 변 OM = ON(S) → RHS 합동"
     },
     {
       "type": "slide",
-      "time": 30,
-      "prompt": "증명 ③ — 합동이므로 $\\overline{AM}=\\overline{CN}$. 그런데 $\\overline{AB}=2\\overline{AM}$, $\\overline{CD}=2\\overline{CN}$ 이다."
+      "prompt": "증명 ③ — 합동이므로 AM = CN. 수선은 현을 이등분하므로 AB = 2AM = 2CN = CD. 거꾸로 올라온 길을 그대로 내려왔다!"
+    },
+    {
+      "type": "slide",
+      "prompt": "📦 성질 ① — 원의 중심에서 같은 거리에 있는 두 현의 길이는 같다. (RHS 합동 → AM = CN → 2배)"
+    },
+    {
+      "type": "slide",
+      "prompt": "성질 ② (①의 역) — AB = CD이면 OM = ON이다. 🔎 이번에도 결론에서 거꾸로! OM = ON이 되려면 △OAM ≡ △OCN이면 된다. 그럼 합동이 되려면?"
     },
     {
       "type": "choice",
       "time": 30,
       "points": 1000,
-      "prompt": "$\\overline{AB}=2\\overline{AM}$ 이라고 할 수 있는 근거는?",
+      "prompt": "△OAM ≡ △OCN (RHS)이 되려면 직각과 빗변(OA = OC) 말고 무엇이 같아야 할까?",
       "choices": [
-        "RHS 합동",
-        "원의 중심에서 현에 내린 수선은 그 현을 이등분한다",
-        "반지름의 길이는 모두 같다",
-        "가정"
+        "OM = ON",
+        "AM = CN",
+        "AB = CD",
+        "∠OAM = ∠OCN"
       ],
       "answer": 2,
-      "explain": "전시학습 성질! M은 AB의 중점 → AB=2AM=2CN=CD"
-    },
-    {
-      "type": "slide",
-      "time": 30,
-      "prompt": "📦 성질 ① — 원의 중심에서 같은 거리에 있는 두 현의 길이는 같다. (RHS 합동 → AM=CN → 2배)"
-    },
-    {
-      "type": "slide",
-      "time": 30,
-      "prompt": "성질 ② (①의 역) — $\\overline{AB}=\\overline{CD}$ 이면 $\\overline{OM}=\\overline{ON}$ 이다. 이번엔 여러분이 증명을 완성해 보자!"
+      "explain": "S로 AM = CN이 필요. OM = ON은 우리가 보일 결론이라 근거로 쓰면 안 돼요!"
     },
     {
       "type": "ox",
       "time": 20,
       "points": 1000,
-      "prompt": "성질 ②의 증명에서 $\\overline{AM}=\\frac{1}{2}\\overline{AB}=\\frac{1}{2}\\overline{CD}=\\overline{CN}$ 이 성립한다.",
+      "prompt": "AM = CN은 가정에서 얻을 수 있다: AM = ½AB = ½CD = CN",
       "answer": "O",
-      "explain": "수선이 현을 이등분 + 가정 AB=CD → AM=CN (이번엔 이것이 S)"
+      "explain": "수선은 현을 이등분 + 가정 AB = CD → AM = CN. 거꾸로 올라가다 가정에 도착!"
     },
     {
       "type": "order",
       "time": 60,
       "points": 1000,
       "round": "catchup",
-      "prompt": "성질 ②의 증명을 순서대로 놓아 보자",
+      "prompt": "이제 앞으로! 성질 ②의 증명을 순서대로 놓아 보자",
       "items": [
-        "$\\overline{AM}=\\frac12\\overline{AB}=\\frac12\\overline{CD}=\\overline{CN}$",
-        "$\\angle OMA=\\angle ONC=90^\\circ$, $\\overline{OA}=\\overline{OC}$ (반지름)",
-        "△OAM≡△OCN (RHS 합동)",
-        "대응변이므로 $\\overline{OM}=\\overline{ON}$"
+        "AM = ½AB = ½CD = CN",
+        "∠OMA = ∠ONC = 90°, OA = OC (반지름)",
+        "△OAM ≡ △OCN (RHS 합동)",
+        "대응변이므로 OM = ON"
       ],
-      "explain": "현의 절반이 같다 → 직각·빗변 → RHS 합동 → OM=ON"
+      "explain": "가정 → AM = CN → 직각·빗변 → RHS 합동 → OM = ON (분석의 역순)"
     },
     {
       "type": "slide",
-      "time": 30,
       "prompt": "📦 성질 ② — 길이가 같은 두 현은 원의 중심에서 같은 거리에 있다. (AM = CN → RHS 합동 → OM = ON)"
     },
     {
       "type": "slide",
-      "time": 30,
       "prompt": "📦 정리 — 한 원에서 ① 중심에서 같은 거리에 있는 두 현의 길이는 같다. ② 길이가 같은 두 현은 중심에서 같은 거리에 있다."
     },
     {

@@ -25,7 +25,7 @@ td.s{width:27%}td.q{width:32%}td.t{width:33%}
 .ans{display:inline-block;background:#22b07d;color:#fff;border-radius:6px;padding:0 6px;font-size:8.5pt;font-weight:700}
 img.th{display:block;height:24mm;max-width:100%;object-fit:contain;object-position:left;border:1px solid #d9deea;border-radius:4px;margin-top:3px}
 .foot{margin-top:8px;display:flex;gap:8px}.foot div{flex:1;background:#fff8e6;border:1px solid #f0dfa0;border-radius:6px;padding:6px 8px;font-size:9.2pt}
-.foot b{display:block;margin-bottom:2px}
+.foot div>b:first-child{display:block;margin-bottom:2px}
 .memo td{height:40px}
 </style></head><body>
 
@@ -55,91 +55,115 @@ img.th{display:block;height:24mm;max-width:100%;object-fit:contain;object-positi
 </div>
 </section>
 
-<!-- ========== 2쪽: 성질 ① 도입 ========== -->
+<!-- ========== 2쪽: 성질 ① 가정 · 분석 시작 ========== -->
 <section class="pg">
-<div class="hd"><span class="no">5~9</span><h1>성질 ① — 질문 · 가정 · 보조선</h1><span class="tm">⏱ 7분</span></div>
-<div class="goal"><b>목표</b> "거리가 같으면 길이도 같다"를 <b>측정이 아니라 합동으로</b> 보일 준비. 가정과 결론을 구분하고, 직각삼각형을 만드는 보조선(반지름)을 학생이 떠올리게 한다.
-<br><b>슬라이드</b>는 점수 없이 [다음] 한 번에 넘어가요. 슬라이드에서 판서로 설명하고, 바로 뒤 문항에서 확인해요.</div>
+<div class="hd"><span class="no">5~9</span><h1>성질 ① — 질문 · 가정 · 🔎 분석 시작</h1><span class="tm">⏱ 6분</span></div>
+<div class="goal"><b>목표</b> 가정(주어진 것)과 결론(보일 것)을 분명히 한 뒤, <b>결론에서 거꾸로</b> "이것이 참이려면 무엇이 먼저 참이어야 하지?"를 묻기 시작한다.
+<br><b>슬라이드</b>는 점수 없이 [다음] 한 번. 점수 문항은 [다음] 3번 = 문제 → 정답 공개 → 순위</div>
 <table>
 <tr><th>번호</th><th>화면 · 정답</th><th>주요 발문</th><th>교사 역할 · 판서</th></tr>
 <tr><td class="n">5<small>슬라이드</small></td><td class="s">오늘의 질문: 거리가 같으면 길이도? 거꾸로는?</td>
-<td class="q"><div class="say">같다고 생각하는 사람 손! 왜 그렇게 생각해요?</div><div class="say">그림을 재 보면 확인할 수 있을까? '항상'이라고 말할 수 있을까?</div></td>
-<td class="t">예측만 받고 <b>판정하지 않기</b>. "증명해서 확인하자"로 연결</td></tr>
+<td class="q"><div class="say">같다고 생각하는 사람 손! 재 보면 '항상'이라고 말할 수 있을까?</div></td>
+<td class="t">예측만 받고 <b>판정하지 않기</b>. "증명해서 확인하자"</td></tr>
 <tr><td class="n">6<small>슬라이드</small></td><td class="s">성질 ① 문장<img class="th" src="../그림/1-성질1-그림.png"></td>
 <td class="q"><div class="say">그림에서 같다고 표시된 건 어디지?</div></td>
-<td class="t"><div class="ink">OM = ON 빨간 눈금 짚기 → "가정 = 주어진 것"</div><div class="ink">문장에서 '~이면' 앞에 밑줄(가정), 뒤에 물결(결론)</div></td></tr>
+<td class="t"><div class="ink">'~이면' 앞에 밑줄(가정), 뒤에 물결(결론)</div><div class="ink">칠판 왼쪽 위에 <b>가정: OM = ON</b>, 오른쪽 아래에 <b>결론: AB = CD</b> 적어 두기</div></td></tr>
 <tr><td class="n">7<small>선택 30초</small></td><td class="s">성질 ①의 가정은?<br><span class="ans">OM = ON</span></td>
 <td class="q"><div class="say">'~이면' 앞이 가정, 뒤가 결론!</div></td>
-<td class="t"><div class="err">AB = CD 고른 학생 → 결론과 헷갈림. 우리가 '보여야 할 것'이 결론</div></td></tr>
-<tr><td class="n">8<small>슬라이드</small></td><td class="s">증명 ① 반지름 OA, OC 긋기<img class="th" src="../그림/2-성질1-증명.png"></td>
-<td class="q"><div class="say">아까 전시학습처럼 직각삼각형을 만들려면 어떤 선을 하나 더 그으면 될까?</div></td>
-<td class="t">학생 답을 먼저 받고 나서 화면 보여 주기<div class="ink">OA, OC 덧그리기 → 파란 삼각형 두 개 강조</div></td></tr>
-<tr><td class="n">9<small>선택 30초</small></td><td class="s">OA = OC인 이유<br><span class="ans">원의 반지름</span></td>
+<td class="t"><div class="err">AB = CD → 결론과 헷갈림. 결론은 '보여야 할 것'</div></td></tr>
+<tr><td class="n">8<small>슬라이드</small><span class="rd" style="background:#2f5bff">분석</span></td><td class="s">🔎 거꾸로 생각하기<img class="th" src="../그림/1-성질1-그림.png"></td>
+<td class="q"><div class="say">결론에서 출발해 볼까요? AB = CD가 되려면, 그 전에 무엇이 참이어야 할까?</div></td>
+<td class="t"><div class="ink">결론 AB = CD 위에 ⇑ 화살표, "무엇이 참이면 될까?"</div>학생 생각을 2~3개 받고 9번으로</td></tr>
+<tr><td class="n">9<small>선택 30초</small><span class="rd" style="background:#2f5bff">분석</span></td><td class="s">AB = CD가 되려면?<br><span class="ans">AM = CN</span></td>
+<td class="q"><div class="say">M은 AB의 어디지? (전시학습 1번!) 그러면 AB와 AM의 관계는?</div></td>
+<td class="t"><div class="ink">⇑ 위에 <b>AM = CN</b> 적기, 옆에 "수선은 현을 이등분"</div><div class="err">AM = MB → 참이지만 CD와 연결이 안 됨</div></td></tr>
+</table>
+<div class="foot">
+<div><b>🎯 이 쪽의 핵심</b>가정과 결론을 칠판 양 끝에 적어 두고, 분석은 <b>결론 쪽에서 가정 쪽으로</b> 사다리를 쌓아 올리기.</div>
+</div>
+</section>
+
+<!-- ========== 3쪽: 분석 완료 · 증명 시작 ========== -->
+<section class="pg">
+<div class="hd"><span class="no">10~14</span><h1>성질 ① — 🔎 분석 완료 · 증명 시작</h1><span class="tm">⏱ 6분</span></div>
+<div class="goal"><b>목표</b> 분석 사다리를 "두 삼각형의 합동"까지 쌓고, <b>합동을 보이려면 삼각형이 필요 → 보조선</b>이라는 이유를 학생이 스스로 찾게 한다. 그다음부터는 사다리를 거꾸로 내려오며 증명을 쓴다.</div>
+<table>
+<tr><th>번호</th><th>화면 · 정답</th><th>주요 발문</th><th>교사 역할 · 판서</th></tr>
+<tr><td class="n">10<small>선택 30초</small><span class="rd" style="background:#2f5bff">분석</span></td><td class="s">AM = CN이 되려면?<br><span class="ans">△OAM ≡ △OCN</span></td>
+<td class="q"><div class="say">두 선분의 길이가 같다는 걸 보이는 방법, 지금까지 뭘 배웠지? (합동!)</div></td>
+<td class="t"><div class="ink">⇑ 위에 <b>△OAM ≡ △OCN</b></div><div class="err">AM = MB → 9번과 같은 함정</div></td></tr>
+<tr><td class="n">11<small>슬라이드</small><span class="rd" style="background:#2f5bff">분석</span></td><td class="s">거꾸로 올라온 길<img class="th" src="../그림/7-분석-성질1.png"></td>
+<td class="q"><div class="say">그런데 그림에 △OAM이 있나요? 합동을 보이려면 먼저 무엇이 필요하지?</div></td>
+<td class="t">칠판 사다리와 화면을 비교. 맨 위 "?" = <b>삼각형을 만들 선</b><div class="ink">학생이 말한 선을 점선으로 그어 보기</div></td></tr>
+<tr><td class="n">12<small>슬라이드</small></td><td class="s">증명 ① 반지름 OA, OC<img class="th" src="../그림/2-성질1-증명.png"></td>
+<td class="q"><div class="say">이제 사다리를 위에서부터 내려오며 써 볼까요?</div></td>
+<td class="t"><div class="ink">사다리 옆에 ⇓ 화살표 그리고 "증명 = 분석의 역순"</div><div class="ink">OA, OC 덧그리기</div></td></tr>
+<tr><td class="n">13<small>선택 30초</small></td><td class="s">OA = OC인 이유<br><span class="ans">원의 반지름</span></td>
 <td class="q"><div class="say">OA와 OC는 원에서 어떤 선이지?</div></td>
-<td class="t"><div class="ink">OA, OC 옆에 'H(빗변)' 적기</div><div class="err">'공통인 변' → 공통변은 두 삼각형이 함께 쓰는 한 변</div></td></tr>
+<td class="t"><div class="ink">OA, OC 옆에 'H(빗변)'</div><div class="err">'공통인 변' → 공통변은 두 삼각형이 함께 쓰는 한 변</div></td></tr>
+<tr><td class="n">14<small>슬라이드</small></td><td class="s">증명 ② 세 조건 나열<img class="th" src="../그림/2-성질1-증명.png"></td>
+<td class="q"><div class="say">같은 것 세 개, 각이에요 변이에요?</div></td>
+<td class="t"><div class="ink">90° 옆에 R, OA = OC 옆에 H, OM = ON 옆에 S</div>"OM = ON은 가정에서 왔네! 사다리가 가정에 닿았다"</td></tr>
 </table>
 <div class="foot">
-<div><b>🎯 이 페이지의 핵심</b>가정(OM = ON)과 결론(AB = CD)을 학생 입으로 구분하게 하기. 보조선은 교사가 먼저 긋지 말고 질문으로 끌어내기.</div>
+<div><b>🎯 이 쪽의 핵심</b>보조선을 "그냥 긋는 것"이 아니라 <b>분석에서 필요해서</b> 긋는다는 걸 학생 입으로 말하게 하기.</div>
 </div>
 </section>
 
-<!-- ========== 3쪽: 성질 ① 증명 ========== -->
+<!-- ========== 4쪽: RHS · 결론 · 성질 ② 분석 ========== -->
 <section class="pg">
-<div class="hd"><span class="no">10~14</span><h1>성질 ① — RHS 합동 · 결론</h1><span class="tm">⏱ 6분</span></div>
-<div class="goal"><b>목표</b> 세 조건을 R·H·S에 하나씩 연결하고, 합동 → AM = CN → 2배로 결론까지 간다. 13번에서 <b>전시학습 성질이 증명의 근거</b>로 다시 쓰인다는 것을 느끼게 한다.</div>
+<div class="hd"><span class="no">15~19</span><h1>성질 ① 결론 · 성질 ② 🔎 분석</h1><span class="tm">⏱ 6분</span></div>
+<div class="goal"><b>목표</b> 성질 ①을 RHS 합동으로 마무리하고, 역인 성질 ②에서는 <b>학생이 직접 결론에서 거꾸로</b> 올라가 가정에 닿게 한다. 이때 <b>결론을 근거로 쓰면 안 된다</b>는 것을 짚는다.</div>
 <table>
 <tr><th>번호</th><th>화면 · 정답</th><th>주요 발문</th><th>교사 역할 · 판서</th></tr>
-<tr><td class="n">10<small>슬라이드</small></td><td class="s">증명 ② 세 조건 나열<img class="th" src="../그림/2-성질1-증명.png"></td>
-<td class="q"><div class="say">같은 것 세 개를 찾았어요. 각각 각이에요, 변이에요?</div></td>
-<td class="t"><div class="ink">∠OMA = ∠ONC = 90° 옆에 R, OA = OC 옆에 H, OM = ON 옆에 S</div></td></tr>
-<tr><td class="n">11<small>단답 30초</small><span class="rd">2배</span></td><td class="s">합동 조건은?<br><span class="ans">RHS</span></td>
+<tr><td class="n">15<small>단답 30초</small><span class="rd">2배</span></td><td class="s">합동 조건은?<br><span class="ans">RHS</span></td>
 <td class="q"><div class="say">직각, 빗변, 그리고 한 변 — 무슨 합동?</div></td>
-<td class="t">2배 라운드라고 미리 알려 긴장감 주기<div class="err">SAS → 끼인각이 아님 · RHA → 같은 건 각이 아니라 변(OM = ON)</div></td></tr>
-<tr><td class="n">12<small>슬라이드</small></td><td class="s">증명 ③ AM = CN, AB = 2AM<img class="th" src="../그림/2-성질1-증명.png"></td>
-<td class="q"><div class="say">두 삼각형이 합동이면 또 무엇이 같아질까?</div><div class="say">AM이 같다는 걸 알았는데, 우리가 원하는 건 AB잖아. 어떻게 하지?</div></td>
-<td class="t"><div class="ink">AM, CN에 같은 표시 → "×2"</div></td></tr>
-<tr><td class="n">13<small>선택 30초</small></td><td class="s">AB = 2AM인 근거<br><span class="ans">수선은 현을 이등분</span></td>
-<td class="q"><div class="say">이거 아까 어디서 봤죠? (전시학습 1번!)</div></td>
-<td class="t">전시학습 1번 화면을 떠올리게 하기<div class="err">'RHS 합동' 고른 학생 → 합동은 AM = CN까지만 알려 줌</div></td></tr>
-<tr><td class="n">14<small>슬라이드</small></td><td class="s">📦 성질 ① 결론 박스<img class="th" src="../그림/4-결론박스-성질1.png"></td>
+<td class="t">2배 라운드 미리 알리기<div class="err">SAS → 끼인각 아님 · RHA → 같은 건 각이 아니라 변</div></td></tr>
+<tr><td class="n">16<small>슬라이드</small></td><td class="s">증명 ③ AM = CN → AB = CD<img class="th" src="../그림/2-성질1-증명.png"></td>
+<td class="q"><div class="say">사다리를 끝까지 내려왔나요?</div></td>
+<td class="t"><div class="ink">사다리 칸마다 ✔ 표시하며 내려오기</div></td></tr>
+<tr><td class="n">17<small>슬라이드</small></td><td class="s">📦 성질 ① 결론 박스<img class="th" src="../그림/4-결론박스-성질1.png"></td>
 <td class="q"><div class="say">다 같이 읽어 볼까요?</div></td>
-<td class="t">회색 근거 줄을 손으로 짚으며 3단계 요약: <b>RHS 합동 → AM = CN → 2배</b></td></tr>
+<td class="t">회색 근거 줄 짚기: <b>RHS 합동 → AM = CN → 2배</b></td></tr>
+<tr><td class="n">18<small>슬라이드</small><span class="rd" style="background:#2f5bff">분석</span></td><td class="s">성질 ② + 🔎 거꾸로<img class="th" src="../그림/3-성질2-증명.png"></td>
+<td class="q"><div class="say">①과 비교해 뭐가 바뀌었죠? 이번 결론은? 거꾸로 올라가 볼까요?</div></td>
+<td class="t"><div class="ink">①·② 가정/결론 나란히, 바뀐 것에 화살표</div><div class="ink">새 사다리: 결론 OM = ON ⇑ △OAM ≡ △OCN ⇑ ?</div></td></tr>
+<tr><td class="n">19<small>선택 30초</small><span class="rd" style="background:#2f5bff">분석</span></td><td class="s">RHS가 되려면 무엇이 같아야?<br><span class="ans">AM = CN</span></td>
+<td class="q"><div class="say">①에서는 S가 OM = ON이었죠. ②에서도 OM = ON을 써도 될까?</div></td>
+<td class="t"><div class="err"><b>OM = ON 고른 학생</b> → "그건 우리가 보일 결론! 결론을 근거로 쓰면 제자리걸음"</div><div class="ink">⇑ 위에 AM = CN</div></td></tr>
 </table>
 <div class="foot">
-<div><b>🎯 이 페이지의 핵심</b>11번 공개 화면의 오답 분포(SAS·RHA)를 판서로 짚기. "왜 SAS가 아니지?"가 가장 좋은 설명 기회예요.</div>
+<div><b>🎯 이 쪽의 핵심</b>19번 공개 화면에서 OM = ON을 고른 수를 꼭 짚기. <b>순환논리</b>를 경험하는 가장 좋은 기회예요.</div>
 </div>
 </section>
 
-<!-- ========== 4쪽: 성질 ② ========== -->
+<!-- ========== 5쪽: 성질 ② 증명 · 정리 ========== -->
 <section class="pg">
-<div class="hd"><span class="no">15~20</span><h1>성질 ② (역) — 학생이 완성 · 정리</h1><span class="tm">⏱ 7분</span></div>
-<div class="goal"><b>목표</b> 가정과 결론이 바뀐 '역'을 학생이 스스로 증명한다. 성질 ①과 <b>같은 RHS 합동이지만 S가 OM = ON → AM = CN으로 바뀐다</b>는 것이 핵심.</div>
+<div class="hd"><span class="no">20~24</span><h1>성질 ② — 가정에 도착 · 증명 · 정리</h1><span class="tm">⏱ 5분</span></div>
+<div class="goal"><b>목표</b> 분석 사다리가 가정 AB = CD에 닿는 순간을 확인하고, 그 사다리를 거꾸로 내려오며 증명을 완성한다.</div>
 <table>
 <tr><th>번호</th><th>화면 · 정답</th><th>주요 발문</th><th>교사 역할 · 판서</th></tr>
-<tr><td class="n">15<small>슬라이드</small></td><td class="s">성질 ② (①의 역)<img class="th" src="../그림/3-성질2-증명.png"></td>
-<td class="q"><div class="say">①과 비교해서 뭐가 바뀌었죠?</div><div class="say">이번 가정은 AB = CD. 그러면 현의 절반끼리는?</div></td>
-<td class="t"><div class="ink">①·② 가정/결론을 나란히 쓰고 화살표로 바뀐 것 표시</div><div class="ink">16번 공개 뒤 AM·MB·CN·ND에 같은 눈금(〃) 판서</div>"이번엔 여러분이 증명!"</td></tr>
-<tr><td class="n">16<small>OX 20초</small></td><td class="s">AM = ½AB = ½CD = CN<br><span class="ans">O</span></td>
-<td class="q"><div class="say">①에서 S는 OM = ON이었죠. ②에서 S는?</div></td>
-<td class="t"><div class="ink">S 자리에 AM = CN 적기 (①의 판서와 비교)</div></td></tr>
-<tr><td class="n">17<small>순서 60초</small><span class="rd">역전</span></td><td class="s">증명 4단계 순서 배열<br><span class="ans">절반 → 직각·빗변 → 합동 → OM = ON</span></td>
-<td class="q"><div class="say">①의 증명 순서를 떠올리면서 놓아 보세요.</div></td>
-<td class="t">역전 라운드 안내(아래 절반이 맞히면 ×2)<div class="ink">공개 후 4단계를 칠판에 순서대로 정리</div></td></tr>
-<tr><td class="n">18<small>슬라이드</small></td><td class="s">📦 성질 ② 결론 박스<img class="th" src="../그림/5-결론박스-성질2.png"></td>
+<tr><td class="n">20<small>OX 20초</small><span class="rd" style="background:#2f5bff">분석</span></td><td class="s">AM = ½AB = ½CD = CN<br><span class="ans">O</span></td>
+<td class="q"><div class="say">AM = CN은 어디서 얻을 수 있지? 가정을 보세요!</div></td>
+<td class="t"><div class="ink">AM·MB·CN·ND에 같은 눈금(〃)</div><div class="ink">사다리 맨 위에 <b>AB = CD (가정) — 도착!</b></div></td></tr>
+<tr><td class="n">21<small>순서 60초</small><span class="rd">역전</span></td><td class="s">증명 4단계 순서<br><span class="ans">절반 → 직각·빗변 → 합동 → OM = ON</span></td>
+<td class="q"><div class="say">이번엔 사다리를 위에서 아래로 내려오면서 놓아 보세요.</div></td>
+<td class="t">역전 라운드 안내(아래 절반이 맞히면 ×2)<div class="ink">공개 후 사다리 옆에 ⇓ 번호 1~4</div></td></tr>
+<tr><td class="n">22<small>슬라이드</small></td><td class="s">📦 성질 ② 결론 박스<img class="th" src="../그림/5-결론박스-성질2.png"></td>
 <td class="q"><div class="say">다 같이 읽어 볼까요?</div></td>
-<td class="t">회색 근거 줄 짚기: <b>AM = CN → RHS 합동 → OM = ON</b></td></tr>
-<tr><td class="n">19<small>슬라이드</small></td><td class="s">📦 성질 ①·② 정리<img class="th" src="../그림/6-결론박스-정리.png"></td>
-<td class="q"><div class="say">두 식에서 달라진 건 뭐죠? (화살표 방향)</div></td>
-<td class="t"><div class="ink">⟹ 두 개를 ⟺ 하나로 묶어 보이기 → "서로 역, 둘 다 참"</div></td></tr>
-<tr><td class="n">20<small>설문 20초</small></td><td class="s">짝에게 설명할 수 있나요?</td>
+<td class="t">회색 근거 줄: <b>AM = CN → RHS 합동 → OM = ON</b></td></tr>
+<tr><td class="n">23<small>슬라이드</small></td><td class="s">📦 성질 ①·② 정리<img class="th" src="../그림/6-결론박스-정리.png"></td>
+<td class="q"><div class="say">두 식에서 달라진 건? 그리고 두 증명 모두 어떤 순서로 생각했죠?</div></td>
+<td class="t"><div class="ink">⟹ 두 개를 ⟺ 하나로 묶기 → "서로 역, 둘 다 참"</div>"결론에서 거꾸로 생각하고, 앞으로 쓴다"</td></tr>
+<tr><td class="n">24<small>설문 20초</small></td><td class="s">짝에게 설명할 수 있나요?</td>
 <td class="q"><div class="say">솔직하게 눌러 주세요. 점수 없어요.</div></td>
-<td class="t"><b>결과 보고 결정</b><br>'합동 헷갈림'이 많으면 → 10~11번 판서로 2분 다시 짚기<br>그렇지 않으면 → 정리학습으로</td></tr>
+<td class="t"><b>결과 보고 결정</b><br>'합동 헷갈림'이 많으면 → 14~15번 판서로 2분 다시 짚기<br>그렇지 않으면 → 정리학습으로</td></tr>
 </table>
 </section>
 
-<!-- ========== 5쪽: 정리학습 ========== -->
+<!-- ========== 6쪽: 정리학습 ========== -->
 <section class="pg">
-<div class="hd"><span class="no">21~</span><h1>정리학습 — 성질 활용 문제</h1><span class="tm">⏱ 15분</span></div>
+<div class="hd"><span class="no">25~</span><h1>정리학습 — 성질 활용 문제</h1><span class="tm">⏱ 15분</span></div>
 <div class="goal"><b>목표</b> 두 성질을 문제에 써 본다. 쉬운 교과서 문제 → 심화 → 내신 기출 순서.
 <br><b>배점·라운드</b> 기본 1000 · 심화 2000(2배) · <b>파이널 베팅은 맨 마지막 문항에만</b></div>
 <table>
@@ -152,7 +176,7 @@ img.th{display:block;height:24mm;max-width:100%;object-fit:contain;object-positi
 </table>
 <table class="memo" style="margin-top:10px">
 <tr><th style="width:58px">문항</th><th>문제 메모 (정답 · 예상 오답 · 힌트)</th></tr>
-<tr><td class="n">21</td><td></td></tr><tr><td class="n">22</td><td></td></tr><tr><td class="n">23</td><td></td></tr><tr><td class="n">24</td><td></td></tr><tr><td class="n">25</td><td></td></tr>
+<tr><td class="n">25</td><td></td></tr><tr><td class="n">26</td><td></td></tr><tr><td class="n">27</td><td></td></tr><tr><td class="n">28</td><td></td></tr><tr><td class="n">29</td><td></td></tr>
 </table>
 </section>
 </body></html>
