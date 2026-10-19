@@ -31,7 +31,7 @@ function fig(o) {
   out.push(`<circle cx="${cx}" cy="${cy}" r="5" fill="${K}"/>`, lbl([cx, cy], 0, -24, 'O'));
   return out.join('');
 }
-const base = { cx: 250, cy: 250, r: 200, d: 120, ta: 150, tc: 290 };
+const base = { cx: 250, cy: 250, r: 200, d: 120, ta: 140, tc: 300 };
 const svgFig = (o, w, h) => `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${fig(Object.assign({}, base, o))}</svg>`;
 const pages = {
   '1-성질1-그림.png': `<div class="fig">${svgFig({ ticksOM: 1 }, 500, 500)}<div class="pad"></div></div>`,
